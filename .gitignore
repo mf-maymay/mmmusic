@@ -4,6 +4,7 @@ __pycache__/
 
 # credentials
 credentials.py
+.cache*
 
 # output folder
 output/
