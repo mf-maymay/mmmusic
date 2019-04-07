@@ -1,25 +1,6 @@
 # -*- coding: utf-8 -*-
 from functools import reduce
-import spotipy
-from credentials import client_credentials_manager
-
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-
-class Cache(dict):
-    def __init__(self, func):
-        self.func = func
-
-    def __getitem__(self, item):
-        if item not in self:
-            self[item] = self.func(item)
-        return dict.__getitem__(self, item)
-
-    def __call__(self, item):
-        return self[item]
-
-    def get(self, item):
-        return self[item]
+from utils import get_artist_name, get_related
 
 
 def escape_special_chars(string):
@@ -28,25 +9,6 @@ def escape_special_chars(string):
     for char in char_list:
         replaced = replaced.replace(char, "\\" + char)
     return replaced
-
-
-def search_artist(name):
-    return sp.search("artist:" + name, type="artist")
-
-
-@Cache
-def get_artist(id):
-    return sp.artist(id)
-
-
-@Cache
-def get_artist_name(id):
-    return escape_special_chars(get_artist(id)["name"])
-
-
-@Cache
-def get_related(id):
-    return sp.artist_related_artists(id)["artists"]
 
 
 ids = {
@@ -170,10 +132,6 @@ ids = {
 
 class Finder(object):
     ids = ids
-    search_artist = search_artist
-    get_artist = get_artist
-    get_artist_name = get_artist_name
-    get_related = get_related
 
     def __init__(self, *artist_kws, artist_ids=None):
         self.artist_kws = artist_kws

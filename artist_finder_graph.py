@@ -5,6 +5,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
 from artist_finder import Finder
+from utils import get_artist_name, get_related
 
 DEFAULT_NODE_COLOR_NEAR = "#6177aa"
 DEFAULT_NODE_COLOR_FAR = "#0e1b3a"
@@ -35,7 +36,7 @@ class ArtistGraph(object):
         self.is_built = False
 
     def get_artist_names(self):
-        return sorted(map(Finder.get_artist_name, self.G.nodes))
+        return sorted(map(get_artist_name, self.G.nodes))
 
     def trim(self):
         while True:
@@ -58,7 +59,7 @@ class ArtistGraph(object):
         self.G.add_edges_from(self.finder.edges)
 
         for artist in self.finder.midpoints(names=False):
-            for related in Finder.get_related(artist):
+            for related in get_related(artist):
                 if related["id"] in self.G.nodes:
                     self.G.add_edge(artist, related["id"])
 
@@ -141,7 +142,7 @@ class ArtistGraph(object):
 
         color = {k: dist[k] / max_dist for k in self.G.nodes}
 
-        node_labels = {artist_id: Finder.get_artist_name(artist_id)
+        node_labels = {artist_id: get_artist_name(artist_id)
                        for artist_id in self.G.nodes}
 
         cmap = LinearSegmentedColormap.from_list("music",

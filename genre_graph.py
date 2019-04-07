@@ -3,23 +3,15 @@ from collections import Counter, defaultdict
 from itertools import permutations
 import networkx as nx
 import pandas as pd
-from artist_finder import Cache, get_artist
-from artist_info import all_artists
-
-all_artists = dict(all_artists)
-
-
-@Cache
-def get_genres(artist):
-    return get_artist(artist)["genres"]
-
+from artist_info import saved
+from utils import get_genres
 
 artist_genres = {}
 genre_artists = defaultdict(list)
 edges = Counter()
 
 
-for name, artist in all_artists.items():
+for artist, name in saved.items():
     artist_genres[name] = get_genres(artist)
 
     for genre in get_genres(artist):
