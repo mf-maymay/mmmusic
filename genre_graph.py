@@ -7,7 +7,7 @@ from artist_info import saved
 from utils import get_genres
 
 artist_genres = {}
-genre_artists = defaultdict(list)
+genre_artists = defaultdict(set)
 edges = Counter()
 
 
@@ -15,7 +15,7 @@ for artist, name in saved.items():
     artist_genres[name] = get_genres(artist)
 
     for genre in get_genres(artist):
-        genre_artists[genre].append(name)
+        genre_artists[genre] |= {name}
 
     edges.update(permutations(get_genres(artist), 2))
 

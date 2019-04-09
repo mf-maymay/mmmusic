@@ -40,3 +40,7 @@ def get_related(artist_id):
 
 def search_artist(name):
     return sp.search("artist:" + name, type="artist")
+
+
+def plt_safe(string):
+    return string.replace(r"$", r"\$")

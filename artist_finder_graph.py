@@ -5,7 +5,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
 from artist_finder import Finder
-from utils import get_artist_name, get_related
+from utils import get_artist_name, get_related, plt_safe
 
 DEFAULT_NODE_COLOR_NEAR = "#6177aa"
 DEFAULT_NODE_COLOR_FAR = "#0e1b3a"
@@ -15,15 +15,10 @@ DEFAULT_FIG_COLOR = "#2e4272"
 
 
 class ArtistGraph(object):
-    def __init__(self, *artist_kws, artist_ids=None):
-        if not artist_kws and not artist_ids:
-            raise ValueError("artist_kws and artist_ids cannot both be empty")
+    def __init__(self, *artist_ids):
+        self.artist_ids = artist_ids
 
-        self.artist_kws = artist_kws
-
-        self.finder = Finder(*self.artist_kws, artist_ids=artist_ids)
-
-        self.artist_ids = self.finder.artist_ids
+        self.finder = Finder(*self.artist_ids)
 
         self.G = nx.Graph()
 
@@ -107,7 +102,7 @@ class ArtistGraph(object):
              edge_color=DEFAULT_EDGE_COLOR,
              font_color=DEFAULT_FONT_COLOR,
              fig_color=DEFAULT_FIG_COLOR,
-             save="ids",
+             save=True,
              only_keep_roots=False
              ):
         if not self.is_built:
@@ -142,7 +137,7 @@ class ArtistGraph(object):
 
         color = {k: dist[k] / max_dist for k in self.G.nodes}
 
-        node_labels = {artist_id: get_artist_name(artist_id)
+        node_labels = {artist_id: plt_safe(get_artist_name(artist_id))
                        for artist_id in self.G.nodes}
 
         cmap = LinearSegmentedColormap.from_list("music",
@@ -166,10 +161,7 @@ class ArtistGraph(object):
 
         fig.tight_layout()
 
-        if save == "kws":
-            fig.savefig("output/" + "-".join(self.artist_kws) + ".png",
-                        facecolor=fig_color)
-        elif save == "ids":
+        if save:
             fig.savefig("output/" + "-".join(self.artist_ids) + ".png",
                         facecolor=fig_color)
 
@@ -181,14 +173,14 @@ class ArtistGraph(object):
 
 
 if __name__ == "__main__":
+    from artist_ids import ids
+
     save = True
 
     step_only = False
 
-    artists = ["picastro", "pretend"]
+    artists = map(ids.__getitem__, ["picastro", "pretend"])
 
-    artist_ids = []
-
-    artist_graph = ArtistGraph(*artists, artist_ids=artist_ids)
+    artist_graph = ArtistGraph(*artists)
 
     fig, ax = artist_graph.grow_and_plot(step_only=step_only, save=save)
