@@ -55,8 +55,8 @@ class ArtistGraph(object):
 
         for artist in self.finder.midpoints(names=False):
             for related in get_related(artist):
-                if related["id"] in self.G.nodes:
-                    self.G.add_edge(artist, related["id"])
+                if related in self.G.nodes:
+                    self.G.add_edge(artist, related)
 
         print("Nodes (initial):", len(self.G.nodes))
 

@@ -5,6 +5,22 @@ from credentials import client_credentials_manager
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 
+class Artist(object):
+    def __init__(self, artist_id):
+        artist = sp.artist(artist_id)
+
+        self.id = artist_id
+        self.name = artist["name"]
+        self.genres = artist["genres"]
+        self.popularity = artist["popularity"]
+
+        related = sp.artist_related_artists(artist_id)["artists"]
+        self.related = set(a["id"] for a in related)
+
+    def __repr__(self):
+        return self.name
+
+
 class Cache(dict):
     def __init__(self, func):
         self.func = func
@@ -23,23 +39,19 @@ class Cache(dict):
 
 @Cache
 def get_artist(artist_id):
-    return sp.artist(artist_id)
+    return Artist(artist_id)
 
 
 def get_artist_name(artist_id):
-    return get_artist(artist_id)["name"]
+    return get_artist(artist_id).name  # XXX: unnecessary
 
 
-def get_genres(artist):
-    return get_artist(artist)["genres"]
+def get_genres(artist_id):
+    return get_artist(artist_id).genres  # XXX: unnecessary
 
 
 def get_related(artist_id):
-    return sp.artist_related_artists(artist_id)["artists"]
-
-
-def search_artist(name):
-    return sp.search("artist:" + name, type="artist")
+    return get_artist(artist_id).related  # XXX: unnecessary
 
 
 def plt_safe(string):

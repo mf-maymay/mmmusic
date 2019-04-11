@@ -19,7 +19,7 @@ class Finder(object):
         for k in self.artist_ids:
             new = set()
             for artist in self.lasts[k]:
-                add = {related["id"] for related in get_related(artist)}
+                add = get_related(artist)
                 self.edges |= {(artist, related) for related in add}
                 new |= add
             self.lasts[k] = new - self.sets[k]
@@ -41,3 +41,8 @@ if __name__ == "__main__":
     from artist_ids import ids
 
     finder = Finder(ids["death grips"], ids["earl sweatshirt"])
+
+    finder.find()
+
+    for midpoint in finder.midpoints():
+        print(midpoint)
