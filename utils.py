@@ -9,6 +9,8 @@ class Artist(object):
     def __init__(self, artist_id):
         artist = sp.artist(artist_id)
 
+        self._hash = hash(artist_id)
+
         self.id = artist_id
         self.name = artist["name"]
         self.genres = artist["genres"]
@@ -17,13 +19,25 @@ class Artist(object):
         self._related = None
 
     @property
-    def related(self):
+    def related(self):  # TODO: consider returning Artist objects, instead
         if self._related is None:
             related = sp.artist_related_artists(self.id)["artists"]
             self._related = set(a["id"] for a in related)
         return self._related
 
+    def __eq__(self, other):
+        return (self._hash == hash(other))
+
+    def __hash__(self):
+        return self._hash
+
+    def __lt__(self, other):
+        return (self.name < str(other))
+
     def __repr__(self):
+        return self.name
+
+    def __str__(self):
         return self.name
 
 
