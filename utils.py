@@ -14,8 +14,14 @@ class Artist(object):
         self.genres = artist["genres"]
         self.popularity = artist["popularity"]
 
-        related = sp.artist_related_artists(artist_id)["artists"]
-        self.related = set(a["id"] for a in related)
+        self._related = None
+
+    @property
+    def related(self):
+        if self._related is None:
+            related = sp.artist_related_artists(self.id)["artists"]
+            self._related = set(a["id"] for a in related)
+        return self._related
 
     def __repr__(self):
         return self.name
