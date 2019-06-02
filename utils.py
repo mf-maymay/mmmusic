@@ -19,10 +19,10 @@ class Artist(object):
         self._related = None
 
     @property
-    def related(self):  # TODO: consider returning Artist objects, instead
+    def related(self):
         if self._related is None:
             related = sp.artist_related_artists(self.id)["artists"]
-            self._related = set(a["id"] for a in related)
+            self._related = set(get_artist(a["id"]) for a in related)
         return self._related
 
     def __eq__(self, other):
