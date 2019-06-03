@@ -14,8 +14,7 @@ DEFAULT_FIG_COLOR = "#2e4272"
 
 class ArtistGraph(object):
     def __init__(self, *artist_ids):
-        self.artists = sorted(get_artist(k) for k in artist_ids)  # XXX
-        # self.artists = artist_ids
+        self.artists = sorted(get_artist(k) for k in artist_ids)
 
         self.finder = Finder(*self.artists)
 
@@ -85,8 +84,10 @@ class ArtistGraph(object):
 
         fig.tight_layout()
 
-        if save:  # TODO: should use ids, not names
-            fig.savefig("output/" + "-".join(map(str, self.artists)) + ".png",
+        if save:  # XXX: use ids, not names ? - ya, some names not good
+            fig.savefig("output/" +
+                        "-".join(a.id for a in self.artists) +
+                        ".png",
                         facecolor=fig_color)  # TODO: make dir if not exists
 
         return fig, ax
@@ -102,9 +103,13 @@ if __name__ == "__main__":
 
     save = True
 
-    artists = [ids[a] for a in ("death grips",
-                                "earl sweatshirt",
-                                "king krule")]
+#    artists = [ids[a] for a in ("death grips",
+#                                "earl sweatshirt",
+#                                "king krule")]
+
+    artists = [ids[a] for a in ("akron family",
+                                "sturgill simpson",
+                                "thom yorke")]
 
     artist_graph = ArtistGraph(*artists)
 

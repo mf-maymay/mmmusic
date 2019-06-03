@@ -90,7 +90,7 @@ ids = {
     "skinny puppy": "5Mu0EMEsUIVE132pNMywns",
     "slint": "4IwOItqRhsIoRuD5HP4vyC",
     "stan getz": "0FMucZsEnCxs5pqBjHjIc8",
-    "steely dan": "6P7H3ai06vU1sGvdpBwDmE",
+    "sturgill simpson": "3vDpQbGnzRbRVirXlfQagB",
     "sun ra": "0tIODqvzGUoEaK26rK4pvX",
     "swans": "79S80ZWgVhIPMCHuvl6SkA",
     "swell maps": "1FGzeqDPTLZwfbfxpmPAZn",

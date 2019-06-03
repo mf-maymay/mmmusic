@@ -13,7 +13,7 @@ class Finder(object):
 
         self.farthest = {artist: {artist} for artist in self.artists}
 
-        self.G = nx.Graph()
+        self.G = nx.Graph()  # undirected
         self.G.add_nodes_from(self.artists)
 
         self.is_grown = False
@@ -82,26 +82,27 @@ class Finder(object):
         if self.max_path_len is not None:
             self.max_path_len += 1
 
-        # XXX: below needs updating for multiple roots, due to max_path_len
-        for start, stop in combinations(self.artists, 2):
-            try:
-                for path in nx.shortest_simple_paths(self.G_cut, start, stop):
+        combo_path_gens = [nx.shortest_simple_paths(self.G_cut, start, stop)
+                           for start, stop in combinations(self.artists, 2)]
+
+        paths_to_add = True
+
+        while paths_to_add:
+            paths_to_add = False
+            for path_gen in combo_path_gens:
+                path = next(path_gen, None)
+                if path is not None:
                     if ((not self.paths) or
-                        ((len(path) == len(self.paths[-1])) if
-                         (self.max_path_len is None) else
-                         (len(path) <= self.max_path_len))):
+                        (self.max_path_len is not None and
+                         len(path) <= self.max_path_len)):
                         self.paths.append(path)
-                    else:
-                        break
-            except nx.NetworkXNoPath as e:
-                print(e.args[0])
-                continue
+                        paths_to_add = True
+            if self.paths and self.max_path_len is None:
+                self.max_path_len = max(map(len, self.paths))
 
         keepers = set(self.artists)
 
         if self.paths:
-            self.max_path_len = max(map(len, self.paths))
-
             keepers |= reduce(set.union, map(set, self.paths))
 
         self.G_cut.remove_nodes_from(set(self.G_cut.nodes) - keepers)
