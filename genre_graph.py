@@ -11,11 +11,11 @@ genre_artists = defaultdict(set)
 edges = Counter()
 
 
-for artist, name in saved.items():
-    artist_genres[name] = get_genres(artist)
+for artist in saved:
+    artist_genres[artist] = get_genres(artist)
 
     for genre in get_genres(artist):
-        genre_artists[genre] |= {name}
+        genre_artists[genre] |= {artist}
 
     edges.update(permutations(get_genres(artist), 2))
 
@@ -35,3 +35,10 @@ edf.sort_values("count", inplace=True, ascending=False)
 
 def edf_find(genre):
     return edf[edf["g1"] == genre]
+
+
+if __name__ == "__main__":
+    graph.remove_nodes_from(g for g in genre_artists
+                            if len(genre_artists[g]) <= 4)
+
+    nx.draw_kamada_kawai(graph, with_labels=True, edge_color="g")

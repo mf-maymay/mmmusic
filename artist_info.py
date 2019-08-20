@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import spotipy
 from credentials import token
+from utils import get_artist
 
 sp = spotipy.Spotify(auth=token)
 
-saved = {}
+saved = set()
 
 offset = 0
 
@@ -14,8 +15,8 @@ while True:
     items = albums["items"]
 
     for item in items:
-        saved.update((artist["id"], artist["name"])
-                     for artist in item["album"]["artists"])
+        saved |= {get_artist(artist["id"])
+                  for artist in item["album"]["artists"]}
 
     offset += len(items)
 

@@ -107,9 +107,12 @@ if __name__ == "__main__":
 #                                "earl sweatshirt",
 #                                "king krule")]
 
-    artists = [ids[a] for a in ("akron family",
-                                "sturgill simpson",
-                                "thom yorke")]
+#    artists = [ids[a] for a in ("akron family",
+#                                "sturgill simpson",
+#                                "thom yorke")]
+
+    artists = [ids[a] for a in ("built to spill",
+                                "wilco")]
 
     artist_graph = ArtistGraph(*artists)
 
