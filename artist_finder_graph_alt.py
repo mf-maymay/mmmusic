@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -84,11 +85,12 @@ class ArtistGraph(object):
 
         fig.tight_layout()
 
-        if save:  # XXX: use ids, not names ? - ya, some names not good
+        if save:
+            os.makedirs("output", exist_ok=True)
             fig.savefig("output/" +
                         "-".join(a.id for a in self.artists) +
                         ".png",
-                        facecolor=fig_color)  # TODO: make dir if not exists
+                        facecolor=fig_color)
 
         return fig, ax
 
@@ -112,7 +114,7 @@ if __name__ == "__main__":
 #                                "thom yorke")]
 
     artists = [ids[a] for a in ("built to spill",
-                                "wilco")]
+                                "king krule")]
 
     artist_graph = ArtistGraph(*artists)
 
