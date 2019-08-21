@@ -3,7 +3,7 @@ import os
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
-from artist_finder_alt import Finder
+from artist_finder import Finder
 from utils import get_artist, get_artist_name, plt_safe
 
 DEFAULT_NODE_COLOR_NEAR = "#6177aa"
