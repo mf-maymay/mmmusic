@@ -6,12 +6,6 @@ import networkx as nx
 from artist_finder import Finder
 from utils import get_artist, get_artist_name, plt_safe
 
-DEFAULT_NODE_COLOR_NEAR = "#6177aa"
-DEFAULT_NODE_COLOR_FAR = "#0e1b3a"
-DEFAULT_EDGE_COLOR = "#000102"
-DEFAULT_FONT_COLOR = "#b9cdfb"
-DEFAULT_FIG_COLOR = "#2e4272"
-
 
 class ArtistGraph(object):
     def __init__(self, *artist_ids):
@@ -24,12 +18,13 @@ class ArtistGraph(object):
         return self.finder.G_cut
 
     def plot(self,
-             node_color_near=DEFAULT_NODE_COLOR_NEAR,
-             node_color_far=DEFAULT_NODE_COLOR_FAR,
-             edge_color=DEFAULT_EDGE_COLOR,
-             font_color=DEFAULT_FONT_COLOR,
-             fig_color=DEFAULT_FIG_COLOR,
-             save=True
+             node_color_near="#6177aa",
+             node_color_far="#0e1b3a",
+             edge_color="#000102",
+             font_color="#b9cdfb",
+             fig_color="#2e4272",
+             save=False,
+             **plot_kwargs  # passed to nx.draw
              ):
 
         if not self.finder.is_grown:
@@ -65,9 +60,8 @@ class ArtistGraph(object):
                        for artist_id in self.G_cut.nodes}
 
         cmap = LinearSegmentedColormap.from_list("music",
-                                                 [DEFAULT_NODE_COLOR_NEAR,
-                                                  DEFAULT_NODE_COLOR_FAR]
-                                                 )
+                                                 [node_color_near,
+                                                  node_color_far])
 
         fig, ax = plt.subplots(figsize=(16, 9))
 
@@ -78,7 +72,8 @@ class ArtistGraph(object):
                              node_color=[color[k] for k in self.G_cut.nodes],
                              edge_color=edge_color,
                              font_color=font_color,
-                             labels=node_labels
+                             labels=node_labels,
+                             **plot_kwargs
                              )
 
         fig.set_facecolor(fig_color)
@@ -103,8 +98,6 @@ class ArtistGraph(object):
 if __name__ == "__main__":
     from artist_ids import ids
 
-    save = True
-
 #    artists = [ids[a] for a in ("death grips",
 #                                "earl sweatshirt",
 #                                "king krule")]
@@ -113,9 +106,9 @@ if __name__ == "__main__":
 #                                "sturgill simpson",
 #                                "thom yorke")]
 
-    artists = [ids[a] for a in ("built to spill",
-                                "king krule")]
+    artists = [ids[a] for a in ("black sabbath",
+                                "magazine")]
 
     artist_graph = ArtistGraph(*artists)
 
-    fig, ax = artist_graph.grow_and_plot(save=save)
+    fig, ax = artist_graph.grow_and_plot(save=True)
