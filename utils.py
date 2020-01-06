@@ -1,77 +1,78 @@
 # -*- coding: utf-8 -*-
+from collections import namedtuple
+from functools import wraps, lru_cache
 import spotipy
 from credentials import client_credentials_manager
 
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 
-class Artist(object):
-    def __init__(self, artist_id):
+_Artist = namedtuple("_Artist", ("id", "name", "genres", "popularity"))
+
+
+class Cache(dict):
+    def __init__(self, func):
+        wraps(func)(self)
+        super().__init__(self)
+
+    def __call__(self, *args, **kwargs):
+        key = tuple(args) + tuple(sorted(kwargs.items()))
+        if key not in self:
+            result = self.__wrapped__(*args, **kwargs)
+            self[key] = result
+        else:
+            result = self[key]
+        return result
+
+
+class Artist(_Artist):
+    __slots__ = ()
+
+    @Cache
+    def __new__(cls, artist_id):
+        if isinstance(artist_id, Artist):
+            return artist_id
+
         artist = sp.artist(artist_id)
 
-        self._hash = hash(artist_id)
+        return super().__new__(cls,
+                               artist_id,
+                               artist["name"],
+                               tuple(sorted(artist["genres"])),
+                               artist["popularity"])
 
-        self.id = artist_id
-        self.name = artist["name"]
-        self.genres = artist["genres"]
-        self.popularity = artist["popularity"]
-
-        self._related = None
-
-    @property
+    @lru_cache(maxsize=1)  # evaluates lazily, using self as key for cache
     def related(self):
-        if self._related is None:
-            related = sp.artist_related_artists(self.id)["artists"]
-            self._related = set(get_artist(a["id"]) for a in related)
-        return self._related
+        return set(Artist(a["id"])
+                   for a in sp.artist_related_artists(self.id)["artists"])
 
     def __eq__(self, other):
-        return (self._hash == hash(other))
+        return (hash(self) == hash(other))
 
     def __hash__(self):
-        return self._hash
+        return hash(self.id)
 
     def __lt__(self, other):
         return (self.name < str(other))
-
-    def __repr__(self):
-        return self.name
 
     def __str__(self):
         return self.name
 
 
-class Cache(dict):
-    def __init__(self, func):
-        self.func = func
-
-    def __getitem__(self, item):
-        if item not in self:
-            self[item] = self.func(item)
-        return dict.__getitem__(self, item)
-
-    def __call__(self, item):
-        return self[item]
-
-    def get(self, item):
-        return self[item]
-
-
-@Cache
 def get_artist(artist_id):
     return Artist(artist_id)
 
 
 def get_artist_name(artist_id):
-    return get_artist(artist_id).name  # XXX: unnecessary
+    return Artist(artist_id).name
 
 
 def get_genres(artist_id):
-    return get_artist(artist_id).genres  # XXX: unnecessary
+    return Artist(artist_id).genres
 
 
 def get_related(artist_id):
-    return get_artist(artist_id).related  # XXX: unnecessary
+    return Artist(artist_id).related()
 
 
 def plt_safe(string):
