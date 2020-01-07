@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import namedtuple
-from functools import wraps, lru_cache
+from functools import wraps
+import types
 import spotipy
 from credentials import client_credentials_manager
 
@@ -24,6 +25,12 @@ class Cache(dict):
             result = self[key]
         return result
 
+    def __get__(self, instance, cls):
+        if instance is None:
+            return self
+        else:
+            return types.MethodType(self, instance)
+
 
 class Artist(_Artist):
     __slots__ = ()
@@ -41,7 +48,7 @@ class Artist(_Artist):
                                tuple(sorted(artist["genres"])),
                                artist["popularity"])
 
-    @lru_cache(maxsize=1)  # evaluates lazily, using self as key for cache
+    @Cache
     def related(self):
         return set(Artist(a["id"])
                    for a in sp.artist_related_artists(self.id)["artists"])
