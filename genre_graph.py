@@ -6,10 +6,9 @@ import pandas as pd
 from artist_info import saved
 from utils import get_genres
 
-artist_genres = {}
-genre_artists = defaultdict(set)
-edges = Counter()
-
+artist_genres = {}  # artist: genres of artist
+genre_artists = defaultdict(set)  # genre: artists in genre
+edges = Counter()  # (genre1, genre2): number of mutual artists
 
 for artist in saved:
     artist_genres[artist] = get_genres(artist)
@@ -19,26 +18,31 @@ for artist in saved:
 
     edges.update(permutations(get_genres(artist), 2))
 
-
-graph = nx.Graph()
-graph.add_edges_from(edges.keys())
-
-
-edf = pd.DataFrame()
-
+cogenres = pd.DataFrame()  # genres sharing artists (g1, g2, num_shared)
 cols = list(zip(*((u, v, w) for (u, v), w in edges.items())))
-
-edf["g1"], edf["g2"], edf["count"] = cols
-
-edf.sort_values("count", inplace=True, ascending=False)
+cogenres["genre1"], cogenres["genre2"], cogenres["shared"] = cols
+cogenres.sort_values("shared", inplace=True, ascending=False)
 
 
-def edf_find(genre):
-    return edf[edf["g1"] == genre]
+def draw_genre_map(size_min):
+    graph = nx.Graph()
+    graph.add_edges_from(edges.keys())
+
+    graph.remove_nodes_from(g for g in genre_artists
+                            if len(genre_artists[g]) <= size_min)
+
+    nx.draw_kamada_kawai(graph, with_labels=True, edge_color="gray",
+                         style="dotted")
+
+
+def related_genres(genre):
+    return cogenres[cogenres["genre1"] == genre]
+
+
+def show_genre(genre):
+    for artist in genre_artists[genre]:
+        print(artist)
 
 
 if __name__ == "__main__":
-    graph.remove_nodes_from(g for g in genre_artists
-                            if len(genre_artists[g]) <= 4)
-
-    nx.draw_kamada_kawai(graph, with_labels=True, edge_color="g")
+    draw_genre_map(10)
