@@ -3,8 +3,10 @@ from collections import Counter, defaultdict
 from itertools import permutations
 import networkx as nx
 import pandas as pd
-from artist_info import saved
+from artist_info import get_user_artists
 from artists import get_genres
+
+saved = get_user_artists(input("username: "))
 
 artist_genres = {}  # artist: genres of artist
 genre_artists = defaultdict(set)  # genre: artists in genre
