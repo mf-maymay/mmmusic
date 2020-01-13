@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import spotipy
+from artists import get_artist
 from credentials import token
-from utils import get_artist
 
 sp = spotipy.Spotify(auth=token)
 

@@ -2,7 +2,7 @@
 from functools import reduce
 from itertools import combinations
 import networkx as nx
-from utils import get_artist, get_related
+from artists import get_artist, get_related
 
 
 class Finder(object):

@@ -4,7 +4,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
 from artist_finder import Finder
-from utils import get_artist, get_artist_name, plt_safe
+from artists import get_artist, get_artist_name
 
 
 class ArtistGraph(object):
@@ -56,7 +56,8 @@ class ArtistGraph(object):
 
         color = {k: dist[k] / max_dist for k in self.G_cut.nodes}
 
-        node_labels = {artist_id: plt_safe(get_artist_name(artist_id))
+        node_labels = {artist_id:
+                       get_artist_name(artist_id).replace(r"$", r"\$")
                        for artist_id in self.G_cut.nodes}
 
         cmap = LinearSegmentedColormap.from_list("music",
@@ -98,17 +99,8 @@ class ArtistGraph(object):
 if __name__ == "__main__":
     from artist_ids import ids
 
-#    artists = [ids[a] for a in ("death grips",
-#                                "earl sweatshirt",
-#                                "king krule")]
+    seeds = [ids[a] for a in ("dirty three", "picastro")]
 
-#    artists = [ids[a] for a in ("akron family",
-#                                "sturgill simpson",
-#                                "thom yorke")]
-
-    artists = [ids[a] for a in ("black sabbath",
-                                "magazine")]
-
-    artist_graph = ArtistGraph(*artists)
+    artist_graph = ArtistGraph(*seeds)
 
     fig, ax = artist_graph.grow_and_plot(save=True)

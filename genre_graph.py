@@ -4,7 +4,7 @@ from itertools import permutations
 import networkx as nx
 import pandas as pd
 from artist_info import saved
-from utils import get_genres
+from artists import get_genres
 
 artist_genres = {}  # artist: genres of artist
 genre_artists = defaultdict(set)  # genre: artists in genre
