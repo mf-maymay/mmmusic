@@ -3,9 +3,9 @@ from collections import namedtuple
 from functools import wraps
 import types
 import spotipy
-from credentials import client_credentials_manager
+from spotipy.oauth2 import SpotifyClientCredentials
 
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
 
 _Artist = namedtuple("_Artist", ("id", "name", "genres", "popularity"))
