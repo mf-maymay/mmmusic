@@ -3,16 +3,16 @@ from collections import Counter, defaultdict
 from itertools import permutations
 import networkx as nx
 import pandas as pd
-from artist_info import get_user_artists
 from artists import get_genres
+from users import User
 
-saved = get_user_artists(input("username: "))
+user = User(input("username: "))
 
 artist_genres = {}  # artist: genres of artist
 genre_artists = defaultdict(set)  # genre: artists in genre
 edges = Counter()  # (genre1, genre2): number of mutual artists
 
-for artist in saved:
+for artist in user.artists():
     artist_genres[artist] = get_genres(artist)
 
     for genre in get_genres(artist):
