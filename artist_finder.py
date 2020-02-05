@@ -18,17 +18,11 @@ class Finder(object):
 
         self.is_grown = False
 
-        self._G_cut = None  # subset of G
+        self.G_cut = None  # subset of G
 
         self.paths = None
 
         self.max_path_len = None
-
-    @property  # XXX
-    def G_cut(self):
-        if self._G_cut is None:
-            self._G_cut = self.G.copy()
-        return self._G_cut
 
     def expand(self):
         for artist in self.artists:
@@ -58,7 +52,7 @@ class Finder(object):
         self.is_grown = True
 
     def trim(self):
-        self._G_cut = None
+        self.G_cut = self.G.copy()
 
         print("Nodes (initial):", len(self.G_cut.nodes))
 

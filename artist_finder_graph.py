@@ -3,104 +3,95 @@ import os
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
-from artist_finder import Finder
-from artists import get_artist, get_artist_name
+from artists import get_artist_name
 
 
-class ArtistGraph(object):
-    def __init__(self, *artist_ids):
-        self.artists = sorted(get_artist(k) for k in artist_ids)
+def plot(finder,
+         node_color_near="#6177aa",
+         node_color_far="#0e1b3a",
+         edge_color="#000102",
+         font_color="#b9cdfb",
+         fig_color="#2e4272",
+         save=False,
+         **plot_kwargs  # passed to nx.draw
+         ):
 
-        self.finder = Finder(*self.artists)
+    if not finder.is_grown:
+        raise RuntimeError("finder.grow() must be called before plot()")
 
-    @property  # XXX
-    def G_cut(self):
-        return self.finder.G_cut
+    dist = {artist_id: 0 for artist_id in finder.artists}
 
-    def plot(self,
-             node_color_near="#6177aa",
-             node_color_far="#0e1b3a",
-             edge_color="#000102",
-             font_color="#b9cdfb",
-             fig_color="#2e4272",
-             save=False,
-             **plot_kwargs  # passed to nx.draw
-             ):
+    if finder.paths:
+        pres = []
+        dists = []
 
-        if not self.finder.is_grown:
-            raise RuntimeError("finder.grow() must be called before plot()")
+        for i, artist_id in enumerate(finder.artists):
+            pres.append(nx.bfs_predecessors(finder.G_cut, artist_id))
+            dists.append({artist_id: 0})
 
-        dist = {artist_id: 0 for artist_id in self.artists}
+        for i, artist_id in enumerate(finder.artists):
+            for artist, pre in pres[i]:
+                dists[i][artist] = dists[i][pre] + 1
 
-        if self.finder.paths:
-            pres = []
-            dists = []
+        for artist_id in finder.G_cut.nodes:
+            dist[artist_id] = min(map(lambda d: d.get(artist_id, 1),
+                                      dists))
 
-            for i, artist_id in enumerate(self.artists):
-                pres.append(nx.bfs_predecessors(self.G_cut, artist_id))
-                dists.append({artist_id: 0})
+    for artist_id in finder.G_cut.nodes:
+        if artist_id not in dist:
+            dist[artist_id] = 1
 
-            for i, artist_id in enumerate(self.artists):
-                for artist, pre in pres[i]:
-                    dists[i][artist] = dists[i][pre] + 1
+    max_dist = max(max(dist.values()), 1)
 
-            for artist_id in self.G_cut.nodes:
-                dist[artist_id] = min(map(lambda d: d.get(artist_id, 1),
-                                          dists))
+    color = {k: dist[k] / max_dist for k in finder.G_cut.nodes}
 
-        for artist_id in self.G_cut.nodes:
-            if artist_id not in dist:
-                dist[artist_id] = 1
+    node_labels = {artist_id:
+                   get_artist_name(artist_id).replace(r"$", r"\$")
+                   for artist_id in finder.G_cut.nodes}
 
-        max_dist = max(max(dist.values()), 1)
+    cmap = LinearSegmentedColormap.from_list("music",
+                                             [node_color_near,
+                                              node_color_far])
 
-        color = {k: dist[k] / max_dist for k in self.G_cut.nodes}
+    fig, ax = plt.subplots(figsize=(16, 9))
 
-        node_labels = {artist_id:
-                       get_artist_name(artist_id).replace(r"$", r"\$")
-                       for artist_id in self.G_cut.nodes}
+    nx.draw_kamada_kawai(finder.G_cut,
+                         with_labels=True,
+                         ax=ax,
+                         cmap=cmap,
+                         node_color=[color[k] for k in finder.G_cut.nodes],
+                         edge_color=edge_color,
+                         font_color=font_color,
+                         labels=node_labels,
+                         **plot_kwargs
+                         )
 
-        cmap = LinearSegmentedColormap.from_list("music",
-                                                 [node_color_near,
-                                                  node_color_far])
+    fig.set_facecolor(fig_color)
 
-        fig, ax = plt.subplots(figsize=(16, 9))
+    fig.tight_layout()
 
-        nx.draw_kamada_kawai(self.G_cut,
-                             with_labels=True,
-                             ax=ax,
-                             cmap=cmap,
-                             node_color=[color[k] for k in self.G_cut.nodes],
-                             edge_color=edge_color,
-                             font_color=font_color,
-                             labels=node_labels,
-                             **plot_kwargs
-                             )
+    if save:
+        os.makedirs("output", exist_ok=True)
+        fig.savefig("output/" +
+                    "-".join(a.id for a in finder.artists) +
+                    ".png",
+                    facecolor=fig_color)
 
-        fig.set_facecolor(fig_color)
+    return fig, ax
 
-        fig.tight_layout()
 
-        if save:
-            os.makedirs("output", exist_ok=True)
-            fig.savefig("output/" +
-                        "-".join(a.id for a in self.artists) +
-                        ".png",
-                        facecolor=fig_color)
-
-        return fig, ax
-
-    def grow_and_plot(self, **plot_kw):
-        self.finder.grow()
-        self.finder.trim()
-        return self.plot(**plot_kw)
+def grow_and_plot(finder, **plot_kw):
+    finder.grow()
+    finder.trim()
+    return plot(finder, **plot_kw)
 
 
 if __name__ == "__main__":
+    from artist_finder import Finder
     from artist_ids import ids
 
-    seeds = [ids[a] for a in ("dirty three", "picastro")]
+    seeds = [ids[a] for a in ("alice coltrane", "swans")]
 
-    artist_graph = ArtistGraph(*seeds)
+    finder = Finder(*seeds)
 
-    fig, ax = artist_graph.grow_and_plot(save=True)
+    fig, ax = grow_and_plot(finder, save=True)
