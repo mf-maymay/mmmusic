@@ -116,12 +116,12 @@ class Finder(object):
              **plot_kwargs  # passed to nx.draw
              ):
 
-        if not finder.is_grown:
-            raise RuntimeError("finder.grow() must be called before plot()")
+        if not self.is_grown:
+            raise RuntimeError("grow() must be called before plot()")
 
-        dist = {artist_id: 0 for artist_id in finder.artists}
+        dist = {artist_id: 0 for artist_id in self.artists}
 
-        if finder.paths:
+        if self.paths:
             pres = []
             dists = []
 
