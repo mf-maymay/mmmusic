@@ -8,3 +8,6 @@ credentials.py
 
 # output folder
 output/
+
+# jupyter
+.ipynb_checkpoints/
