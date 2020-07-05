@@ -16,7 +16,7 @@ for artist in user.artists():
     artist_genres[artist] = get_genres(artist)
 
     for genre in get_genres(artist):
-        genre_artists[genre] |= {artist}
+        genre_artists[genre].add(artist)
 
     edges.update(permutations(get_genres(artist), 2))
 
@@ -27,6 +27,7 @@ cogenres.sort_values("shared", inplace=True, ascending=False)
 
 
 def draw_genre_map(size_min):
+    """Draws a graph of genres connected by shared artists."""
     graph = nx.Graph()
     graph.add_edges_from(edges.keys())
 

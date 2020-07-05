@@ -55,7 +55,7 @@ class User(object):
         saved = set()
 
         for album in self.albums():
-            saved |= {Artist(artist_id) for artist_id in album.artist_ids}
+            saved.update(Artist(artist_id) for artist_id in album.artist_ids)
 
         self._artists = tuple(sorted(saved))
 

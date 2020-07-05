@@ -28,19 +28,30 @@ class Finder(object):
         self.max_path_len = None
 
     def expand(self):
+        """
+        Expands each initial artist's network.
+
+        Gathers the related artists of newest members of initial artists' sets.
+        """
         for artist in self.artists:
             new = set()
-            for fartist in self.farthest[artist]:
-                related = {get_artist(rel) for rel in get_related(fartist)}
-                self.G.add_edges_from({(fartist, rel) for rel in related})
+            for farthest in self.farthest[artist]:
+                related = {get_artist(rel) for rel in get_related(farthest)}
+                self.G.add_edges_from({(farthest, rel) for rel in related})
                 new |= related
             self.farthest[artist] = new - self.sets[artist]
             self.sets[artist] |= self.farthest[artist]
 
     def midpoints(self):
+        """Returns the artists that belong to all initial artists' sets."""
         return reduce(set.intersection, self.sets.values())
 
     def grow(self):
+        """
+        Expands the graph until the initial artists are connected.
+
+        If the graph is already connected, it is expanded once.
+        """
         if self.is_grown:
             self.expand()
         else:
@@ -188,7 +199,9 @@ class Finder(object):
 if __name__ == "__main__":
     from artist_ids import ids
 
-    finder = Finder(ids["david bowie"], ids["faust"])
+    finder = Finder(ids["alice coltrane"], ids["erykah badu"])
+    # finder = Finder(ids["alice coltrane"], ids["erykah badu"], ids["sun ra"])
+    # XXX: finder for 3 artists not working anymore
 
     finder.grow_and_plot()
 
