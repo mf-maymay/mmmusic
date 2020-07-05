@@ -4,13 +4,19 @@ from spotipy.util import prompt_for_user_token
 from albums import Album
 from artists import Artist
 
-# TODO: rename to "users"
-
 
 class User(object):
     def __init__(self, username):
         self._username = username
 
+        self._albums = None
+        self._artists = None
+
+        self.sp = None
+
+        self.setup_sp()
+
+    def setup_sp(self):  # XXX: scope limited to read-only
         token = prompt_for_user_token(self._username, "user-library-read")
 
         if not token:
@@ -18,10 +24,8 @@ class User(object):
 
         self.sp = spotipy.Spotify(auth=token)
 
-        self._albums = None
-        self._artists = None
+    def albums(self):  # XXX: subsequent calls do not update list
 
-    def albums(self):
         if self._albums:
             return self._albums
 
@@ -44,7 +48,7 @@ class User(object):
 
         return self._albums
 
-    def artists(self):
+    def artists(self):  # XXX: subsequent calls do not update list
         if self._artists:
             return self._artists
 
@@ -66,3 +70,7 @@ if __name__ == "__main__":
 
     for artist in user.artists():
         print(artist)
+
+    # albums = sorted(", ".join(str(Artist(artist))
+    #                           for artist in album.artist_ids) +
+    #                 " -- " + str(album) for album in user.albums())
