@@ -14,17 +14,22 @@ class Artist(_Artist):
     __slots__ = ()
 
     @Cache()
-    def __new__(cls, artist_id):
-        if isinstance(artist_id, Artist):
-            return artist_id  # Artist(Artist(x)) == Artist(x)
+    def __new__(cls, *args):
+        if len(args) == 1:
+            artist_id = args[0]
 
-        artist = sp.artist(artist_id)
+            if isinstance(artist_id, Artist):
+                return artist_id  # Artist(Artist(x)) == Artist(x)
 
-        return super().__new__(cls,
-                               artist_id,
-                               artist["name"],
-                               tuple(sorted(artist["genres"])),
-                               artist["popularity"])
+            artist = sp.artist(artist_id)
+
+            return super().__new__(cls,
+                                   artist_id,
+                                   artist["name"],
+                                   tuple(sorted(artist["genres"])),
+                                   artist["popularity"])
+
+        return super().__new__(cls, *args)
 
     @Cache()
     def related(self):
