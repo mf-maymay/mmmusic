@@ -58,7 +58,3 @@ def get_genres(artist_id):
 
 def get_related(artist_id):
     return Artist(artist_id).related()
-
-
-def plt_safe(string):
-    return string.replace(r"$", r"\$")
