@@ -42,9 +42,17 @@ def related_genres(genre):
     return cogenres[cogenres["genre1"] == genre]
 
 
-def show_genre(genre):
-    for artist in genre_artists[genre]:
-        print(artist)
+def genres_containing(keyword):
+    return sorted(genre for genre in genre_artists if keyword in genre)
+
+
+def artists_of_genres_containing(keyword):
+    genres = genres_containing(keyword)
+    seen = set()
+    return [artist
+            for genre in genres
+            for artist in sorted(genre_artists[genre])
+            if (artist not in seen and not seen.add(artist))]
 
 
 if __name__ == "__main__":
