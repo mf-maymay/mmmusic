@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
-from users import User
+from artists import Artist
 
 
-def dfs_order(user, source=None, full=False):
-    for artist in user.artists():
-        artist.related()  # cache related artists
-
-    artists = set(user.artists())
+def dfs_order(artists, source=None, full=False):
+    artists = {Artist(artist) for artist in artists}
 
     G = nx.Graph()  # undirected
     G.add_nodes_from(artists)
@@ -15,7 +12,7 @@ def dfs_order(user, source=None, full=False):
     for artist in artists:
         related = set(artist.related())
 
-        for rel in related & artists:  # relations within library
+        for rel in related & artists:  # related artists within library
             G.add_edge(artist, rel)
 
     if source is None:
@@ -30,7 +27,6 @@ def dfs_order(user, source=None, full=False):
         dfs.append(source)
 
     if full:
-
         while (G.remove_node(source) or
                G.remove_edges_from(dfs_edges) or
                G):
@@ -50,16 +46,17 @@ def dfs_order(user, source=None, full=False):
 
 if __name__ == "__main__":
     from artist_ids import ids
+    from users import User
 
     user = User(input("username: "))
 
     # source = None
     # full = True
 
-    source = ids["wire"]
+    source = Artist(ids["owls"])
     full = False
 
-    dfs = dfs_order(user, source=source, full=full)
+    dfs = dfs_order(user.artists(), source=source, full=full)
 
     for artist in dfs:
         print(artist)
