@@ -1,59 +1,105 @@
 # -*- coding: utf-8 -*-
-from collections import Counter, defaultdict
+from collections import defaultdict
 from itertools import permutations
 import networkx as nx
-import pandas as pd
-from artists import get_genres
-from users import User
-
-user = User(input("username: "))
-
-artist_genres = {}  # artist: genres of artist
-genre_artists = defaultdict(set)  # genre: artists in genre
-edges = Counter()  # (genre1, genre2): number of mutual artists
-
-for artist in user.artists():
-    artist_genres[artist] = get_genres(artist)
-
-    for genre in get_genres(artist):
-        genre_artists[genre].add(artist)
-
-    edges.update(permutations(get_genres(artist), 2))
-
-cogenres = pd.DataFrame()  # genres sharing artists (g1, g2, num_shared)
-cols = list(zip(*((u, v, w) for (u, v), w in edges.items())))
-cogenres["genre1"], cogenres["genre2"], cogenres["shared"] = cols
-cogenres.sort_values("shared", inplace=True, ascending=False)
+from artists import Artist
 
 
-def draw_genre_map(size_min):
-    """Draws a graph of genres connected by shared artists."""
+def genre_members(artists):
+    """Returns a dictionary mapping genres to their artists."""
+    genre_artists = defaultdict(set)  # genre: artists in genre
+
+    for artist in artists:
+        for genre in artist.genres:
+            genre_artists[genre].add(artist)
+
+    return genre_artists
+
+
+def genres_containing(keyword, artists):
+    """Returns the genres containing `keyword` in their names."""
+    return {genre for genre in genre_members(artists) if keyword in genre}
+
+
+def artists_of_genres_containing(keyword, artists):
+    """Returns the artists of genres containing `keyword` in their names."""
+    members = set()
+
+    genre_artists = genre_members(artists)
+
+    for genre in genres_containing(keyword, artists):
+        members.update(genre_artists[genre])
+
+    return members
+
+
+def genre_overlaps(artists):
+    """Returns a dictionary mapping pairs of genres to their shared artists."""
+    mutuals = defaultdict(set)
+
+    for artist in artists:
+        for pair in permutations(Artist(artist).genres, 2):
+            mutuals[pair].add(artist)
+
+    return mutuals
+
+
+def related_genres(genre, artists):
+    """Returns the genres that share artists with `genre`."""
+    related = set()
+
+    for pair in genre_overlaps(artists):
+        if genre in pair:
+            related.update(pair)
+
+    return related - {genre}
+
+
+def genre_map(size_min, artists, draw=False):
+    """Creates a graph of genres connected by shared artists."""
     graph = nx.Graph()
-    graph.add_edges_from(edges.keys())
+    graph.add_edges_from(genre_overlaps(artists))
+
+    genre_artists = genre_members(artists)
 
     graph.remove_nodes_from(g for g in genre_artists
                             if len(genre_artists[g]) <= size_min)
 
-    nx.draw_kamada_kawai(graph, with_labels=True, edge_color="gray",
-                         style="dotted")
+    if draw:
+        nx.draw_kamada_kawai(graph, with_labels=True, edge_color="gray",
+                             style="dotted")
 
-
-def related_genres(genre):
-    return cogenres[cogenres["genre1"] == genre]
-
-
-def genres_containing(keyword):
-    return sorted(genre for genre in genre_artists if keyword in genre)
-
-
-def artists_of_genres_containing(keyword):
-    genres = genres_containing(keyword)
-    seen = set()
-    return [artist
-            for genre in genres
-            for artist in sorted(genre_artists[genre])
-            if (artist not in seen and not seen.add(artist))]
+    return graph
 
 
 if __name__ == "__main__":
-    draw_genre_map(10)
+    from networkx.algorithms.approximation import clique_removal
+    from users import User
+
+    user = User(input("username: "))
+
+    artists = user.artists()
+
+    graph = genre_map(20, artists, draw=True)
+
+    largest_independent_set, maximal_cliques = clique_removal(
+        genre_map(0, artists)
+    )
+
+    genre_artists = genre_members(artists)
+
+    groups = {}
+
+    for clique in maximal_cliques:
+        clique = sorted(clique, key=lambda c: (-len(genre_artists[c]), c))
+        groups[clique[0].upper()] = clique
+
+    groups_list = sorted(
+        groups.items(),
+        key=lambda c: (-sum(len(genre_artists[g]) for g in c[1]), c[0])
+    )
+
+    print("\n".join(f"{rep}:\n\t" +
+                    "\n\t".join(f"{c} ({len(genre_artists[c])})"
+                                for c in clique)
+                    for rep, clique in groups_list))
