@@ -5,12 +5,12 @@ import os
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
-from artists import get_artist, get_artist_name, get_related
+from artists import Artist
 
 
 class Finder(object):
     def __init__(self, *artist_ids):
-        self.artists = {get_artist(k) for k in artist_ids}
+        self.artists = {Artist(k) for k in artist_ids}
 
         self.sets = {artist: {artist} for artist in self.artists}
 
@@ -36,7 +36,7 @@ class Finder(object):
         for artist in self.artists:
             new = set()
             for farthest in self.farthest[artist]:
-                related = {get_artist(rel) for rel in get_related(farthest)}
+                related = {Artist(rel) for rel in farthest.related()}
                 self.G.add_edges_from({(farthest, rel) for rel in related})
                 new |= related
             self.farthest[artist] = new - self.sets[artist]
@@ -59,7 +59,7 @@ class Finder(object):
                 self.expand()
 
         for artist in self.midpoints():
-            for related in get_related(artist):
+            for related in artist.related():
                 if related in self.G.nodes:
                     self.G.add_edge(artist, related)
 
@@ -157,7 +157,7 @@ class Finder(object):
         color = {k: dist[k] / max_dist for k in self.G_cut.nodes}
 
         node_labels = {artist_id:
-                       get_artist_name(artist_id).replace(r"$", r"\$")
+                       Artist(artist_id).name.replace(r"$", r"\$")
                        for artist_id in self.G_cut.nodes}
 
         cmap = LinearSegmentedColormap.from_list("music",

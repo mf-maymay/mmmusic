@@ -57,22 +57,6 @@ class Artist(_Artist):
         return self.name
 
 
-def get_artist(artist_id):
-    return Artist(artist_id)
-
-
-def get_artist_name(artist_id):
-    return Artist(artist_id).name
-
-
-def get_genres(artist_id):
-    return Artist(artist_id).genres
-
-
-def get_related(artist_id):
-    return Artist(artist_id).related()
-
-
 if __name__ == "__main__":
     artists = [
         Artist("0oSGxfWSnnOXhD2fKuz2Gy"),  # David Bowie
