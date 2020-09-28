@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import spotipy
 from spotipy.util import prompt_for_user_token
-from albums import Album
-from artists import Artist
+from album import Album
+from artist import Artist
 
 
 class User(object):
@@ -26,7 +26,7 @@ class User(object):
 
     def albums(self):  # XXX: subsequent calls do not update list
 
-        if self._albums:
+        if self._albums is not None:
             return self._albums
 
         saved = []
@@ -49,13 +49,14 @@ class User(object):
         return self._albums
 
     def artists(self):  # XXX: subsequent calls do not update list
-        if self._artists:
+        if self._artists is not None:
             return self._artists
 
-        saved = set()
+        artist_ids = {artist_id
+                      for album in self.albums()
+                      for artist_id in album.artist_ids}
 
-        for album in self.albums():
-            saved.update(Artist(artist_id) for artist_id in album.artist_ids)
+        saved = {Artist(artist_id) for artist_id in artist_ids}
 
         self._artists = tuple(sorted(saved))
 

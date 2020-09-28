@@ -2,9 +2,9 @@
 import re
 import requests
 from bs4 import BeautifulSoup
-from artists import Artist
+from artist import Artist
 from cache import Cache
-from users import User
+from user import User
 
 valid_rating = re.compile("[0-5]\\.[0-9]")
 

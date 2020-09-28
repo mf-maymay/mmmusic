@@ -5,7 +5,7 @@ import os
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
-from artists import Artist
+from artist import Artist
 
 
 class Finder(object):

@@ -2,7 +2,7 @@
 from collections import defaultdict
 from itertools import permutations
 import networkx as nx
-from artists import Artist
+from artist import Artist
 
 
 def genre_members(artists):
@@ -74,7 +74,7 @@ def genre_map(size_min, artists, draw=False):
 
 if __name__ == "__main__":
     from networkx.algorithms.approximation import clique_removal
-    from users import User
+    from user import User
 
     user = User(input("username: "))
 

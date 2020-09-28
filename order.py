@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
-from artists import Artist
+from artist import Artist
 
 
 def dfs_order(artists, source=None, full=False):
@@ -46,7 +46,7 @@ def dfs_order(artists, source=None, full=False):
 
 if __name__ == "__main__":
     from artist_ids import ids
-    from users import User
+    from user import User
 
     user = User(input("username: "))
 
