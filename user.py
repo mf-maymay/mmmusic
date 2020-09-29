@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import spotipy
-from spotipy.util import prompt_for_user_token
+from spotipy.oauth2 import SpotifyOAuth
 from album import Album
 from artist import Artist
 
@@ -17,12 +17,10 @@ class User(object):
         self.setup_sp()
 
     def setup_sp(self):  # XXX: scope limited to read-only
-        token = prompt_for_user_token(self._username, "user-library-read")
+        auth_manager = SpotifyOAuth(username=self._username,
+                                    scope="user-library-read")
 
-        if not token:
-            raise RuntimeError("Failed to get token")
-
-        self.sp = spotipy.Spotify(auth=token)
+        self.sp = spotipy.Spotify(auth_manager=auth_manager)
 
     def albums(self):  # XXX: subsequent calls do not update list
 
