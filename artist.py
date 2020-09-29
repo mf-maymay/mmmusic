@@ -4,14 +4,16 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from cache import Cache
 
-sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
-
 
 _Artist = namedtuple("_Artist", ("id", "name", "genres", "popularity"))
 
 
 class Artist(_Artist):
     __slots__ = ()
+
+    _sp = spotipy.Spotify(
+        client_credentials_manager=SpotifyClientCredentials()
+    )
 
     _use_name_for_repr = False  # Use to replace namedtuple's repr with name.
 
@@ -22,7 +24,7 @@ class Artist(_Artist):
             if isinstance(artist_id, Artist):
                 return artist_id  # Artist(Artist(x)) == Artist(x)
 
-            artist = sp.artist(artist_id)
+            artist = cls._sp.artist(artist_id)
 
             return super().__new__(cls,
                                    artist_id,
@@ -35,20 +37,21 @@ class Artist(_Artist):
     @Cache()
     def related(self):
         return set(Artist(a["id"])
-                   for a in sp.artist_related_artists(self.id)["artists"])
+                   for a in self._sp.artist_related_artists(self.id)["artists"]
+                   )
 
     @classmethod
     def clear(cls):
         cls.__new__.clear()
 
     def __eq__(self, other):
-        return (hash(self) == hash(other))
+        return hash(self) == hash(other)
 
     def __hash__(self):
         return hash(self.id)
 
     def __lt__(self, other):
-        return (self.name < str(other))
+        return self.name < str(other)
 
     def __repr__(self):
         return self.name if self._use_name_for_repr else super().__repr__()
