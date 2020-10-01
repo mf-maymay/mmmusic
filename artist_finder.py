@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from functools import reduce
 from itertools import combinations
 import os
 from matplotlib.colors import LinearSegmentedColormap
@@ -8,204 +7,208 @@ import networkx as nx
 from artist import Artist
 
 
-class Finder(object):
-    def __init__(self, *artist_ids):
-        self.artists = {Artist(k) for k in artist_ids}
+def expand(artists, graph=None):
+    """
+    Gets each artists' related artists and adds to graph.
 
-        self.sets = {artist: {artist} for artist in self.artists}
+    Creates new graph from artists if not supplied.
+    Copies graph if supplied; does not modify in place.
+    (a, r) edge will be added for every artist a and related artist r.
+    """
+    artists = {Artist(artist) for artist in artists}
 
-        self.farthest = {artist: {artist} for artist in self.artists}
+    if graph is None:
+        graph = nx.Graph()
+    else:
+        graph = graph.copy()
 
-        self.G = nx.Graph()  # undirected
-        self.G.add_nodes_from(self.artists)
+    graph.add_nodes_from(artists)
 
-        self.is_grown = False
+    for artist in artists:
+        graph.add_edges_from((artist, related)
+                             for related in artist.related())
 
-        self.G_cut = None  # subset of G
+    return graph
 
-        self.paths = None
 
-        self.max_path_len = None
+def grow(seeds, graph=None):
+    """
+    Expands the graph until the seed artists are connected.
 
-    def expand(self):
-        """
-        Expands each initial artist's network.
+    Creates new graph from artists if not supplied.
+    Copies graph if supplied; does not modify in place.
+    """
+    seeds = {Artist(seed) for seed in seeds}
 
-        Gathers the related artists of newest members of initial artists' sets.
-        """
-        for artist in self.artists:
-            new = set()
-            for farthest in self.farthest[artist]:
-                related = {Artist(rel) for rel in farthest.related()}
-                self.G.add_edges_from({(farthest, rel) for rel in related})
-                new |= related
-            self.farthest[artist] = new - self.sets[artist]
-            self.sets[artist] |= self.farthest[artist]
+    if graph is None:
+        graph = nx.Graph()
+    else:
+        graph = graph.copy()
 
-    def midpoints(self):
-        """Returns the artists that belong to all initial artists' sets."""
-        return reduce(set.intersection, self.sets.values())
+    graph.add_nodes_from(seeds)
 
-    def grow(self):
-        """
-        Expands the graph until the initial artists are connected.
+    new_artists = seeds
 
-        If the graph is already connected, it is expanded once.
-        """
-        if self.is_grown:
-            self.expand()
+    while not all(nx.has_path(graph, source, target)
+                  for source, target in combinations(seeds, 2)):
+        new_graph = expand(new_artists, graph)
+        new_artists = new_graph.nodes - graph.nodes
+        graph = new_graph
+        if not new_artists:
+            raise RuntimeError("No new artists found.")
+
+    for artist in new_artists:
+        for related in artist.related():
+            if related in graph.nodes:
+                graph.add_edge(artist, related)  # new interconnections
+
+    return graph
+
+
+def trim(graph, keepers=()):
+    """
+    Iteratively removes leaves from graph.
+
+    Does not modify graph in place.
+    """
+    graph = graph.copy()
+
+    # Remove leaves until none left.
+    while True:
+        to_remove = [x for x in graph.nodes
+                     if graph.degree(x) < 2 and x not in keepers]
+        if to_remove:
+            graph.remove_nodes_from(to_remove)
         else:
-            while not nx.is_connected(self.G):
-                self.expand()
+            break
 
-        for artist in self.midpoints():
-            for related in artist.related():
-                if related in self.G.nodes:
-                    self.G.add_edge(artist, related)
+    return graph
 
-        self.is_grown = True
 
-    def trim(self):
-        self.G_cut = self.G.copy()
+def paths_subgraph(seeds, graph, max_len=None):
+    """
+    Returns the subgraph of graph containing paths between seeds.
 
-        print("Nodes (initial):", len(self.G_cut.nodes))
+    If max_len is None, only the shortest paths between each pair of seeds will
+    be included. Otherwise, only the paths with length <= max_len will be
+    included.
+    """
+    graph = graph.copy()
 
-        # first trim - remove leaves until none left
-        while True:
-            to_remove = []
-            for node in self.G_cut.nodes:
-                if self.G_cut.degree(node) < 2:
-                    if node not in self.artists:
-                        to_remove.append(node)
-            if to_remove:
-                self.G_cut.remove_nodes_from(to_remove)
-            else:
+    paths = []
+
+    for pair in combinations(seeds, 2):
+        pair_max_len = max_len  # Specifically for when max_len is None.
+        for path in nx.shortest_simple_paths(graph, *pair):
+            if pair_max_len is None:
+                paths.append(path)
+                # Set pair_max_len to shortest length between paired nodes.
+                pair_max_len = len(paths[-1])
+            elif len(path) <= pair_max_len:
+                paths.append(path)
+            else:  # nx.shortest_simple_paths yields paths of increasing length
                 break
 
-        print("Nodes (post-first-trim):", len(self.G_cut.nodes))
+    keepers = set()
 
-        # second trim - only keep nodes belonging to desired paths
-        self.paths = []
+    for path in paths:
+        keepers.update(path)
 
-        if self.max_path_len is not None:
-            self.max_path_len += 1
+    graph.remove_nodes_from(graph.nodes - keepers)
 
-        combo_path_gens = [nx.shortest_simple_paths(self.G_cut, start, stop)
-                           for start, stop in combinations(self.artists, 2)]
+    return graph
 
-        paths_to_add = True
 
-        while paths_to_add:
-            paths_to_add = False
-            for path_gen in combo_path_gens:
-                path = next(path_gen, None)
-                if path is not None:
-                    if ((not self.paths) or
-                        (self.max_path_len is not None and
-                         len(path) <= self.max_path_len)):
-                        self.paths.append(path)
-                        paths_to_add = True
-            if self.paths and self.max_path_len is None:
-                self.max_path_len = max(map(len, self.paths))
+def plot(graph,
+         seeds=(),  # for coloring purposes
+         near_color="#6177aa",
+         far_color="#0e1b3a",
+         edge_color="#000102",
+         font_color="#b9cdfb",
+         fig_color="#2e4272",
+         save=False,
+         **plot_kwargs  # passed to nx.draw
+         ):
+    seeds = {Artist(seed) for seed in seeds}
 
-        keepers = set(self.artists)
+    if seeds - graph.nodes:
+        raise ValueError("Not all seeds are in graph.")
 
-        if self.paths:
-            keepers |= reduce(set.union, map(set, self.paths))
+    dist = {seed: 0 for seed in seeds}
 
-        self.G_cut.remove_nodes_from(set(self.G_cut.nodes) - keepers)
+    if seeds and all(nx.has_path(graph, source, target)
+                     for source, target in combinations(seeds, 2)):  # XXX
+        pres = []
+        dists = []
 
-        print("Nodes (post-paths-trim):", len(self.G_cut.nodes))
+        for i, artist_id in enumerate(seeds):
+            pres.append(nx.bfs_predecessors(graph, artist_id))
+            dists.append({artist_id: 0})
 
-    def plot(self,
-             node_color_near="#6177aa",
-             node_color_far="#0e1b3a",
-             edge_color="#000102",
-             font_color="#b9cdfb",
-             fig_color="#2e4272",
-             save=False,
-             **plot_kwargs  # passed to nx.draw
-             ):
+        for i, artist_id in enumerate(seeds):
+            for artist, pre in pres[i]:
+                dists[i][artist] = dists[i][pre] + 1
 
-        if not self.is_grown:
-            raise RuntimeError("grow() must be called before plot()")
+        for artist_id in graph.nodes:
+            dist[artist_id] = min(map(lambda d: d.get(artist_id, 1),
+                                      dists))
 
-        dist = {artist_id: 0 for artist_id in self.artists}
+    for artist_id in graph.nodes:
+        if artist_id not in dist:
+            dist[artist_id] = 1
 
-        if self.paths:
-            pres = []
-            dists = []
+    max_dist = max(max(dist.values()), 1)
 
-            for i, artist_id in enumerate(self.artists):
-                pres.append(nx.bfs_predecessors(self.G_cut, artist_id))
-                dists.append({artist_id: 0})
+    color = {k: dist[k] / max_dist for k in graph.nodes}
 
-            for i, artist_id in enumerate(self.artists):
-                for artist, pre in pres[i]:
-                    dists[i][artist] = dists[i][pre] + 1
+    node_labels = {artist_id:
+                   Artist(artist_id).name.replace(r"$", r"\$")
+                   for artist_id in graph.nodes}
 
-            for artist_id in self.G_cut.nodes:
-                dist[artist_id] = min(map(lambda d: d.get(artist_id, 1),
-                                          dists))
+    cmap = LinearSegmentedColormap.from_list("music",
+                                             [near_color,
+                                              far_color])
 
-        for artist_id in self.G_cut.nodes:
-            if artist_id not in dist:
-                dist[artist_id] = 1
+    fig, ax = plt.subplots(figsize=(16, 9))
 
-        max_dist = max(max(dist.values()), 1)
+    nx.draw_kamada_kawai(graph,
+                         with_labels=True,
+                         ax=ax,
+                         cmap=cmap,
+                         node_color=[color[k] for k in graph.nodes],
+                         edge_color=edge_color,
+                         font_color=font_color,
+                         labels=node_labels,
+                         **plot_kwargs
+                         )
 
-        color = {k: dist[k] / max_dist for k in self.G_cut.nodes}
+    fig.set_facecolor(fig_color)
 
-        node_labels = {artist_id:
-                       Artist(artist_id).name.replace(r"$", r"\$")
-                       for artist_id in self.G_cut.nodes}
+    fig.tight_layout()
 
-        cmap = LinearSegmentedColormap.from_list("music",
-                                                 [node_color_near,
-                                                  node_color_far])
+    if save:
+        os.makedirs("output", exist_ok=True)
+        fig.savefig("output/" +
+                    "-".join(a.id for a in sorted(seeds)) +
+                    ".png",
+                    facecolor=fig_color)
 
-        fig, ax = plt.subplots(figsize=(16, 9))
+    return fig, ax
 
-        nx.draw_kamada_kawai(self.G_cut,
-                             with_labels=True,
-                             ax=ax,
-                             cmap=cmap,
-                             node_color=[color[k] for k in self.G_cut.nodes],
-                             edge_color=edge_color,
-                             font_color=font_color,
-                             labels=node_labels,
-                             **plot_kwargs
-                             )
 
-        fig.set_facecolor(fig_color)
+def grow_and_plot(*seeds, graph=None, **plot_kw):
+    seeds = {Artist(seed) for seed in seeds}
 
-        fig.tight_layout()
+    graph = grow(seeds, graph=graph)
+    graph = trim(graph, keepers=seeds)
+    graph = paths_subgraph(seeds, graph)
 
-        if save:
-            os.makedirs("output", exist_ok=True)
-            fig.savefig("output/" +
-                        "-".join(a.id for a in self.artists) +
-                        ".png",
-                        facecolor=fig_color)
-
-        return fig, ax
-
-    def grow_and_plot(self, **plot_kw):
-        self.grow()
-        self.trim()
-        return self.plot(**plot_kw)
+    return graph, plot(graph, seeds=seeds, **plot_kw)
 
 
 if __name__ == "__main__":
     from artist_ids import ids
 
-    finder = Finder(ids["alice coltrane"], ids["erykah badu"])
-    # finder = Finder(ids["alice coltrane"], ids["erykah badu"], ids["sun ra"])
-    # XXX: finder for 3 artists not working anymore
+    grow_and_plot(ids["alice coltrane"], ids["erykah badu"])
 
-    finder.grow_and_plot()
-
-    print()
-
-    for midpoint in sorted(finder.midpoints()):
-        print(midpoint)
+    grow_and_plot(ids["alice coltrane"], ids["erykah badu"], ids["sun ra"])
