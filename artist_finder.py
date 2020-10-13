@@ -7,13 +7,19 @@ import networkx as nx
 from artist import Artist
 
 
-def expand(artists, graph=None):
+def expand(artists, graph=None) -> nx.Graph:
     """
-    Gets each artists' related artists and adds to graph.
+    Adds each artists' related artists to graph.
 
-    Creates new graph from artists if not supplied.
-    Copies graph if supplied; does not modify in place.
-    (a, r) edge will be added for every artist a and related artist r.
+    Args:
+        artists: An iterable of Artist objects or strings of artist IDs.
+        graph: Optional; A networkx.Graph instance. graph is copied and not
+            modified in-place. If graph is None, an empty graph is used.
+
+    Returns:
+        A networkx.Graph instance with Artist objects as nodes, with the graph
+        argument as a subgraph, and with an edge (a, r) for each artist, a,
+        from the artists argument and each related artist of a, r.
     """
     artists = {Artist(artist) for artist in artists}
 
@@ -31,12 +37,19 @@ def expand(artists, graph=None):
     return graph
 
 
-def grow(seeds, graph=None):
+def grow(seeds, graph=None) -> nx.Graph:
     """
-    Expands the graph until the seed artists are connected.
+    Expands graph until the seed artists are connected by related artists.
 
-    Creates new graph from artists if not supplied.
-    Copies graph if supplied; does not modify in place.
+    Args:
+        seeds: An iterable of Artist objects or strings of artist IDs.
+        graph: Optional; A networkx.Graph instance. graph is copied and not
+            modified in-place. If graph is None, an empty graph is used.
+
+    Returns:
+        A networkx.Graph instance with Artist objects as nodes, with the graph
+        argument as a subgraph, and with each object in the seeds argument
+        within and connected to each other by paths of related artists.
     """
     seeds = {Artist(seed) for seed in seeds}
 
@@ -65,11 +78,18 @@ def grow(seeds, graph=None):
     return graph
 
 
-def trim(graph, keepers=()):
+def trim(graph, keepers=()) -> nx.Graph:
     """
     Iteratively removes leaves from graph.
 
-    Does not modify graph in place.
+    Args:
+        graph: A networkx.Graph instance. graph is copied and not modified
+            in-place.
+        keepers: Optional; A container of items to be kept in graph.
+
+    Returns:
+        A networkx.Graph instance. A subgraph of the graph argument without any
+        leaves, except for nodes specified by the keepers argument (if any).
     """
     graph = graph.copy()
 
@@ -85,13 +105,22 @@ def trim(graph, keepers=()):
     return graph
 
 
-def paths_subgraph(seeds, graph, max_len=None):
+def paths_subgraph(seeds, graph, max_len=None) -> nx.Graph:
     """
-    Returns the subgraph of graph containing paths between seeds.
+    Returns the subgraph of graph containing only the paths between seeds.
 
-    If max_len is None, only the shortest paths between each pair of seeds will
-    be included. Otherwise, only the paths with length <= max_len will be
-    included.
+    Args:
+        seeds: An iterable containing nodes in the graph argument.
+        graph: A networkx.Graph instance. graph is copied and not modified
+            in-place.
+        max_len: Optional; If max_len is None, only the shortest paths between
+            each pair of seeds will be included. Otherwise, only the paths with
+            length <= max_len will be included.
+
+    Returns:
+        A networkx.Graph instance. A subgraph of the graph argument wherein
+        each node belongs to one of the shortest simple paths between the nodes
+        specified by the seeds argument.
     """
     graph = graph.copy()
 
@@ -128,7 +157,39 @@ def plot(graph,
          fig_color="#2e4272",
          save=False,
          **plot_kwargs  # passed to nx.draw
-         ):
+         ) -> (plt.Figure, plt.Axes):
+    """
+    Plots the graph.
+
+    The graph is plotted using networkx.draw_kamada_kawai. If the seeds
+    argument is supplied, the nodes will vary in color based on proximity to
+    the nodes in seeds, from near_color to far_color.
+
+    Args:
+        graph: A networkx.Graph instance.
+        seeds: Optional; A container of items in graph. If supplied, the nodes,
+            when plotted, will be colored based on proximity to the nodes in
+            seeds.
+        near_color: Optional; A string representing a color for matplotlib.
+            The nodes in seeds will be this color. If the seeds argument is not
+            supplied, all nodes will be this color.
+        far_color: Optional; A string representing a color for matplotlib.
+            The nodes farthest away from the nodes in seeds will be this color.
+            If the seeds argument is not supplied, then no nodes will be this
+            color.
+        edge_color: Optional; A string representing a color for matplotlib.
+        font_color: Optional; A string representing a color for matplotlib.
+        fig_color: Optional; A string representing a color for matplotlib.
+        save: If true, save the created plot to the /output directory.
+            (For finer control, opt to instead use `fig.savefig(...)` from the
+            returned plt.Figure object.)
+        plot_kwargs: Optional; Keyword arguments to pass to networkx.draw (and
+            to matplotlib, by extention).
+
+    Returns:
+        A tuple (fig, ax) containing the created plt.Figure (fig) and plt.Axes
+        (ax) objects.
+    """
     seeds = {Artist(seed) for seed in seeds}
 
     if seeds - graph.nodes:
@@ -196,7 +257,28 @@ def plot(graph,
     return fig, ax
 
 
-def grow_and_plot(*seeds, graph=None, **plot_kw):
+def grow_and_plot(*seeds,
+                  graph=None,
+                  **plot_kw) -> (nx.Graph, (plt.Figure, plt.Axes)):
+    """
+    Grows and plots the graph grown from seeds.
+
+    Grows the graph, trims it, gets the subgraph of its paths, and plots it.
+
+    Args:
+        seeds: Artist objects or strings of artist IDs
+        graph: Optional; A networkx.Graph instance. graph is copied and not
+            modified in-place. If graph is None, an empty graph is used.
+        plot_kw: Optional; Keyword arguments to pass to networkx.draw (and
+            to matplotlib, by extention).
+
+    Returns:
+        A tuple (G, (fig, ax)) containing a networkx.Graph instance (g) -- with
+        Artist objects as nodes, and wherein each node belongs to one of the
+        shortest simple paths of related artists between the nodes specified by
+        the seeds argument -- and the created plt.Figure (fig) and plt.Axes
+        (ax) objects.
+    """
     seeds = {Artist(seed) for seed in seeds}
 
     graph = grow(seeds, graph=graph)
