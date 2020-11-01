@@ -105,47 +105,55 @@ def trim(graph, keepers=()) -> nx.Graph:
     return graph
 
 
-def paths_subgraph(seeds, graph, max_len=None) -> nx.Graph:
+def paths_subgraph(graph, seeds, max_len=None) -> (nx.Graph, dict):
     """
     Returns the subgraph of graph containing only the paths between seeds.
 
     Args:
-        seeds: An iterable containing nodes in the graph argument.
         graph: A networkx.Graph instance. graph is copied and not modified
             in-place.
+        seeds: An iterable containing nodes in the graph argument.
         max_len: Optional; If max_len is None, only the shortest paths between
             each pair of seeds will be included. Otherwise, only the paths with
             length <= max_len will be included.
 
     Returns:
-        A networkx.Graph instance. A subgraph of the graph argument wherein
-        each node belongs to one of the shortest simple paths between the nodes
-        specified by the seeds argument.
+        A tuple (G, paths_dict) containing a networkx.Graph instance (G) and
+        a dictionary (paths_dict).
+
+        G is a subgraph of the graph argument wherein each node belongs to one
+        of the shortest simple paths between the nodes specified by the seeds
+        argument.
+
+        paths_dict maps pairs of seeds (as tuples) to the paths between them
+        (as lists of lists).
     """
     graph = graph.copy()
 
-    paths = []
+    paths = {}
 
     for pair in combinations(seeds, 2):
+        paths[pair] = []
         pair_max_len = max_len  # Specifically for when max_len is None.
         for path in nx.shortest_simple_paths(graph, *pair):
             if pair_max_len is None:
-                paths.append(path)
+                paths[pair].append(path)
                 # Set pair_max_len to shortest length between paired nodes.
-                pair_max_len = len(paths[-1])
+                pair_max_len = len(paths[pair][-1])
             elif len(path) <= pair_max_len:
-                paths.append(path)
+                paths[pair].append(path)
             else:  # nx.shortest_simple_paths yields paths of increasing length
                 break
 
     keepers = set()
 
-    for path in paths:
-        keepers.update(path)
+    for pair in paths:
+        for path in paths[pair]:
+            keepers.update(path)
 
     graph.remove_nodes_from(graph.nodes - keepers)
 
-    return graph
+    return graph, paths
 
 
 def plot(graph,
@@ -283,7 +291,7 @@ def grow_and_plot(*seeds,
 
     graph = grow(seeds, graph=graph)
     graph = trim(graph, keepers=seeds)
-    graph = paths_subgraph(seeds, graph)
+    graph, _ = paths_subgraph(graph, seeds)
 
     return graph, plot(graph, seeds=seeds, **plot_kw)
 
