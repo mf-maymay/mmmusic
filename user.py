@@ -6,7 +6,7 @@ from artist import Artist
 
 
 class User(object):
-    def __init__(self, username):
+    def __init__(self, username, scope="user-library-read"):
         self._username = username
 
         self._albums = None
@@ -14,11 +14,11 @@ class User(object):
 
         self.sp = None
 
-        self.setup_sp()
+        self.setup_sp(scope=scope)
 
-    def setup_sp(self):  # XXX: scope limited to read-only
-        auth_manager = SpotifyOAuth(username=self._username,
-                                    scope="user-library-read")
+    def setup_sp(self, scope="user-library-read"):
+
+        auth_manager = SpotifyOAuth(username=self._username, scope=scope)
 
         self.sp = spotipy.Spotify(auth_manager=auth_manager)
 
