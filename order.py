@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import networkx as nx
 from artist import Artist
+from artist_finder import grow, trim, paths_subgraph
 
 
 def dfs_order(artists, source=None, full=False):
@@ -42,6 +43,30 @@ def dfs_order(artists, source=None, full=False):
                 dfs.append(source)
 
     return dfs
+
+
+def greedy_order(artists, paths=None):
+    if paths is None:
+        graph = grow(artists)
+        graph = trim(graph, keepers=artists)
+        graph, paths = paths_subgraph(graph, artists)
+
+    # path_lens = lengths of shortest paths between pairs
+    path_lens = {pair: len(paths[pair][0]) for pair in paths}
+
+    greedy = [min(artists, key=lambda a: a.popularity)]
+
+    short = nx.Graph()
+
+    short.add_weighted_edges_from((*p, w) for p, w in path_lens.items())
+
+    while short.edges:
+        closest = min(short[greedy[-1]],
+                      key=lambda n: short.edges[greedy[-1], n]["weight"])
+        short.remove_node(greedy[-1])
+        greedy.append(closest)
+
+    return greedy
 
 
 if __name__ == "__main__":
