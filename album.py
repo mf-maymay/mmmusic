@@ -24,7 +24,7 @@ class Album(_Album):
             if isinstance(album_id, Album):
                 return album_id  # Album(Album(x)) == Album(x)
 
-            album = cls._sp.album(album_id)
+            album = cls.full_response(album_id)
 
             return super().__new__(cls,
                                    album_id,
@@ -38,6 +38,17 @@ class Album(_Album):
     @classmethod
     def clear(cls):
         cls.__new__.clear()
+
+    @classmethod
+    def full_response(cls, album_id):
+        return cls._sp.album(album_id if not isinstance(album_id, Album)
+                             else album_id.id)
+
+    def release_date(self):
+        return self.full_response(self)["release_date"]
+
+    def tracks(self):
+        return self.full_response(self)["tracks"]["items"]
 
     def __eq__(self, other):
         return hash(self) == hash(other)
@@ -60,3 +71,5 @@ if __name__ == "__main__":
         Album("2w1YJXWMIco6EBf0CovvVN"),
         Album("id", "name", "artist_ids")
     ]
+
+    tracks = albums[0].tracks()
