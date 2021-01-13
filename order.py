@@ -45,7 +45,7 @@ def dfs_order(artists, source=None, full=False):
     return dfs
 
 
-def greedy_order(artists, paths=None):
+def greedy_order(artists, paths=None, log=False):
     if paths is None:
         graph = grow(artists)
         graph = trim(graph, keepers=artists)
@@ -56,15 +56,21 @@ def greedy_order(artists, paths=None):
 
     greedy = [min(artists, key=lambda a: a.popularity)]
 
+    if log:
+        print(greedy[0])
+
     short = nx.Graph()
 
     short.add_weighted_edges_from((*p, w) for p, w in path_lens.items())
 
     while short.edges:
         closest = min(short[greedy[-1]],
-                      key=lambda n: short.edges[greedy[-1], n]["weight"])
+                      key=lambda n: (short.edges[greedy[-1], n]["weight"],
+                                     n.popularity))  # closest, least popular
         short.remove_node(greedy[-1])
         greedy.append(closest)
+        if log:
+            print(closest)
 
     return greedy
 
