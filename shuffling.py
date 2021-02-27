@@ -12,6 +12,13 @@ METRICS = ("danceability", "energy", "key", "loudness", "mode",
            "valence", "tempo")
 
 
+def get_audio_features(user, tracks):
+    out = []
+    for i in range(len(tracks) // 100 + bool(len(tracks) % 100)):
+        out += user.sp.audio_features(tracks=tracks[i*100:(i+1)*100])
+    return out
+
+
 def quick_pick(items: list, add_to_left: callable) -> list:
     items = list(items)  # XXX
 
@@ -53,7 +60,7 @@ def song_polarize(left, right, item, item_scores):
 
 
 def order_tracks(tracks, user):
-    features = dict(zip(tracks, user.sp.audio_features(tracks=tracks)))  # XXX
+    features = dict(zip(tracks, get_audio_features(user, tracks)))  # XXX
     metrics = np.array([[features[track][metric] for metric in METRICS]
                         for track in tracks])
     scores = metrics.copy()  # XXX
