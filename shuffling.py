@@ -4,7 +4,6 @@ import random
 import numpy as np
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
-from user import User
 
 
 METRICS = ("danceability", "energy", "key", "loudness", "mode",
@@ -78,6 +77,7 @@ def order_tracks(tracks, user):
 
 
 if __name__ == "__main__":
+    from utils import User
     user = User(input("username: "))  # XXX
 
     songs = ["0vFabeTqtOtj918sjc5vYo", "3HWxpLKnTlz6jE3Vi5dTF2",

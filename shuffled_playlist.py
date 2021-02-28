@@ -1,24 +1,10 @@
 # -*- coding: utf-8 -*-
 from album import Album
 from artist import Artist
-from genre_graph import artists_of_genres_containing
+from genre_graph import artists_of_genres_matching
 from shuffling import order_tracks
 from user import User
 from utils import create_playlist, no_timeout, record_calls
-
-# -------
-# keywords, playlist_name = ["goth"], "goth"
-# keywords, playlist_name = ["black"], "black"
-# keywords, playlist_name = ["japan", "j-"], "japan"
-# keywords, playlist_name = ["americana", "country"], "american"
-# keywords, playlist_name = ["blue"], "blue"
-keywords, playlist_name = ["metal"], "mettle"
-# keywords, playlist_name = ["classical"], "classicle"
-# keywords, playlist_name = ["bop"], "bop"
-# keywords, playlist_name = ["punk"], "pink"
-# keywords, playlist_name = ["hop"], "hops"
-# keywords, playlist_name = ["jazz"], "jazzistico"
-# -------
 
 Artist._use_name_for_repr = True
 
@@ -28,9 +14,21 @@ User.artists = no_timeout(User.artists)
 
 user = User(input("username: "))
 
-artists = set()
-for keyword in keywords:
-    artists |= artists_of_genres_containing(keyword, user.artists())
+# -------
+# keyword, playlist_name = ".*goth.*", "goth"
+# keyword, playlist_name = ".*black.*", "black"
+# keyword, playlist_name = ".*(japan|j-).*", "japan"
+# keyword, playlist_name = ".*(americana|country).*", "american"
+# keyword, playlist_name = ".*blue.*", "blue"
+# keyword, playlist_name = ".*metal.*", "metal"
+keyword, playlist_name = ".*classical.*", "classical"
+# keyword, playlist_name = ".*bop.*", "bop"
+# keyword, playlist_name = ".*punk.*", "punk"
+# keyword, playlist_name = ".*hop.*", "hops"
+# keyword, playlist_name = ".*jazz.*", "jazzistico"
+# -------
+
+artists = artists_of_genres_matching(keyword, user.artists())
 
 albums = {album for album in user.albums() if set(album.artist_ids) & artists}
 
@@ -52,4 +50,4 @@ ordered = order_tracks(tracks, user)
 
 # -------
 
-create_playlist(user, ordered, playlist_name)
+create_playlist(user, ordered, playlist_name, description=keyword)

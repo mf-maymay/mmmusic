@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from collections import defaultdict
 from itertools import permutations
+import re
 import networkx as nx
 from artist import Artist
 
@@ -16,18 +17,20 @@ def genre_members(artists):
     return genre_artists
 
 
-def genres_containing(keyword, artists):
+def genres_matching(keyword, artists):
     """Returns the genres containing `keyword` in their names."""
-    return {genre for genre in genre_members(artists) if keyword in genre}
+    pattern = re.compile(keyword)
+    return {genre for genre in genre_members(artists)
+            if pattern.fullmatch(genre)}
 
 
-def artists_of_genres_containing(keyword, artists):
+def artists_of_genres_matching(keyword, artists):
     """Returns the artists of genres containing `keyword` in their names."""
     members = set()
 
     genre_artists = genre_members(artists)
 
-    for genre in genres_containing(keyword, artists):
+    for genre in genres_matching(keyword, artists):
         members.update(genre_artists[genre])
 
     return members
