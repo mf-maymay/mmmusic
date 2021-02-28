@@ -43,20 +43,23 @@ def quick_pick(items: list, add_to_left: callable) -> list:
     return quick_pick(left, add_to_left) + quick_pick(right, add_to_left)
 
 
-def polarize(left, right, item):
+def picker(left, right, item):
+    # add item to left if diff less with item in left than in right
     left_score = np.average(left, 0)
     left_score_with_item = np.average(np.vstack((left, item)), 0)
     right_score = np.average(right, 0)
     right_score_with_item = np.average(np.vstack((right, item)), 0)
 
-    return (cosine(left_score_with_item, right_score)
-            > cosine(left_score, right_score_with_item))
+    left_less_diff = (cosine(left_score_with_item, right_score)
+                      < cosine(left_score, right_score_with_item))
+
+    return left_less_diff
 
 
-def song_polarize(left, right, item, item_scores):
-    return polarize([item_scores[x] for x in left],
-                    [item_scores[x] for x in right],
-                    item_scores[item])
+def song_picker(left, right, item, item_scores):
+    return picker([item_scores[x] for x in left],
+                  [item_scores[x] for x in right],
+                  item_scores[item])
 
 
 def order_tracks(tracks, user):
@@ -69,7 +72,9 @@ def order_tracks(tracks, user):
 
     track_scores = dict(zip(tracks, scores))
 
-    return quick_pick(tracks, partial(song_polarize, item_scores=track_scores))
+    func = partial(song_picker, item_scores=track_scores)
+
+    return quick_pick(tracks, func)
 
 
 if __name__ == "__main__":
