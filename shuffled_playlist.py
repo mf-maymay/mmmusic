@@ -15,17 +15,25 @@ User.artists = no_timeout(User.artists)
 user = User(input("username: "))
 
 # -------
-# keyword, playlist_name = ".*goth.*", "goth"
-# keyword, playlist_name = ".*black.*", "black"
-# keyword, playlist_name = ".*(japan|j-).*", "japan"
 # keyword, playlist_name = ".*(americana|country).*", "american"
+# keyword, playlist_name = ".*(japan|j-).*", "japan"
+# keyword, playlist_name = ".*black.*", "black"
 # keyword, playlist_name = ".*blue.*", "blue"
-# keyword, playlist_name = ".*metal.*", "metal"
-keyword, playlist_name = ".*classical.*", "classical"
 # keyword, playlist_name = ".*bop.*", "bop"
-# keyword, playlist_name = ".*punk.*", "punk"
+# keyword, playlist_name = ".*classical.*", "classical"
+# keyword, playlist_name = ".*emo.*", "emo"
+keyword, playlist_name = ".*escape room.*", "escape room"
+# keyword, playlist_name = ".*goth.*", "goth"
 # keyword, playlist_name = ".*hop.*", "hops"
+# keyword, playlist_name = ".*indie.*", "indie"
 # keyword, playlist_name = ".*jazz.*", "jazzistico"
+# keyword, playlist_name = ".*metal.*", "metal"
+# keyword, playlist_name = ".*punk.*", "punk"
+# keyword, playlist_name = "^(?!.*?freak).*.*folk.*", "folk"
+# keyword, playlist_name = (
+#     "^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|neofolk|world).*",
+#     "oblivion"
+# )
 # -------
 
 artists = artists_of_genres_matching(keyword, user.artists())
