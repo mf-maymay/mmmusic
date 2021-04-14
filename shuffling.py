@@ -4,18 +4,12 @@ import random
 import numpy as np
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
+from utils import get_audio_features
 
 
 METRICS = ("danceability", "energy", "key", "loudness", "mode",
            "speechiness", "acousticness", "instrumentalness", "liveness",
            "valence", "tempo")
-
-
-def get_audio_features(user, tracks):
-    out = []
-    for i in range(len(tracks) // 100 + bool(len(tracks) % 100)):
-        out += user.sp.audio_features(tracks=tracks[i*100:(i+1)*100])
-    return out
 
 
 def quick_pick(items: list, add_to_left: callable) -> list:
@@ -73,11 +67,24 @@ def order_tracks(tracks, user):
 
     func = partial(song_picker, item_scores=track_scores)
 
-    return quick_pick(tracks, func)
+    order = quick_pick(tracks, func)
+
+    # playlist smoothing
+    for i in range(len(order) - 2):
+        scores_0 = track_scores[order[i]]
+        scores_1 = track_scores[order[i + 1]]
+        scores_2 = track_scores[order[i + 2]]
+
+        if cosine(scores_0, scores_2) < cosine(scores_0, scores_1):
+            temp = order[i + 1]
+            order[i + 1] = order[i + 2]
+            order[i + 2] = temp
+
+    return order
 
 
 if __name__ == "__main__":
-    from utils import User
+    from user import User
     user = User(input("username: "))  # XXX
 
     songs = ["0vFabeTqtOtj918sjc5vYo", "3HWxpLKnTlz6jE3Vi5dTF2",
