@@ -2,41 +2,31 @@
 from album import Album
 from artist import Artist
 from genre_graph import artists_of_genres_matching
+from playlists import playlists
 from shuffling import order_tracks
 from user import User
 from utils import create_playlist, no_timeout, record_calls
-
-Artist._use_name_for_repr = True
 
 Album.tracks = no_timeout(Album.tracks)
 Artist.related = record_calls(no_timeout(Artist.related))
 User.artists = no_timeout(User.artists)
 
+Artist._use_name_for_repr = True
+
+# -------
+
+playlist = playlists["classical"]
+
 user = User(input("username: "))
 
-# -------
-# keyword, playlist_name = ".*(americana|country).*", "american"
-# keyword, playlist_name = ".*(japan|j-).*", "japan"
-# keyword, playlist_name = ".*black.*", "black"
-# keyword, playlist_name = ".*blue.*", "blue"
-# keyword, playlist_name = ".*bop.*", "bop"
-# keyword, playlist_name = ".*classical.*", "classical"
-# keyword, playlist_name = ".*emo.*", "emo"
-keyword, playlist_name = ".*escape room.*", "escape room"
-# keyword, playlist_name = ".*goth.*", "goth"
-# keyword, playlist_name = ".*hop.*", "hops"
-# keyword, playlist_name = ".*indie.*", "indie"
-# keyword, playlist_name = ".*jazz.*", "jazzistico"
-# keyword, playlist_name = ".*metal.*", "metal"
-# keyword, playlist_name = ".*punk.*", "punk"
-# keyword, playlist_name = "^(?!.*?freak).*.*folk.*", "folk"
-# keyword, playlist_name = (
-#     "^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|neofolk|world).*",
-#     "oblivion"
-# )
-# -------
+artists = (
+    artists_of_genres_matching(playlist.pattern, user.artists())
+    - playlist.artists_to_exclude
+)
 
-artists = artists_of_genres_matching(keyword, user.artists())
+print("\nArtists:")
+for artist in sorted(artists):
+    print("*", artist)
 
 albums = {album for album in user.albums() if set(album.artist_ids) & artists}
 
@@ -58,4 +48,4 @@ ordered = order_tracks(tracks, user)
 
 # -------
 
-create_playlist(user, ordered, playlist_name, description=keyword)
+create_playlist(user, ordered, playlist.name, description=playlist.pattern)
