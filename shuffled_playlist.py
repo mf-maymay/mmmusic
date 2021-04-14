@@ -13,39 +13,42 @@ User.artists = no_timeout(User.artists)
 
 Artist._use_name_for_repr = True
 
-# -------
 
-playlist = playlists["classical"]
+def make_shuffled_playlist(user, playlist):
+    artists = (
+        artists_of_genres_matching(playlist.pattern, user.artists())
+        - playlist.artists_to_exclude
+    )
 
-user = User(input("username: "))
+    print("\nArtists:")
+    for artist in sorted(artists):
+        print("*", artist)
 
-artists = (
-    artists_of_genres_matching(playlist.pattern, user.artists())
-    - playlist.artists_to_exclude
-)
+    albums = {album for album in user.albums()
+              if set(album.artist_ids) & artists}
 
-print("\nArtists:")
-for artist in sorted(artists):
-    print("*", artist)
+    artist_albums = {artist: sorted((album for album in albums
+                                     if artist in album.artist_ids),
+                                    key=Album.release_date)
+                     for artist in artists}
 
-albums = {album for album in user.albums() if set(album.artist_ids) & artists}
+    albums_order = []
+    tracks = []
 
-artist_albums = {artist: sorted((album for album in albums
-                                 if artist in album.artist_ids),
-                                key=Album.release_date)
-                 for artist in artists}
+    for artist in artists:
+        for album in artist_albums[artist]:
+            if album not in albums_order:
+                albums_order.append(album)
+                tracks.extend(track["id"] for track in album.tracks())
 
-albums_order = []
-tracks = []
+    ordered = order_tracks(tracks, user)
 
-for artist in artists:
-    for album in artist_albums[artist]:
-        if album not in albums_order:
-            albums_order.append(album)
-            tracks.extend(track["id"] for track in album.tracks())
+    create_playlist(user, ordered, playlist.name, description=playlist.pattern)
 
-ordered = order_tracks(tracks, user)
 
-# -------
+if __name__ == "__main__":
+    user = User(input("username: "))
 
-create_playlist(user, ordered, playlist.name, description=playlist.pattern)
+    playlist = playlists["classical"]
+
+    make_shuffled_playlist(user, playlist)
