@@ -2,10 +2,10 @@
 from album import Album
 from artist import Artist
 from genre_graph import artists_of_genres_matching
-from playlists import playlists
+from playlists import create_playlist, playlists
 from shuffling import order_tracks
 from user import User
-from utils import create_playlist, no_timeout, record_calls
+from utils import no_timeout, record_calls
 
 Album.tracks = no_timeout(Album.tracks)
 Artist.related = record_calls(no_timeout(Artist.related))
@@ -14,7 +14,7 @@ User.artists = no_timeout(User.artists)
 Artist._use_name_for_repr = True
 
 
-def make_shuffled_playlist(user, playlist):
+def make_shuffled_playlist(user, playlist, confirm=True):
     artists = (
         artists_of_genres_matching(playlist.pattern, user.artists())
         - playlist.artists_to_exclude
@@ -43,12 +43,16 @@ def make_shuffled_playlist(user, playlist):
 
     ordered = order_tracks(tracks, user)
 
-    create_playlist(user, ordered, playlist.name, description=playlist.pattern)
+    create_playlist(
+        user, ordered, playlist.name,
+        description=playlist.pattern,
+        confirm=confirm
+    )
 
 
 if __name__ == "__main__":
     user = User(input("username: "))
 
-    playlist = playlists["classical"]
-
-    make_shuffled_playlist(user, playlist)
+    for name in sorted(playlists):
+        print(name)
+        make_shuffled_playlist(user, playlists[name], confirm=False)
