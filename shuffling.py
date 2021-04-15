@@ -70,15 +70,17 @@ def order_tracks(tracks, user):
     order = quick_pick(tracks, func)
 
     # playlist smoothing
-    for i in range(len(order) - 2):
-        scores_0 = track_scores[order[i]]
-        scores_1 = track_scores[order[i + 1]]
-        scores_2 = track_scores[order[i + 2]]
+    num = len(order)
+
+    for i in range(2 * num - 2):
+        scores_0 = track_scores[order[i % num]]
+        scores_1 = track_scores[order[(i + 1) % num]]
+        scores_2 = track_scores[order[(i + 2) % num]]
 
         if cosine(scores_0, scores_2) < cosine(scores_0, scores_1):
-            temp = order[i + 1]
-            order[i + 1] = order[i + 2]
-            order[i + 2] = temp
+            temp = order[(i + 1) % num]
+            order[(i + 1) % num] = order[(i + 2) % num]
+            order[(i + 2) % num] = temp
 
     return order
 
