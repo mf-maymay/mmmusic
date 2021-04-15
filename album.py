@@ -3,6 +3,7 @@ from collections import namedtuple
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from cache import Cache
+from utils import no_timeout
 
 
 _Album = namedtuple("_Album", ("id", "name", "artist_ids"))
@@ -47,6 +48,7 @@ class Album(_Album):
     def release_date(self):
         return self.full_response(self)["release_date"]
 
+    @no_timeout
     def tracks(self):
         return self.full_response(self)["tracks"]["items"]
 

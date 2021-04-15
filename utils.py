@@ -29,8 +29,9 @@ def record_calls(func):
     return wrapped
 
 
+@no_timeout
 def get_audio_features(user, tracks):
     out = []
     for i in range(len(tracks) // 100 + bool(len(tracks) % 100)):
-        out += user.sp.audio_features(tracks=tracks[i*100:(i+1)*100])
+        out += user.sp.audio_features(tracks=tracks[i * 100:(i + 1) * 100])
     return out

@@ -3,6 +3,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from album import Album
 from artist import Artist
+from utils import no_timeout
 
 
 class User(object):
@@ -22,6 +23,7 @@ class User(object):
 
         self.sp = spotipy.Spotify(auth_manager=auth_manager)
 
+    @no_timeout
     def albums(self):  # XXX: subsequent calls do not update list
 
         if self._albums is not None:
