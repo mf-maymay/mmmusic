@@ -27,6 +27,7 @@ def create_playlist(user, tracks, playlist_name, description="", confirm=True):
 
 
 playlists = {
+    "ALL": Playlist("ALL", pattern=".*"),
     "american": Playlist("american", pattern=".*(americana|country|cow).*"),
     "black": Playlist("black", pattern=".*black.*"),
     "blues": Playlist("blues", pattern="^(?!.*?punk).*blue.*"),
@@ -42,12 +43,12 @@ playlists = {
     "hops": Playlist("hops", pattern=".*hop.*"),
     "indie": Playlist("indie", pattern=".*indie.*"),
     "japan": Playlist("japan", pattern=".*(japan|j-).*"),
-    "jazzistico": Playlist("jazzistico", pattern=".*jazz.*"),
+    "jazzish": Playlist("jazzish", pattern=".*jazz.*"),
     "metal": Playlist("metal", pattern=".*metal.*"),
     "oblivion": Playlist(
         "oblivion",
         pattern=("^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|"
                  "neofolk|world).*")
     ),
-    "punk": Playlist("punk", pattern=".*punk.*")
+    "punkish": Playlist("punkish", pattern=".*punk.*")
 }
