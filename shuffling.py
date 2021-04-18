@@ -52,6 +52,20 @@ def song_picker(left, right, item, item_scores):
                   item_scores[item])
 
 
+def swap_to_smooth(track_0, track_1, track_2, item_scores):
+    artist_cause = False
+
+    # if 0 and 2 are (significantly) more similar than 0 and 1
+    cosine_cause = (
+        cosine(item_scores[track_0], item_scores[track_2])
+        - cosine(item_scores[track_0], item_scores[track_1])
+    ) > 0.1
+
+    key_cause = False
+
+    return artist_cause or cosine_cause or key_cause
+
+
 def order_tracks(tracks, user):
     features = dict(zip(tracks, get_audio_features(user, tracks)))  # XXX
     metrics = np.array([[features[track][metric] for metric in METRICS]
@@ -70,14 +84,15 @@ def order_tracks(tracks, user):
     num = len(order)
 
     for i in range(2 * num - 2):
-        scores_0 = track_scores[order[i % num]]
-        scores_1 = track_scores[order[(i + 1) % num]]
-        scores_2 = track_scores[order[(i + 2) % num]]
-
-        if cosine(scores_0, scores_2) < cosine(scores_0, scores_1):
-            # swap
+        if swap_to_smooth(
+            order[i % num],
+            order[(i + 1) % num],
+            order[(i + 2) % num],
+            item_scores=track_scores
+        ):
             order[(i + 1) % num], order[(i + 2) % num] = (
-                order[(i + 2) % num], order[(i + 1) % num]
+                order[(i + 2) % num],
+                order[(i + 1) % num]
             )
 
     return order
