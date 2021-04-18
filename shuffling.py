@@ -52,7 +52,7 @@ def song_picker(left, right, item, item_scores):
                   item_scores[item])
 
 
-def swap_to_smooth(track_0, track_1, track_2, item_scores):
+def swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
     artist_cause = False
 
     # if 0 and 2 are (significantly) more similar than 0 and 1
@@ -61,7 +61,13 @@ def swap_to_smooth(track_0, track_1, track_2, item_scores):
         - cosine(item_scores[track_0], item_scores[track_1])
     ) > 0.1
 
-    key_cause = False
+    # if key of 1 is inappropriate for 0 and the key of 2 is appropriate
+    good_keys = features[track_0]["key"] + (
+        np.array([0, 2, 4, 5, 7, 9, 11]) if features[track_0]["mode"]
+        else np.array([0, 2, 3, 5, 7, 8, 10])
+    ) % 12
+    key_cause = (features[track_1]["key"] not in good_keys
+                 and features[track_2]["key"] in good_keys)
 
     return artist_cause or cosine_cause or key_cause
 
@@ -88,7 +94,8 @@ def order_tracks(tracks, user):
             order[i % num],
             order[(i + 1) % num],
             order[(i + 2) % num],
-            item_scores=track_scores
+            item_scores=track_scores,
+            features=features
         ):
             order[(i + 1) % num], order[(i + 2) % num] = (
                 order[(i + 2) % num],
