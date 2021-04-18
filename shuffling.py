@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from functools import partial
-import random
+from random import shuffle
 import numpy as np
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
@@ -16,7 +16,7 @@ def quick_pick(items: list, add_to_left: callable) -> list:
     items = list(items)  # XXX
 
     if len(items) > 1:
-        random.shuffle(items)
+        shuffle(items)
 
     if len(items) <= 2:
         return items
@@ -25,9 +25,6 @@ def quick_pick(items: list, add_to_left: callable) -> list:
     right = [items.pop()]
 
     for item in items:
-        # value_in_left = abs(character(left + [item]) - character(right))
-        # value_in_right = abs(character(left) - character(right + [item]))
-
         if add_to_left(left, right, item):
             left.append(item)
         else:
@@ -78,16 +75,17 @@ def order_tracks(tracks, user):
         scores_2 = track_scores[order[(i + 2) % num]]
 
         if cosine(scores_0, scores_2) < cosine(scores_0, scores_1):
-            temp = order[(i + 1) % num]
-            order[(i + 1) % num] = order[(i + 2) % num]
-            order[(i + 2) % num] = temp
+            # swap
+            order[(i + 1) % num], order[(i + 2) % num] = (
+                order[(i + 2) % num], order[(i + 1) % num]
+            )
 
     return order
 
 
 if __name__ == "__main__":
     from user import User
-    user = User(input("username: "))  # XXX
+    user = User(input("username: "))
 
     songs = ["0vFabeTqtOtj918sjc5vYo", "3HWxpLKnTlz6jE3Vi5dTF2",
              "6PSma9xvYhGabJNrbUAE4e", "3qSJD2hjnZ7YDOQx9ieQ0m",
