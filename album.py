@@ -41,6 +41,7 @@ class Album(_Album):
         cls.__new__.clear()
 
     @classmethod
+    @no_timeout
     def full_response(cls, album_id):
         return cls._sp.album(album_id if not isinstance(album_id, Album)
                              else album_id.id)
@@ -48,7 +49,6 @@ class Album(_Album):
     def release_date(self):
         return self.full_response(self)["release_date"]
 
-    @no_timeout
     def tracks(self):
         return self.full_response(self)["tracks"]["items"]
 

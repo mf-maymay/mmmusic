@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from utils import no_timeout
+
 
 class Playlist(object):
     def __init__(self, name, *, pattern, artists_to_exclude=()):
@@ -7,6 +9,7 @@ class Playlist(object):
         self.artists_to_exclude = set(artists_to_exclude)
 
 
+@no_timeout
 def create_playlist(user, tracks, playlist_name, description="", confirm=True):
     if (not confirm or
             input(f"Create playlist '{playlist_name}'? (y/n): ")[0] in "yY"):
