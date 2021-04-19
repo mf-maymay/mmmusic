@@ -66,8 +66,16 @@ def swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
         np.array([0, 2, 4, 5, 7, 9, 11]) if features[track_0]["mode"]
         else np.array([0, 2, 3, 5, 7, 8, 10])
     ) % 12
-    key_cause = (features[track_1]["key"] not in good_keys
-                 and features[track_2]["key"] in good_keys)
+    good_modes = (
+        (1, 0, 0, 1, 1, 0, 0) if features[track_0]["mode"]
+        else (0, 0, 1, 0, 0, 1, 1)
+    )
+    key_cause = (
+        (features[track_1]["key"], features[track_1]["mode"])
+        not in zip(good_keys, good_modes)
+        and (features[track_2]["key"], features[track_2]["mode"])
+        in zip(good_keys, good_modes)
+    )
 
     return artist_cause or cosine_cause or key_cause
 
