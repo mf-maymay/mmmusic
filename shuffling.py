@@ -97,7 +97,7 @@ def order_tracks(tracks, user):
     # playlist smoothing
     num = len(order)
 
-    for i in range(3 * num - 2):
+    for i in range(4 * num - 2):
         if swap_to_smooth(
             order[i % num],
             order[(i + 1) % num],
