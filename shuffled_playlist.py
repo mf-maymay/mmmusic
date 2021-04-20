@@ -32,7 +32,7 @@ def make_shuffled_playlist(user, playlist, confirm=True):
         for album in artist_albums[artist]:
             if album not in albums_order:
                 albums_order.append(album)
-                tracks.extend(track["id"] for track in album.tracks())
+                tracks.extend(track for track in album.tracks())
 
     ordered = order_tracks(tracks, user)
 

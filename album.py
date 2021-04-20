@@ -50,7 +50,8 @@ class Album(_Album):
         return self.full_response(self)["release_date"]
 
     def tracks(self):
-        return self.full_response(self)["tracks"]["items"]
+        return [item["id"]
+                for item in self.full_response(self)["tracks"]["items"]]
 
     def __eq__(self, other):
         return hash(self) == hash(other)
