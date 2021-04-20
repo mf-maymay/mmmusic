@@ -25,7 +25,7 @@ class Track(_Track):
             if isinstance(track_id, Track):
                 return track_id  # Track(Track(x)) == Track(x)
 
-            track = cls._sp.track(track_id)
+            track = no_timeout(cls._sp.track)(track_id)
 
             return super().__new__(cls,
                                    track_id,
