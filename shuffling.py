@@ -52,7 +52,12 @@ def song_picker(left, right, item, item_scores):
 
 
 def swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
-    artist_cause = False
+    # if 0 and 1 share artists and 0 and 2 do not
+    artists_0 = set(track_0.artist_ids)
+    artist_cause = (
+        (artists_0 & set(track_1.artist_ids))
+        and not (artists_0 & set(track_2.artist_ids))
+    )
 
     # if 0 and 2 are (significantly) more similar than 0 and 1
     cosine_cause = (
