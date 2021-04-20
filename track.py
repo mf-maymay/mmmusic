@@ -42,6 +42,7 @@ class Track(_Track):
         cls.__new__.clear()
 
     @no_timeout
+    @Cache()
     def audio_features(self):
         return self._sp.audio_features(self.id)[0]
 

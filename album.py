@@ -43,6 +43,7 @@ class Album(_Album):
 
     @classmethod
     @no_timeout
+    @Cache()
     def full_response(cls, album_id):
         return cls._sp.album(album_id if not isinstance(album_id, Album)
                              else album_id.id)
@@ -50,6 +51,7 @@ class Album(_Album):
     def release_date(self):
         return self.full_response(self)["release_date"]
 
+    @Cache()
     def tracks(self):
         return [Track(item["id"])
                 for item in self.full_response(self)["tracks"]["items"]]
