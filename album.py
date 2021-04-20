@@ -3,6 +3,7 @@ from collections import namedtuple
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from cache import Cache
+from track import Track
 from utils import no_timeout
 
 
@@ -50,7 +51,7 @@ class Album(_Album):
         return self.full_response(self)["release_date"]
 
     def tracks(self):
-        return [item["id"]
+        return [Track(item["id"])
                 for item in self.full_response(self)["tracks"]["items"]]
 
     def __eq__(self, other):

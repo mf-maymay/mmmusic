@@ -3,6 +3,7 @@ from collections import namedtuple
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from cache import Cache
+from utils import no_timeout
 
 
 _Track = namedtuple("_Track", ("id", "name", "album_id", "artist_ids"))
@@ -39,6 +40,10 @@ class Track(_Track):
     @classmethod
     def clear(cls):
         cls.__new__.clear()
+
+    @no_timeout
+    def audio_features(self):
+        return self._sp.audio_features(self.id)[0]
 
     def __eq__(self, other):
         return hash(self) == hash(other)

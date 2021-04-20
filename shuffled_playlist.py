@@ -37,7 +37,9 @@ def make_shuffled_playlist(user, playlist, confirm=True):
     ordered = order_tracks(tracks, user)
 
     create_playlist(
-        user, ordered, playlist.name,
+        user,
+        [track.id for track in ordered],
+        playlist.name,
         description=playlist.pattern,
         confirm=confirm
     )
