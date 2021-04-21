@@ -4,6 +4,7 @@ from random import shuffle
 import numpy as np
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
+from track import Track
 
 
 METRICS = ("danceability", "energy", "key", "loudness", "mode",
@@ -52,20 +53,23 @@ def song_picker(left, right, item, item_scores):
 
 
 def swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
-    # if 0 and 1 share artists and 0 and 2 do not
+    # if 0 and 1 share artists and 0 and 2 do not, swap
+    # if vice versa, keep
     artists_0 = set(track_0.artist_ids)
-    artist_cause = (
-        (artists_0 & set(track_1.artist_ids))
-        and not (artists_0 & set(track_2.artist_ids))
-    )
+    artists_1 = set(track_1.artist_ids)
+    artists_2 = set(track_2.artist_ids)
 
-    # if 0 and 2 are (significantly) more similar than 0 and 1
-    cosine_cause = (
-        cosine(item_scores[track_0], item_scores[track_2])
-        - cosine(item_scores[track_0], item_scores[track_1])
-    ) > 0.1
+    swap_for_artists = (artists_0 & artists_1) and not (artists_0 & artists_2)
 
-    # if key of 1 is inappropriate for 0 and the key of 2 is appropriate
+    keep_for_artists = (artists_0 & artists_2) and not (artists_0 & artists_1)
+
+    if swap_for_artists:
+        return True
+    if keep_for_artists:
+        return False
+
+    # if key of 1 is inappropriate for 0 and the key of 2 is appropriate, swap
+    # if vice versa, keep
     good_keys = features[track_0]["key"] + (
         np.array([0, 2, 4, 5, 7, 9, 11]) if features[track_0]["mode"]
         else np.array([0, 2, 3, 5, 7, 8, 10])
@@ -74,18 +78,37 @@ def swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
         (1, 0, 0, 1, 1, 0, 0) if features[track_0]["mode"]
         else (0, 0, 1, 0, 0, 1, 1)
     )
-    key_cause = (
-        (features[track_1]["key"], features[track_1]["mode"])
-        not in zip(good_keys, good_modes)
-        and (features[track_2]["key"], features[track_2]["mode"])
-        in zip(good_keys, good_modes)
+    key_1 = features[track_1]["key"]
+    mode_1 = features[track_1]["mode"]
+    key_2 = features[track_2]["key"]
+    mode_2 = features[track_2]["mode"]
+
+    swap_for_key = (
+        (key_1, mode_1) not in zip(good_keys, good_modes)
+        and (key_2, mode_2) in zip(good_keys, good_modes)
     )
 
-    return artist_cause or cosine_cause or key_cause
+    keep_for_key = (
+        (key_2, mode_2) not in zip(good_keys, good_modes)
+        and (key_1, mode_1) in zip(good_keys, good_modes)
+    )
+
+    if swap_for_key:
+        return True
+    if keep_for_key:
+        return False
+
+    # if 0 and 2 are (significantly) more similar than 0 and 1
+    cos_0_1 = cosine(item_scores[track_0], item_scores[track_1])
+    cos_0_2 = cosine(item_scores[track_0], item_scores[track_2])
+
+    swap_for_cosine = cos_0_2 - cos_0_1 > 0.1
+
+    return swap_for_cosine
 
 
 def order_tracks(tracks, user):
-    features = {track: track.audio_features() for track in tracks}
+    features = dict(zip(tracks, Track.get_audio_features(tracks)))
     metrics = np.array([[features[track][metric] for metric in METRICS]
                         for track in tracks])
     scores = metrics.copy()  # XXX
