@@ -41,6 +41,16 @@ class Track(_Track):
     def clear(cls):
         cls.__new__.clear()
 
+    @classmethod
+    def get_audio_features(cls, tracks):
+        out = []
+        for i in range(len(tracks) // 100 + bool(len(tracks) % 100)):
+            out += no_timeout(cls._sp.audio_features)(
+                tracks=[track if not isinstance(track, Track) else track.id
+                        for track in tracks[i * 100:(i + 1) * 100]]
+            )
+        return out
+
     @no_timeout
     @Cache()
     def audio_features(self):
