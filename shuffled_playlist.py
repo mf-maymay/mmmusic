@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from album import Album
 from artist import Artist
-from genre_graph import artists_of_genres_matching
+from genre_graph import artists_of_genres_matching, genres_matching
 from playlists import create_playlist, playlists
 from shuffling import order_tracks
 from user import User
@@ -13,6 +13,10 @@ def make_shuffled_playlist(user, playlist, confirm=True):
         - playlist.artists_to_exclude
     )
 
+    print(f"'{playlist.pattern}' genres:")
+    for genre in sorted(genres_matching(playlist.pattern, artists)):
+        print("*", genre)
+    print()
     print(f"'{playlist.name}' artists:")
     for artist in sorted(artists):
         print("*", artist)
