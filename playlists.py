@@ -42,16 +42,19 @@ playlists = {
     ),
     "emo": Playlist("emo", pattern=".*emo.*"),
     "escape room": Playlist("escape room", pattern=".*escape room.*"),
+    "experimental": Playlist("experimental", pattern=".*experimental.*"),
     "folk": Playlist("folk", pattern="^(?!.*?freak).*.*folk.*"),
     "hops": Playlist("hops", pattern=".*hop.*"),
     "indie": Playlist("indie", pattern=".*indie.*"),
     "japan": Playlist("japan", pattern=".*(japan|j-).*"),
     "jazzish": Playlist("jazzish", pattern=".*jazz.*"),
-    "metal": Playlist("metal", pattern=".*metal.*"),
+    "metal": Playlist("metal", pattern=".*(doom|metal|zeuhl).*"),
+    "noise": Playlist("noise", pattern=".*noise.*"),
     "oblivion": Playlist(
         "oblivion",
         pattern=("^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|"
                  "neofolk|world).*")
     ),
-    "punkish": Playlist("punkish", pattern=".*punk.*")
+    "punkish": Playlist("punkish", pattern=".*punk.*"),
+    "tropical": Playlist("tropical", pattern=".*(brazil|latin|mpb|reggae).*")
 }
