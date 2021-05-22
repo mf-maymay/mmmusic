@@ -46,7 +46,6 @@ class Playlist(object):
 
 playlists = {
     "ALL": Playlist("ALL", pattern=".*"),
-    "american": Playlist("american", pattern=".*(americana|country|cow).*"),
     "black": Playlist("black", pattern=".*black.*"),
     "blues": Playlist("blues", pattern="^(?!.*?punk).*blue.*"),
     "bop": Playlist("bop", pattern=".*bop.*"),
@@ -54,6 +53,10 @@ playlists = {
         "classical",
         pattern=".*(classical|compositional).*",
         artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"]
+    ),
+    "countryish": Playlist(
+        "countryish",
+        pattern=".*(americana|country|cow).*"
     ),
     "emo": Playlist("emo", pattern=".*emo.*"),
     "escape room": Playlist("escape room", pattern=".*escape room.*"),
