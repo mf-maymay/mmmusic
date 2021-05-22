@@ -2,7 +2,7 @@
 from album import Album
 from artist import Artist
 from genre_graph import artists_of_genres_matching, genres_matching
-from playlists import create_playlist, playlists
+from playlists import playlists
 from shuffling import order_tracks
 from user import User
 
@@ -38,15 +38,9 @@ def make_shuffled_playlist(user, playlist, confirm=True):
                 albums_order.append(album)
                 tracks.extend(track for track in album.tracks())
 
-    ordered = order_tracks(tracks, user)
+    playlist.tracks = order_tracks(tracks, user)
 
-    create_playlist(
-        user,
-        [track.id for track in ordered],
-        playlist.name,
-        description=playlist.pattern,
-        confirm=confirm
-    )
+    playlist.create(user, confirm=confirm)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from math import ceil
 from utils import no_timeout
 
 
@@ -8,25 +9,39 @@ class Playlist(object):
         self.pattern = pattern
         self.artists_to_exclude = set(artists_to_exclude)
 
+        self.description = self.pattern
+        self.tracks = []  # XXX
 
-@no_timeout
-def create_playlist(user, tracks, playlist_name, description="", confirm=True):
-    if (not confirm or
-            input(f"Create playlist '{playlist_name}'? (y/n): ")[0] in "yY"):
-        print(f"Creating '{playlist_name}'...")
+    @no_timeout
+    def create(self, user, confirm=True):
+        if not self.tracks:
+            raise ValueError("self.tracks is empty")
 
-        user.setup_sp(scope="playlist-modify-private")  # XXX
+        if (
+            not confirm or
+            input(f"Create playlist '{self.name}'? (y/n): ")[0] in "yY"
+        ):
+            print(f"Creating '{self.name}'...")
 
-        playlist = user.sp.user_playlist_create(user._username,
-                                                playlist_name,
-                                                public=False,
-                                                description=description)
+            user.setup_sp(scope="playlist-modify-private")  # XXX
 
-        for i in range(0, (l := len(tracks)) // 100 + bool(l % 100)):
-            to_add = tracks[(100 * i):(100 * (i + 1))]
-            user.sp.user_playlist_add_tracks(user._username,
-                                             playlist["id"],
-                                             to_add)
+            playlist = user.sp.user_playlist_create(
+                user._username,
+                self.name,
+                public=False,
+                description=self.description
+            )
+
+            for i in range(ceil(len(self.tracks) / 100)):
+                to_add = [
+                    track.id
+                    for track in self.tracks[(100 * i):(100 * (i + 1))]
+                ]
+                user.sp.user_playlist_add_tracks(
+                    user._username,
+                    playlist["id"],
+                    to_add
+                )
 
 
 playlists = {
