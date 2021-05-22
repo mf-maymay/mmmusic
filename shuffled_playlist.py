@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from album import Album
 from artist import Artist
-from genre_graph import artists_of_genres_matching, genres_matching
+from genres import artists_of_genres_matching, genres_matching
 from playlists import playlists
 from shuffling import order_tracks
 from user import User
