@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from genres import artists_of_genres_matching, genres_matching
+from track import Track
 
 
 def albums_from_artists(user, artists):
@@ -15,6 +16,16 @@ def tracks_from_albums(albums):
 
 def all_user_tracks(user):
     return tracks_from_albums(user.albums())
+
+
+def tracks_by_audio_feature(features_filter_func):
+    def get_tracks(playlist, user):
+        all_tracks = all_user_tracks(user)
+        all_features = Track.get_audio_features(all_tracks)
+        playlist.tracks = [track
+                           for track, features in zip(all_tracks, all_features)
+                           if features_filter_func(features)]
+    return get_tracks
 
 
 def tracks_by_genre_pattern(pattern, display=True):

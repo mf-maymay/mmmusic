@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from playlist import Playlist
-from playlist_utils import tracks_by_genre_pattern
+from playlist_utils import tracks_by_audio_feature, tracks_by_genre_pattern
 
 playlists = {
     "ALL": Playlist(
@@ -86,6 +86,10 @@ playlists = {
         get_tracks_func=tracks_by_genre_pattern(
             ".*(brazil|latin|mpb|reggae).*"
         )
+    ),
+    "high-energy": Playlist(
+        "high-energy",
+        get_tracks_func=tracks_by_audio_feature(lambda x: x["energy"] >= .7)
     )
 }
 

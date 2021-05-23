@@ -20,6 +20,7 @@ class Playlist(object):
 
         self.artists_to_exclude = set(artists_to_exclude)
 
+        self.description = ""
         self.tracks = []
 
     def get_tracks(self, user):
