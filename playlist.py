@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from math import ceil
-from shuffling import order_tracks
+from shuffling import smart_shuffle
 from utils import no_timeout
 
 
@@ -10,7 +10,7 @@ class Playlist(object):
         name,
         *,
         get_tracks_func,
-        order_tracks_func=order_tracks,
+        order_tracks_func=smart_shuffle,
         artists_to_exclude=()
     ):
         self.name = name

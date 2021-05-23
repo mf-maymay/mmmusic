@@ -33,7 +33,7 @@ def quick_pick(items: list, add_to_left: callable) -> list:
     return quick_pick(left, add_to_left) + quick_pick(right, add_to_left)
 
 
-def picker(left, right, item):
+def _picker(left, right, item):
     # add item to left if diff less with item in left than in right
     left_score = np.average(left, 0)
     left_score_with_item = np.average(np.vstack((left, item)), 0)
@@ -46,13 +46,13 @@ def picker(left, right, item):
     return left_less_diff
 
 
-def song_picker(left, right, item, item_scores):
-    return picker([item_scores[x] for x in left],
-                  [item_scores[x] for x in right],
-                  item_scores[item])
+def _song_picker(left, right, item, item_scores):
+    return _picker([item_scores[x] for x in left],
+                   [item_scores[x] for x in right],
+                   item_scores[item])
 
 
-def swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
+def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
     # if 0 and 1 share artists and 0 and 2 do not, swap
     # if vice versa, keep
     artists_0 = set(track_0.artist_ids)
@@ -107,7 +107,7 @@ def swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
     return swap_for_cosine
 
 
-def order_tracks(tracks, user):
+def smart_shuffle(tracks, user):
     features = dict(zip(tracks, Track.get_audio_features(tracks)))
     metrics = np.array([[features[track][metric] for metric in METRICS]
                         for track in tracks])
@@ -117,7 +117,7 @@ def order_tracks(tracks, user):
 
     track_scores = dict(zip(tracks, scores))
 
-    func = partial(song_picker, item_scores=track_scores)
+    func = partial(_song_picker, item_scores=track_scores)
 
     order = quick_pick(tracks, func)
 
@@ -125,7 +125,7 @@ def order_tracks(tracks, user):
     num = len(order)
 
     for i in range(4 * num - 2):
-        if swap_to_smooth(
+        if _swap_to_smooth(
             order[i % num],
             order[(i + 1) % num],
             order[(i + 2) % num],
@@ -148,4 +148,4 @@ if __name__ == "__main__":
              "6PSma9xvYhGabJNrbUAE4e", "3qSJD2hjnZ7YDOQx9ieQ0m",
              "09uV1Sli9wapcKQmmyaG4E", "5vaCmKjItq2Da5BKNFHlEb"]
 
-    ordered = order_tracks(songs, user)
+    ordered = smart_shuffle(songs, user)
