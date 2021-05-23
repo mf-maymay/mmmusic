@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from album import Album
 from artist import Artist
 from genres import artists_of_genres_matching, genres_matching
 from playlists import playlists
 from shuffling import order_tracks
 from user import User
+from utils2 import albums_from_artists, tracks_from_albums
 
 
 def make_shuffled_playlist(user, playlist, confirm=True):
@@ -21,22 +21,9 @@ def make_shuffled_playlist(user, playlist, confirm=True):
     for artist in sorted(artists):
         print("*", artist)
 
-    albums = {album for album in user.albums()
-              if set(album.artist_ids) & artists}
+    albums = albums_from_artists(user, artists)
 
-    artist_albums = {artist: sorted((album for album in albums
-                                     if artist in album.artist_ids),
-                                    key=Album.release_date)
-                     for artist in artists}
-
-    albums_order = []
-    tracks = []
-
-    for artist in artists:
-        for album in artist_albums[artist]:
-            if album not in albums_order:
-                albums_order.append(album)
-                tracks.extend(track for track in album.tracks())
+    tracks = tracks_from_albums(albums)
 
     playlist.tracks = order_tracks(tracks, user)
 
