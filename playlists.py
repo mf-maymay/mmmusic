@@ -1,21 +1,42 @@
 # -*- coding: utf-8 -*-
 from math import ceil
+from playlist_utils import pattern_matching_tracks
+from shuffling import order_tracks
 from utils import no_timeout
 
 
 class Playlist(object):
-    def __init__(self, name, *, pattern, artists_to_exclude=()):
+    def __init__(
+        self,
+        name,
+        *,
+        get_tracks_func,
+        order_tracks_func=order_tracks,
+        artists_to_exclude=()
+    ):
         self.name = name
-        self.pattern = pattern
+
+        self._get_tracks_func = get_tracks_func
+        self._order_tracks_func = order_tracks_func
+
         self.artists_to_exclude = set(artists_to_exclude)
 
-        self.description = self.pattern
-        self.tracks = []  # XXX
+        self.tracks = []
+
+    def get_tracks(self, user):
+        self._get_tracks_func(self, user)
+
+    def order_tracks(self, user):
+        if not self.tracks:
+            raise ValueError("self.tracks is empty")
+
+        self.tracks = self._order_tracks_func(self.tracks, user)
 
     @no_timeout
     def create(self, user, confirm=True):
         if not self.tracks:
-            raise ValueError("self.tracks is empty")
+            self.get_tracks(user)
+            self.order_tracks(user)
 
         if (
             not confirm or
@@ -45,34 +66,96 @@ class Playlist(object):
 
 
 playlists = {
-    "ALL": Playlist("ALL", pattern=".*"),
-    "black": Playlist("black", pattern=".*black.*"),
-    "blues": Playlist("blues", pattern="^(?!.*?punk).*blue.*"),
-    "bop": Playlist("bop", pattern=".*bop.*"),
+    "ALL": Playlist(
+        "ALL",
+        get_tracks_func=pattern_matching_tracks(".*")
+    ),
+    "black": Playlist(
+        "black",
+        get_tracks_func=pattern_matching_tracks(".*black.*")
+    ),
+    "blues": Playlist(
+        "blues",
+        get_tracks_func=pattern_matching_tracks("^(?!.*?punk).*blue.*")
+    ),
+    "bop": Playlist(
+        "bop",
+        get_tracks_func=pattern_matching_tracks(".*bop.*")
+    ),
     "classical": Playlist(
         "classical",
-        pattern=".*(classical|compositional).*",
+        get_tracks_func=pattern_matching_tracks(
+            ".*(classical|compositional).*"
+        ),
         artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"]
     ),
     "countryish": Playlist(
         "countryish",
-        pattern=".*(americana|country|cow).*"
+        get_tracks_func=pattern_matching_tracks(".*(americana|country|cow).*")
     ),
-    "emo": Playlist("emo", pattern=".*emo.*"),
-    "escape room": Playlist("escape room", pattern=".*escape room.*"),
-    "experimental": Playlist("experimental", pattern=".*experimental.*"),
-    "folk": Playlist("folk", pattern="^(?!.*?freak).*.*folk.*"),
-    "hops": Playlist("hops", pattern=".*hop.*"),
-    "indie": Playlist("indie", pattern=".*indie.*"),
-    "japan": Playlist("japan", pattern=".*(japan|j-).*"),
-    "jazzish": Playlist("jazzish", pattern=".*jazz.*"),
-    "metal": Playlist("metal", pattern=".*(doom|metal|zeuhl).*"),
-    "noise": Playlist("noise", pattern=".*noise.*"),
+    "emo": Playlist(
+        "emo",
+        get_tracks_func=pattern_matching_tracks(".*emo.*")
+    ),
+    "escape room": Playlist(
+        "escape room",
+        get_tracks_func=pattern_matching_tracks(".*escape room.*")
+    ),
+    "experimental": Playlist(
+        "experimental",
+        get_tracks_func=pattern_matching_tracks(".*experimental.*")
+    ),
+    "folk": Playlist(
+        "folk",
+        get_tracks_func=pattern_matching_tracks("^(?!.*?freak).*.*folk.*")
+    ),
+    "hops": Playlist(
+        "hops",
+        get_tracks_func=pattern_matching_tracks(".*hop.*")
+    ),
+    "indie": Playlist(
+        "indie",
+        get_tracks_func=pattern_matching_tracks(".*indie.*")
+    ),
+    "japan": Playlist(
+        "japan",
+        get_tracks_func=pattern_matching_tracks(".*(japan|j-).*")
+    ),
+    "jazzish": Playlist(
+        "jazzish",
+        get_tracks_func=pattern_matching_tracks(".*jazz.*")
+    ),
+    "metal": Playlist(
+        "metal",
+        get_tracks_func=pattern_matching_tracks(".*(doom|metal|zeuhl).*")
+    ),
+    "noise": Playlist(
+        "noise",
+        get_tracks_func=pattern_matching_tracks(".*noise.*")
+    ),
     "oblivion": Playlist(
         "oblivion",
-        pattern=("^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|"
-                 "neofolk|world).*")
+        get_tracks_func=pattern_matching_tracks(
+            "^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|neofolk|"
+            "world).*"
+        )
     ),
-    "punkish": Playlist("punkish", pattern=".*punk.*"),
-    "tropical": Playlist("tropical", pattern=".*(brazil|latin|mpb|reggae).*")
+    "punkish": Playlist(
+        "punkish",
+        get_tracks_func=pattern_matching_tracks(".*punk.*")
+    ),
+    "tropical": Playlist(
+        "tropical",
+        get_tracks_func=pattern_matching_tracks(
+            ".*(brazil|latin|mpb|reggae).*"
+        )
+    )
 }
+
+
+if __name__ == "__main__":
+    from user import User
+
+    user = User(input("username: "))
+
+    playlists["jazzish"].create(user)
