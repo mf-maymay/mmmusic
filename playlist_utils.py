@@ -17,7 +17,7 @@ def all_user_tracks(user):
     return tracks_from_albums(user.albums())
 
 
-def pattern_matching_tracks(pattern, display=True):
+def tracks_by_genre_pattern(pattern, display=True):
     def get_tracks(playlist, user):
         artists = (
             artists_of_genres_matching(pattern, user.artists())
