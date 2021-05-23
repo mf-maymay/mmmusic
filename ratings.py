@@ -9,6 +9,7 @@ from user import User
 from utils import no_timeout
 
 valid_rating = re.compile("[0-5]\\.[0-9]")
+valid_vote = re.compile("([0-9]|,)+ Votes")
 
 search_str = "http://www.sputnikmusic.com/search_results.php?search_text="
 
@@ -25,7 +26,7 @@ def sputnik_rating(artist, album):
     album_elem = soup.find("a", text=album)
 
     if album_elem is None:
-        return None  # XXX
+        return None, None  # XXX
 
     parents = album_elem.parents
 
@@ -35,13 +36,20 @@ def sputnik_rating(artist, album):
 
     rating_elem = td.find("b", text=valid_rating)
 
+    votes_elem = td.find("font", text=valid_vote)
+
+    if votes_elem is None:
+        votes = 0
+    else:
+        votes = int(votes_elem.text.split()[0].replace(",", ""))
+
     if rating_elem is None:
-        return None
+        return None, None
 
     try:
-        return float(rating_elem.text)
+        return float(rating_elem.text), votes
     except ValueError:
-        return None
+        return None, None
 
 
 def get_user_album_ratings(user):
@@ -49,14 +57,13 @@ def get_user_album_ratings(user):
         _ = sputnik_rating(Artist(album.artist_ids[0]).name,
                            album.name)
 
-    ratings = sorted(((artist, album, rating)
-                      for (artist, album), rating in sputnik_rating.items()
-                      if rating is not None),
-                     key=lambda x: (x[2], x[0], x[1]))
+    ratings = [(artist, album, rating, votes)
+               for (artist, album), (rating, votes) in sputnik_rating.items()
+               if rating is not None]
 
     return pd.DataFrame(
         ratings,
-        columns=["Artist", "Album", "Rating"]
+        columns=["Artist", "Album", "Rating", "Votes"]
     )
 
 
