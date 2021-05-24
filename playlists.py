@@ -89,7 +89,11 @@ playlists = {
     ),
     "high-energy": Playlist(
         "high-energy",
-        get_tracks_func=tracks_by_audio_feature(lambda x: x["energy"] >= .7)
+        get_tracks_func=tracks_by_audio_feature(lambda x: x["energy"] >= .8)
+    ),
+    "low-valence": Playlist(
+        "low-valence",
+        get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= .2)
     )
 }
 
@@ -101,3 +105,4 @@ if __name__ == "__main__":
 
     for playlist in sorted(playlists):
         playlists[playlist].create(user, confirm=False)
+        print()
