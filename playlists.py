@@ -87,13 +87,19 @@ playlists = {
             ".*(brazil|latin|mpb|reggae).*"
         )
     ),
+    "high-danceability": Playlist(
+        "high-danceability",
+        get_tracks_func=tracks_by_audio_feature(
+            lambda x: x["danceability"] >= .75
+        )
+    ),
     "high-energy": Playlist(
         "high-energy",
-        get_tracks_func=tracks_by_audio_feature(lambda x: x["energy"] >= .8)
+        get_tracks_func=tracks_by_audio_feature(lambda x: x["energy"] >= .9)
     ),
     "low-valence": Playlist(
         "low-valence",
-        get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= .2)
+        get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= .1)
     )
 }
 
