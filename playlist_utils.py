@@ -18,9 +18,12 @@ def all_user_tracks(user):
     return tracks_from_albums(user.albums())
 
 
-def tracks_by_audio_feature(features_filter_func):
+def tracks_by_audio_feature(features_filter_func, base=None):  # XXX
     def get_tracks(playlist, user):
-        all_tracks = all_user_tracks(user)
+        if base is None:
+            all_tracks = all_user_tracks(user)
+        else:
+            all_tracks = base(playlist, user)
         all_features = Track.get_audio_features(all_tracks)
         return [track for track, features in zip(all_tracks, all_features)
                 if features_filter_func(features)]

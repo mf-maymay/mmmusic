@@ -100,6 +100,13 @@ playlists = {
     "low-valence": Playlist(
         "low-valence",
         get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= .1)
+    ),
+    "sad jazz": Playlist(
+        "sad jazz",
+        get_tracks_func=tracks_by_audio_feature(
+            lambda x: x["valence"] <= .25,
+            base=tracks_by_genre_pattern(".*jazz.*")
+        )
     )
 }
 
