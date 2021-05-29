@@ -24,7 +24,7 @@ class Playlist(object):
         self.tracks = []
 
     def get_tracks(self, user):
-        self._get_tracks_func(self, user)
+        self.tracks = self._get_tracks_func(self, user)
 
     def order_tracks(self, user):
         if not self.tracks:

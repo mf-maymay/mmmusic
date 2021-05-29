@@ -22,9 +22,8 @@ def tracks_by_audio_feature(features_filter_func):
     def get_tracks(playlist, user):
         all_tracks = all_user_tracks(user)
         all_features = Track.get_audio_features(all_tracks)
-        playlist.tracks = [track
-                           for track, features in zip(all_tracks, all_features)
-                           if features_filter_func(features)]
+        return [track for track, features in zip(all_tracks, all_features)
+                if features_filter_func(features)]
     return get_tracks
 
 
@@ -45,8 +44,9 @@ def tracks_by_genre_pattern(pattern, display=True):
                 print("*", artist)
 
         albums = albums_from_artists(user, artists)
-        playlist.tracks = tracks_from_albums(albums)
         playlist.description = pattern
+
+        return tracks_from_albums(albums)
     return get_tracks
 
 
