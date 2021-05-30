@@ -58,9 +58,11 @@ playlists = {
         "japan",
         get_tracks_func=tracks_by_genre_pattern(".*(japan|j-).*")
     ),
-    "jazzish": Playlist(
-        "jazzish",
-        get_tracks_func=tracks_by_genre_pattern(".*jazz.*")
+    "jazz": Playlist(
+        "jazz",
+        get_tracks_func=tracks_by_genre_pattern(
+            "^(?!.*?(dark|nu|jazz metal|jazz rap|jazztronica)).*jazz.*"
+        )
     ),
     "metal": Playlist(
         "metal",
@@ -105,7 +107,16 @@ playlists = {
         "sad jazz",
         get_tracks_func=tracks_by_audio_feature(
             lambda x: x["valence"] <= .25,
-            base=tracks_by_genre_pattern(".*jazz.*")
+            base=tracks_by_genre_pattern(
+                "^(?!.*?(dark|nu|jazz metal|jazz rap|jazztronica)).*jazz.*"
+            )
+        )
+    ),
+    "vocal jazz": Playlist(
+        "vocal jazz",
+        get_tracks_func=tracks_by_audio_feature(
+            lambda x: x["instrumentalness"] < .6,
+            base=tracks_by_genre_pattern(".*vocal jazz.*")
         )
     )
 }
@@ -117,5 +128,7 @@ if __name__ == "__main__":
     user = User(input("username: "))
 
     for playlist in sorted(playlists):
+        playlists[playlist].get_tracks(user)
+        playlists[playlist].order_tracks(user)
         playlists[playlist].create(user, confirm=False)
         print()
