@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from playlist import Playlist
-from playlist_utils import tracks_by_audio_feature, tracks_by_genre_pattern
+from playlist_utils import (
+    tracks_by_audio_feature,
+    tracks_by_genre_pattern,
+    tracks_from_playlist
+)
 
 playlists = {
     "ALL": Playlist(
@@ -118,6 +122,22 @@ playlists = {
             lambda x: x["instrumentalness"] < .6,
             base=tracks_by_genre_pattern(".*vocal jazz.*")
         )
+    ),
+    "q, shuffled": Playlist(
+        "q, shuffled",
+        get_tracks_func=tracks_from_playlist("7DOqATuWsl640ustK8lhhI")
+    ),
+    "q - harder, shuffled": Playlist(
+        "q - harder, shuffled",
+        get_tracks_func=tracks_from_playlist("5mRa71QUmE6EWavxTA22g6")
+    ),
+    "q - hip hop, shuffled": Playlist(
+        "q - hip hop, shuffled",
+        get_tracks_func=tracks_from_playlist("0sFhYQaTiuZlG1vMDSiFMR")
+    ),
+    "q - jazz, shuffled": Playlist(
+        "q - jazz, shuffled",
+        get_tracks_func=tracks_from_playlist("4HQnus8hcLfX5pYtG95pKY")
     )
 }
 

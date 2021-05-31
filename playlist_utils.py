@@ -53,6 +53,27 @@ def tracks_by_genre_pattern(pattern, display=True):
     return get_tracks
 
 
+def tracks_from_playlist(playlist_id):
+    def get_tracks(playlist, user):
+        tracks = []
+        items = user.sp.playlist_items(playlist_id)
+
+        while items:
+            tracks.extend(
+                Track(
+                    item["track"]["id"],
+                    item["track"]["name"],
+                    item["track"]["album"]["id"],
+                    tuple(artist["id"] for artist in item["track"]["artists"])
+                )
+                for item in items["items"]
+            )
+            items = user.sp.next(items)
+
+        return tracks
+    return get_tracks
+
+
 if __name__ == "__main__":
     from artist import Artist
     from user import User
