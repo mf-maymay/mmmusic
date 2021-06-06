@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from playlist import Playlist
 from playlist_utils import (
+    all_user_tracks,
     tracks_by_audio_feature,
     tracks_by_genre_pattern,
     tracks_from_playlist
@@ -9,7 +10,7 @@ from playlist_utils import (
 playlists = {
     "ALL": Playlist(
         "ALL",
-        get_tracks_func=tracks_by_genre_pattern(".*")
+        get_tracks_func=all_user_tracks
     ),
     "black": Playlist(
         "black",
@@ -26,9 +27,9 @@ playlists = {
     "classical": Playlist(
         "classical",
         get_tracks_func=tracks_by_genre_pattern(
-            ".*(classical|compositional).*"
-        ),
-        artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"]
+            ".*(classical|compositional).*",
+            artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"]  # adrian younge
+        )
     ),
     "countryish": Playlist(
         "countryish",
@@ -147,7 +148,7 @@ if __name__ == "__main__":
 
     user = User(input("username: "))
 
-    for playlist in sorted(playlists):
+    for playlist in sorted(playlists, reverse=True):
         playlists[playlist].get_tracks(user)
         playlists[playlist].order_tracks(user)
         playlists[playlist].create(user, confirm=False)

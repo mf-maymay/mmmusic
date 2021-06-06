@@ -10,21 +10,18 @@ class Playlist(object):
         name,
         *,
         get_tracks_func,
-        order_tracks_func=smart_shuffle,
-        artists_to_exclude=()
+        order_tracks_func=smart_shuffle
     ):
         self.name = name
 
         self._get_tracks_func = get_tracks_func
         self._order_tracks_func = order_tracks_func
 
-        self.artists_to_exclude = set(artists_to_exclude)
-
-        self.description = ""
+        self.description = self._get_tracks_func.__doc__ or ""
         self.tracks = []
 
     def get_tracks(self, user):
-        self.tracks = self._get_tracks_func(self, user)
+        self.tracks = self._get_tracks_func(user)
 
     def order_tracks(self, user):
         if not self.tracks:

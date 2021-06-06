@@ -19,22 +19,24 @@ def all_user_tracks(user):
 
 
 def tracks_by_audio_feature(features_filter_func, base=None):  # XXX
-    def get_tracks(playlist, user):
+    def get_tracks(user):
         if base is None:
             all_tracks = all_user_tracks(user)
         else:
-            all_tracks = base(playlist, user)
+            all_tracks = base(user)
         all_features = Track.get_audio_features(all_tracks)
         return [track for track, features in zip(all_tracks, all_features)
                 if features_filter_func(features)]
+
+    get_tracks.__doc__ = "tracks_by_audio_feature(...)"
     return get_tracks
 
 
-def tracks_by_genre_pattern(pattern, display=True):
-    def get_tracks(playlist, user):
+def tracks_by_genre_pattern(pattern, artists_to_exclude=(), display=True):
+    def get_tracks(user):
         artists = (
             artists_of_genres_matching(pattern, user.artists())
-            - playlist.artists_to_exclude
+            - set(artists_to_exclude)
         )
 
         if display:
@@ -42,19 +44,20 @@ def tracks_by_genre_pattern(pattern, display=True):
             for genre in sorted(genres_matching(pattern, artists)):
                 print("*", genre)
             print()
-            print(f"'{playlist.name}' artists:")
+            print(f"'{pattern}' artists:")
             for artist in sorted(artists):
                 print("*", artist)
 
         albums = albums_from_artists(user, artists)
-        playlist.description = pattern
 
         return tracks_from_albums(albums)
+
+    get_tracks.__doc__ = f"tracks_by_genre_pattern({repr(pattern)})"
     return get_tracks
 
 
 def tracks_from_playlist(playlist_id):
-    def get_tracks(playlist, user):
+    def get_tracks(user):
         tracks = []
         items = user.sp.playlist_items(playlist_id)
 
@@ -71,6 +74,8 @@ def tracks_from_playlist(playlist_id):
             items = user.sp.next(items)
 
         return tracks
+
+    get_tracks.__doc__ = f"tracks_from_playlist({repr(playlist_id)})"
     return get_tracks
 
 
