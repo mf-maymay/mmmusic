@@ -20,10 +20,6 @@ playlists = {
         "blues",
         get_tracks_func=tracks_by_genre_pattern("^(?!.*?punk).*blue.*")
     ),
-    "bop": Playlist(
-        "bop",
-        get_tracks_func=tracks_by_genre_pattern(".*bop.*")
-    ),
     "classical": Playlist(
         "classical",
         get_tracks_func=tracks_by_genre_pattern(
@@ -42,14 +38,6 @@ playlists = {
     "escape room": Playlist(
         "escape room",
         get_tracks_func=tracks_by_genre_pattern(".*escape room.*")
-    ),
-    "experimental": Playlist(
-        "experimental",
-        get_tracks_func=tracks_by_genre_pattern(".*experimental.*")
-    ),
-    "folk": Playlist(
-        "folk",
-        get_tracks_func=tracks_by_genre_pattern("^(?!.*?freak).*.*folk.*")
     ),
     "hops": Playlist(
         "hops",
@@ -88,6 +76,10 @@ playlists = {
         "punkish",
         get_tracks_func=tracks_by_genre_pattern(".*punk.*")
     ),
+    "slow": Playlist(
+        "slow",
+        get_tracks_func=tracks_by_genre_pattern(".*slow.*")
+    ),
     "tropical": Playlist(
         "tropical",
         get_tracks_func=tracks_by_genre_pattern(
@@ -120,7 +112,7 @@ playlists = {
     "vocal jazz": Playlist(
         "vocal jazz",
         get_tracks_func=tracks_by_audio_feature(
-            lambda x: x["instrumentalness"] < .6,
+            lambda x: x["instrumentalness"] < .3,
             base=tracks_by_genre_pattern(".*vocal jazz.*")
         )
     ),
