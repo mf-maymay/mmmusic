@@ -18,6 +18,26 @@ def all_user_tracks(user):
     return tracks_from_albums(user.albums())
 
 
+def tracks_by_album_attribute(album_filter_func):  # XXX
+    def get_tracks(user):
+        albums = [album for album in user.albums()
+                  if album_filter_func(album)]
+        return tracks_from_albums(albums)
+
+    get_tracks.__doc__ = "tracks_by_artist_attribute(...)"
+    return get_tracks
+
+
+def tracks_by_artist_attribute(artist_filter_func):  # XXX
+    def get_tracks(user):
+        artists = [artist for artist in user.artists()
+                   if artist_filter_func(artist)]
+        return tracks_from_albums(albums_from_artists(user, artists))
+
+    get_tracks.__doc__ = "tracks_by_artist_attribute(...)"
+    return get_tracks
+
+
 def tracks_by_audio_feature(features_filter_func, base=None):  # XXX
     def get_tracks(user):
         if base is None:
