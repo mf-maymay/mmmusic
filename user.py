@@ -62,6 +62,9 @@ class User(object):
 
         return self._artists
 
+    def __hash__(self):
+        return hash(self._username)
+
 
 if __name__ == "__main__":
     user = User(input("username: "))

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from cache import Cache
 from genres import artists_of_genres_matching
 from track import Track
 
@@ -11,9 +12,10 @@ def albums_from_artists(user, artists):
 
 
 def tracks_from_albums(albums):
-    return [track for album in albums for track in album.tracks()]
+    return tuple(track for album in albums for track in album.tracks())
 
 
+@Cache()
 def all_user_tracks(user):
     return tracks_from_albums(user.albums())
 
