@@ -4,7 +4,7 @@ from random import shuffle
 import numpy as np
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
-from track import Track
+from track import get_audio_features
 
 
 METRICS = ("danceability", "energy", "key", "loudness", "mode",
@@ -108,7 +108,7 @@ def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
 
 
 def smart_shuffle(tracks, user):
-    features = dict(zip(tracks, Track.get_audio_features(tracks)))
+    features = dict(zip(tracks, get_audio_features(tracks)))
     metrics = np.array([[features[track][metric] for metric in METRICS]
                         for track in tracks])
     scores = metrics.copy()  # XXX

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from cache import Cache
 from genres import artists_of_genres_matching
-from track import Track
+from track import Track, get_audio_features, get_tracks_from_albums
 
 
 def albums_from_artists(user, artists):
@@ -11,20 +11,16 @@ def albums_from_artists(user, artists):
     )
 
 
-def tracks_from_albums(albums):
-    return tuple(track for album in albums for track in album.tracks())
-
-
 @Cache()
 def all_user_tracks(user):
-    return tracks_from_albums(user.albums())
+    return get_tracks_from_albums(user.albums())
 
 
 def tracks_by_album_attribute(album_filter_func):  # XXX
     def get_tracks(user):
         albums = [album for album in user.albums()
                   if album_filter_func(album)]
-        return tracks_from_albums(albums)
+        return get_tracks_from_albums(albums)
 
     get_tracks.__doc__ = "tracks_by_artist_attribute(...)"
     return get_tracks
@@ -34,7 +30,7 @@ def tracks_by_artist_attribute(artist_filter_func):  # XXX
     def get_tracks(user):
         artists = [artist for artist in user.artists()
                    if artist_filter_func(artist)]
-        return tracks_from_albums(albums_from_artists(user, artists))
+        return get_tracks_from_albums(albums_from_artists(user, artists))
 
     get_tracks.__doc__ = "tracks_by_artist_attribute(...)"
     return get_tracks
@@ -46,7 +42,7 @@ def tracks_by_audio_feature(features_filter_func, base=None):  # XXX
             all_tracks = all_user_tracks(user)
         else:
             all_tracks = base(user)
-        all_features = Track.get_audio_features(all_tracks)
+        all_features = get_audio_features(all_tracks)
         return [track for track, features in zip(all_tracks, all_features)
                 if features_filter_func(features)]
 
@@ -61,7 +57,7 @@ def tracks_by_genre_pattern(pattern, artists_to_exclude=()):
             - set(artists_to_exclude)
         )
         albums = albums_from_artists(user, artists)
-        return tracks_from_albums(albums)
+        return get_tracks_from_albums(albums)
 
     get_tracks.__doc__ = f"tracks_by_genre_pattern({repr(pattern)})"
     return get_tracks

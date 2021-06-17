@@ -41,16 +41,6 @@ class Track(_Track):
     def clear(cls):
         cls.__new__.clear()
 
-    @classmethod
-    def get_audio_features(cls, tracks):
-        out = []
-        for i in range(len(tracks) // 100 + bool(len(tracks) % 100)):
-            out += no_timeout(cls._sp.audio_features)(
-                tracks=[track if not isinstance(track, Track) else track.id
-                        for track in tracks[i * 100:(i + 1) * 100]]
-            )
-        return out
-
     @no_timeout
     @Cache()
     def audio_features(self):
@@ -72,8 +62,15 @@ class Track(_Track):
         return self.name
 
 
-if __name__ == "__main__":
-    tracks = [
-        Track("0vFabeTqtOtj918sjc5vYo"),
-        Track("id", "name", "album_id", "artist_ids")
-    ]
+def get_audio_features(tracks):
+    out = []
+    for i in range(len(tracks) // 100 + bool(len(tracks) % 100)):
+        out += no_timeout(Track._sp.audio_features)(
+            tracks=[track if not isinstance(track, Track) else track.id
+                    for track in tracks[i * 100:(i + 1) * 100]]
+        )
+    return out
+
+
+def get_tracks_from_albums(albums):
+    return tuple(track for album in albums for track in album.tracks())
