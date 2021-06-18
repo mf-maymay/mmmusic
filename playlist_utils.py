@@ -2,6 +2,7 @@
 from cache import Cache
 from genres import artists_of_genres_matching
 from track import Track, get_audio_features, get_tracks_from_albums
+from utils import no_timeout
 
 
 def albums_from_artists(user, artists):
@@ -66,7 +67,7 @@ def tracks_by_genre_pattern(pattern, artists_to_exclude=()):
 def tracks_from_playlist(playlist_id):
     def get_tracks(user):
         tracks = []
-        items = user.sp.playlist_items(playlist_id)
+        items = no_timeout(user.sp.playlist_items)(playlist_id)
 
         while items:
             tracks.extend(
@@ -78,7 +79,7 @@ def tracks_from_playlist(playlist_id):
                 )
                 for item in items["items"]
             )
-            items = user.sp.next(items)
+            items = no_timeout(user.sp.next)(items)
 
         return tracks
 
