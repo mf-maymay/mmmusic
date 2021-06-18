@@ -6,6 +6,7 @@ from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
 from track import get_audio_features
 
+MAX_SMOOTH_CYCLES = 12
 
 METRICS = ("danceability", "energy", "key", "loudness", "mode",
            "speechiness", "acousticness", "instrumentalness", "liveness",
@@ -122,20 +123,29 @@ def smart_shuffle(tracks, user):
     order = quick_pick(tracks, func)
 
     # playlist smoothing
-    num = len(order)
+    cycle_len = len(order)
 
-    for i in range(4 * num - 2):
+    last_swap = 0
+
+    for i in range(MAX_SMOOTH_CYCLES * cycle_len - 2):
         if _swap_to_smooth(
-            order[i % num],
-            order[(i + 1) % num],
-            order[(i + 2) % num],
+            order[i % cycle_len],
+            order[(i + 1) % cycle_len],
+            order[(i + 2) % cycle_len],
             item_scores=track_scores,
             features=features
         ):
-            order[(i + 1) % num], order[(i + 2) % num] = (
-                order[(i + 2) % num],
-                order[(i + 1) % num]
+            order[(i + 1) % cycle_len], order[(i + 2) % cycle_len] = (
+                order[(i + 2) % cycle_len],
+                order[(i + 1) % cycle_len]
             )
+            last_swap = i
+
+        elif i - last_swap > cycle_len:
+            print(f"final swap after {i // cycle_len} cycles")
+            break
+    else:
+        print("max smooth cycles reached")
 
     return order
 
