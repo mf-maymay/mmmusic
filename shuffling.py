@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from functools import partial
-from random import shuffle
 import numpy as np
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
@@ -11,6 +10,8 @@ MAX_SMOOTH_CYCLES = 12
 METRICS = ("danceability", "energy", "key", "loudness", "mode",
            "speechiness", "acousticness", "instrumentalness", "liveness",
            "valence", "tempo")
+
+shuffle = np.random.default_rng().shuffle
 
 
 def quick_pick(items: list, add_to_left: callable) -> list:
