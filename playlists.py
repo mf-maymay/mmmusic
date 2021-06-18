@@ -31,10 +31,6 @@ playlists = {
         "countryish",
         get_tracks_func=tracks_by_genre_pattern(".*(americana|country|cow).*")
     ),
-    "emo": Playlist(
-        "emo",
-        get_tracks_func=tracks_by_genre_pattern(".*emo.*")
-    ),
     "escape room": Playlist(
         "escape room",
         get_tracks_func=tracks_by_genre_pattern(".*escape room.*")
@@ -60,10 +56,6 @@ playlists = {
     "metal": Playlist(
         "metal",
         get_tracks_func=tracks_by_genre_pattern(".*(doom|metal|zeuhl).*")
-    ),
-    "noise": Playlist(
-        "noise",
-        get_tracks_func=tracks_by_genre_pattern(".*noise.*")
     ),
     "oblivion": Playlist(
         "oblivion",
@@ -99,38 +91,6 @@ playlists = {
     "low-valence": Playlist(
         "low-valence",
         get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= .1)
-    ),
-    "sad jazz": Playlist(
-        "sad jazz",
-        get_tracks_func=tracks_by_audio_feature(
-            lambda x: x["valence"] <= .25,
-            base=tracks_by_genre_pattern(
-                "^(?!.*?(dark|nu|jazz metal|jazz rap|jazztronica)).*jazz.*"
-            )
-        )
-    ),
-    "vocal jazz": Playlist(
-        "vocal jazz",
-        get_tracks_func=tracks_by_audio_feature(
-            lambda x: x["instrumentalness"] < .3,
-            base=tracks_by_genre_pattern(".*vocal jazz.*")
-        )
-    ),
-    "q, shuffled": Playlist(
-        "q, shuffled",
-        get_tracks_func=tracks_from_playlist("7DOqATuWsl640ustK8lhhI")
-    ),
-    "q - harder, shuffled": Playlist(
-        "q - harder, shuffled",
-        get_tracks_func=tracks_from_playlist("5mRa71QUmE6EWavxTA22g6")
-    ),
-    "q - hip hop, shuffled": Playlist(
-        "q - hip hop, shuffled",
-        get_tracks_func=tracks_from_playlist("0sFhYQaTiuZlG1vMDSiFMR")
-    ),
-    "q - jazz, shuffled": Playlist(
-        "q - jazz, shuffled",
-        get_tracks_func=tracks_from_playlist("4HQnus8hcLfX5pYtG95pKY")
     )
 }
 
