@@ -26,8 +26,12 @@ user = User(input("username: "))
 user.setup_sp(scope="playlist-modify-private")
 
 
-# TODO: dump flush
+# Identify playlists for tracks
 dump_tracks = tracks_from_playlist(DUMP_ID)(user)
+
+print(f"Found {len(dump_tracks)} tracks in 'dump'")
+print("Identifying playlists for tracks ...")
+
 dump_frame = pd.DataFrame(dump_tracks)
 dump_frame["album"] = [Album(x) for x in dump_frame["album_id"]]
 dump_frame["genres"] = [
@@ -38,6 +42,7 @@ dump_frame["genres"] = [
     for album in dump_frame["album"]
 ]
 dump_frame["playlist"] = None
+
 for q, pattern in Q_PATTERNS:
     compiled = re.compile(pattern)
     dump_frame["playlist"] = [
@@ -47,10 +52,28 @@ for q, pattern in Q_PATTERNS:
         for playlist, genres in zip(dump_frame["playlist"],
                                     dump_frame["genres"])
     ]
+    print(f"Identified '{q}' tracks")
+
 dump_frame.loc[dump_frame["playlist"].isna(), "playlist"] = "q - misc"
+print("Identified 'q - misc' tracks")
 
 
-# remove already-saved items from q playlists
+# Add tracks to playlists
+for q, q_id in Q_IDS.items():
+    tracks = dump_frame.loc[dump_frame["playlist"] == q, "id"].values
+    print(f"Adding {len(tracks)} tracks to '{q}' ...")
+    for i in range(ceil(len(tracks) / 100)):
+        to_add = [track for track in tracks[(100 * i):(100 * (i + 1))]]
+        user.sp.user_playlist_add_tracks(
+            user._username,
+            q_id,
+            to_add
+        )
+    print(f"Added tracks to '{q}' ...")
+
+
+# Remove already-saved tracks from playlists
+print("Identifying saved tracks ...")
 user_tracks = set(all_user_tracks(user))
 
 q_tracks = {
@@ -60,13 +83,15 @@ q_tracks = {
 
 for q, q_id in Q_IDS.items():
     tracks = [track.id for track in q_tracks[q] & user_tracks]
+    print(f"Removing {len(tracks)} saved tracks from '{q}' ...")
     for i in range(ceil(len(tracks) / 100)):
         to_remove = tracks[(100 * i):(100 * (i + 1))]
-        user.sp.playlist_remove_all_occurrences_of_items(
+        user.sp.user_playlist_remove_all_occurrences_of_tracks(
+            user._username,
             q_id,
             to_remove
         )
     print(f"Cleaned '{q}'")
 
 
-# TODO: shuffle q playlists
+# TODO: Shuffle playlists
