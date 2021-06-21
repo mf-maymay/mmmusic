@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from math import ceil
 from cache import Cache
 from genres import artists_of_genres_matching
+from shuffling import smart_shuffle
 from track import Track, get_audio_features, get_tracks_from_albums
 from utils import no_timeout
 
@@ -85,3 +87,26 @@ def tracks_from_playlist(playlist_id):
 
     get_tracks.__doc__ = f"tracks_from_playlist({repr(playlist_id)})"
     return get_tracks
+
+
+def shuffle_playlist(user, playlist_id):
+    # get tracks
+    tracks = tracks_from_playlist(playlist_id)(user)
+    # clear playlist
+    for i in range(ceil(len(tracks) / 100)):
+        to_remove = [track.id for track in tracks[(100 * i):(100 * (i + 1))]]
+        no_timeout(user.sp.user_playlist_remove_all_occurrences_of_tracks)(
+            user._username,
+            playlist_id,
+            to_remove
+        )
+    # shuffle tracks
+    shuffled = smart_shuffle(tracks, user)
+    # write back to playlist
+    for i in range(ceil(len(shuffled) / 100)):
+        to_add = [track.id for track in shuffled[(100 * i):(100 * (i + 1))]]
+        no_timeout(user.sp.user_playlist_add_tracks)(
+            user._username,
+            playlist_id,
+            to_add
+        )
