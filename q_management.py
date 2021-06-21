@@ -4,7 +4,11 @@ import re
 import pandas as pd
 from album import Album
 from artist import Artist
-from playlist_utils import all_user_tracks, tracks_from_playlist
+from playlist_utils import (
+    all_user_tracks,
+    shuffle_playlist,
+    tracks_from_playlist
+)
 from user import User
 
 DUMP_ID = "5AZxg3qZIC7cGnxWa7EuSd"
@@ -105,4 +109,8 @@ for q, q_id in Q_IDS.items():
     print(f"Cleaned '{q}'")
 
 
-# TODO: Shuffle playlists
+# Shuffle playlists
+for q, q_id in Q_IDS.items():
+    print(f"Shuffling '{q}' ...")
+    shuffle_playlist(user, q_id)
+    print(f"Shuffled '{q}'")
