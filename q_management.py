@@ -60,10 +60,10 @@ print("Identified 'q - misc' tracks")
 
 # Add tracks to playlists
 for q, q_id in Q_IDS.items():
-    tracks = dump_frame.loc[dump_frame["playlist"] == q, "id"].values
+    tracks = list(dump_frame.loc[dump_frame["playlist"] == q, "id"].values)
     print(f"Adding {len(tracks)} tracks to '{q}' ...")
     for i in range(ceil(len(tracks) / 100)):
-        to_add = [track for track in tracks[(100 * i):(100 * (i + 1))]]
+        to_add = tracks[(100 * i):(100 * (i + 1))]
         user.sp.user_playlist_add_tracks(
             user._username,
             q_id,
@@ -71,6 +71,17 @@ for q, q_id in Q_IDS.items():
         )
     print(f"Added tracks to '{q}' ...")
 
+
+# Clear dump
+print("Clearing dump ...")
+for i in range(ceil(len(dump_tracks) / 100)):
+    to_remove = [track.id for track in dump_tracks[(100 * i):(100 * (i + 1))]]
+    user.sp.user_playlist_remove_all_occurrences_of_tracks(
+        user._username,
+        DUMP_ID,
+        to_remove
+    )
+print("Cleared dump")
 
 # Remove already-saved tracks from playlists
 print("Identifying saved tracks ...")
