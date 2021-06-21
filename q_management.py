@@ -17,13 +17,15 @@ Q_IDS = {
     "q - harder": "5mRa71QUmE6EWavxTA22g6",
     "q - hop": "0sFhYQaTiuZlG1vMDSiFMR",
     "q - jazz": "4HQnus8hcLfX5pYtG95pKY",
-    "q - misc": "7DOqATuWsl640ustK8lhhI"
+    "q - misc": "7DOqATuWsl640ustK8lhhI",
+    "q - rock": "1tlzpLpRdQXUicLbhIJMcM"
 }
 
 Q_PATTERNS = [
     ("q - hop", ".*hop.*"),
     ("q - harder", ".*(core|doom|metal|punk).*"),
-    ("q - jazz", ".*jazz.*")
+    ("q - jazz", ".*jazz.*"),
+    ("q - rock", ".*rock.*")
 ]
 
 user = User(input("username: "))
