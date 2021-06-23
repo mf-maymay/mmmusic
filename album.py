@@ -10,7 +10,7 @@ ALBUM_FIELDS = ("id", "name", "artist_ids")
 
 
 def _album_cache_key_func(cls, album_id=None, *, info=None):
-    if isinstance(album_id, Album):  # XXX: Album reference before definition?
+    if isinstance(album_id, cls):
         return album_id.id
     if info is None:
         return album_id
@@ -47,7 +47,7 @@ class Album(object):
     @no_timeout
     def full_response(cls, album_id):
         return cls._sp.album(
-            album_id if not isinstance(album_id, Album) else album_id.id
+            album_id if not isinstance(album_id, cls) else album_id.id
         )
 
     @Cache()
