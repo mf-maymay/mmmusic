@@ -36,67 +36,72 @@ user.setup_sp(scope="playlist-modify-private")
 dump_tracks = tracks_from_playlist(DUMP_ID)(user)
 
 print(f"Found {len(dump_tracks)} tracks in 'dump'")
-print("Identifying playlists for tracks ...")
 
-dump_frame = pd.DataFrame(dump_tracks)
-dump_frame["album"] = [Album(x) for x in dump_frame["album_id"]]
-dump_frame["genres"] = [
-    tuple(sorted(set(
-        genre for artist_id in album.artist_ids
-        for genre in Artist(artist_id).genres
-    )))
-    for album in dump_frame["album"]
-]
-dump_frame["playlist"] = None
+if dump_tracks:
+    print("Identifying playlists for tracks ...")
 
-for q, pattern in Q_PATTERNS:
-    compiled = re.compile(pattern)
-    dump_frame["playlist"] = [
-        playlist if pd.notna(playlist)
-        else q if any(map(compiled.fullmatch, genres))
-        else None
-        for playlist, genres in zip(dump_frame["playlist"],
-                                    dump_frame["genres"])
+    dump_frame = pd.DataFrame(dump_tracks)
+    dump_frame["album"] = [Album(x) for x in dump_frame["album_id"]]
+    dump_frame["genres"] = [
+        tuple(sorted(set(
+            genre for artist_id in album.artist_ids
+            for genre in Artist(artist_id).genres
+        )))
+        for album in dump_frame["album"]
     ]
-    print(f"Identified '{q}' tracks")
+    dump_frame["playlist"] = None
 
-dump_frame.loc[dump_frame["playlist"].isna(), "playlist"] = "q - misc"
-print("Identified 'q - misc' tracks")
+    for q, pattern in Q_PATTERNS:
+        compiled = re.compile(pattern)
+        dump_frame["playlist"] = [
+            playlist if pd.notna(playlist)
+            else q if any(map(compiled.fullmatch, genres))
+            else None
+            for playlist, genres in zip(dump_frame["playlist"],
+                                        dump_frame["genres"])
+        ]
+        print(f"Identified '{q}' tracks")
 
+    dump_frame.loc[dump_frame["playlist"].isna(), "playlist"] = "q - misc"
+    print("Identified 'q - misc' tracks")
 
-# Add tracks to playlists
-for q, q_id in Q_IDS.items():
-    tracks = list(dump_frame.loc[dump_frame["playlist"] == q, "id"].values)
-    print(f"Adding {len(tracks)} tracks to '{q}' ...")
-    for i in range(ceil(len(tracks) / 100)):
-        to_add = tracks[(100 * i):(100 * (i + 1))]
-        user.sp.user_playlist_add_tracks(
+    # Add tracks to playlists
+    for q, q_id in Q_IDS.items():
+        tracks = list(dump_frame.loc[dump_frame["playlist"] == q, "id"].values)
+        print(f"Adding {len(tracks)} tracks to '{q}' ...")
+        for i in range(ceil(len(tracks) / 100)):
+            to_add = tracks[(100 * i):(100 * (i + 1))]
+            user.sp.user_playlist_add_tracks(
+                user._username,
+                q_id,
+                to_add
+            )
+        print(f"Added tracks to '{q}' ...")
+
+    # Clear dump
+    print("Clearing dump ...")
+    for i in range(ceil(len(dump_tracks) / 100)):
+        to_remove = [
+            track.id for track in dump_tracks[(100 * i):(100 * (i + 1))]
+        ]
+        user.sp.user_playlist_remove_all_occurrences_of_tracks(
             user._username,
-            q_id,
-            to_add
+            DUMP_ID,
+            to_remove
         )
-    print(f"Added tracks to '{q}' ...")
-
-
-# Clear dump
-print("Clearing dump ...")
-for i in range(ceil(len(dump_tracks) / 100)):
-    to_remove = [track.id for track in dump_tracks[(100 * i):(100 * (i + 1))]]
-    user.sp.user_playlist_remove_all_occurrences_of_tracks(
-        user._username,
-        DUMP_ID,
-        to_remove
-    )
-print("Cleared dump")
+    print("Cleared dump")
 
 # Remove already-saved tracks from playlists
 print("Identifying saved tracks ...")
+user.setup_sp(scope="user-library-read")
 user_tracks = set(all_user_tracks(user))
 
 q_tracks = {
     q: set(tracks_from_playlist(q_id)(user))
     for q, q_id in Q_IDS.items()
 }
+
+user.setup_sp(scope="playlist-modify-private")
 
 for q, q_id in Q_IDS.items():
     tracks = [track.id for track in q_tracks[q] & user_tracks]
