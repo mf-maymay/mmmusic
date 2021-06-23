@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from collections import namedtuple
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from cache import Cache
@@ -7,35 +6,42 @@ from track import Track
 from utils import no_timeout
 
 
-_Album = namedtuple("_Album", ("id", "name", "artist_ids"))
+ALBUM_FIELDS = ("id", "name", "artist_ids")
 
 
-class Album(_Album):
-    __slots__ = ()
+def _album_cache_key_func(cls, album_id=None, *, info=None):
+    if isinstance(album_id, Album):  # XXX: Album reference before definition?
+        return album_id.id
+    if info is None:
+        return album_id
+    return info["id"]
+
+
+class Album(object):
+    __slots__ = (*ALBUM_FIELDS, "info")
 
     _sp = spotipy.Spotify(
         client_credentials_manager=SpotifyClientCredentials()
     )
 
-    _use_name_for_repr = False  # Use to replace namedtuple's repr with name.
+    _use_name_for_repr = False  # Use to replace default repr with name.
 
-    @Cache(key_func=lambda *args, **kwargs:  # Let kwargs fail in __new__.
-           args[1] if len(args) == 2 else args[1:])
-    def __new__(cls, album_id, *args):
-        if not args:
-            if isinstance(album_id, Album):
-                return album_id  # Album(Album(x)) == Album(x)
+    def __init__(self, album_id=None, *, info=None):
+        self.info = info if info else self.full_response(album_id)
 
-            album = cls.full_response(album_id)
+        self.id = self.info["id"]
 
-            return super().__new__(cls,
-                                   album_id,
-                                   album["name"],
-                                   tuple(artist["id"]
-                                         for artist in album["artists"])
-                                   )
+        self.name = self.info["name"]
 
-        return super().__new__(cls, album_id, *args)
+        self.artist_ids = tuple(
+            artist["id"] for artist in self.info["artists"]
+        )
+
+    @Cache(key_func=_album_cache_key_func)
+    def __new__(cls, album_id=None, *, info=None):  # TODO: kwargs
+        if album_id is None and info is None:
+            raise ValueError("Must supply either album_id or info")
+        return super().__new__(cls)
 
     @classmethod
     def clear(cls):
@@ -43,18 +49,17 @@ class Album(_Album):
 
     @classmethod
     @no_timeout
-    @Cache()
     def full_response(cls, album_id):
-        return cls._sp.album(album_id if not isinstance(album_id, Album)
-                             else album_id.id)
+        return cls._sp.album(
+            album_id if not isinstance(album_id, Album) else album_id.id
+        )
 
     def release_date(self):
-        return self.full_response(self)["release_date"]
+        return self.info["release_date"]
 
     @Cache()
     def tracks(self):
-        return [Track(item["id"])
-                for item in self.full_response(self)["tracks"]["items"]]
+        return [Track(item["id"]) for item in self.info["tracks"]["items"]]
 
     def __eq__(self, other):
         return hash(self) == hash(other)
@@ -66,16 +71,21 @@ class Album(_Album):
         return self.name < str(other)
 
     def __repr__(self):
-        return self.name if self._use_name_for_repr else super().__repr__()
+        return (
+            self.name if self._use_name_for_repr
+            else "Album({})".format(
+                ", ".join(
+                    "{}={}".format(field, repr(getattr(self, field)))
+                    for field in ALBUM_FIELDS
+                )
+            )
+        )
 
     def __str__(self):
         return self.name
 
 
 if __name__ == "__main__":
-    albums = [
-        Album("2w1YJXWMIco6EBf0CovvVN"),
-        Album("id", "name", "artist_ids")
-    ]
+    album = Album("2w1YJXWMIco6EBf0CovvVN")
 
-    tracks = albums[0].tracks()
+    tracks = album.tracks()

@@ -34,13 +34,7 @@ class User(object):
         albums = self.sp.current_user_saved_albums(limit=50, offset=0)
 
         while albums:
-            saved.extend(
-                Album(album["album"]["id"],
-                      album["album"]["name"],
-                      tuple(artist["id"]
-                            for artist in album["album"]["artists"]))
-                for album in albums["items"]
-            )
+            saved.extend(Album(info=item["album"]) for item in albums["items"])
 
             albums = self.sp.next(albums)
 
