@@ -44,18 +44,11 @@ class Album(object):
         return super().__new__(cls)
 
     @classmethod
-    def clear(cls):
-        cls.__new__.clear()
-
-    @classmethod
     @no_timeout
     def full_response(cls, album_id):
         return cls._sp.album(
             album_id if not isinstance(album_id, Album) else album_id.id
         )
-
-    def release_date(self):
-        return self.info["release_date"]
 
     @Cache()
     def tracks(self):
