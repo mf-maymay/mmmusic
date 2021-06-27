@@ -52,7 +52,10 @@ class Album(object):
 
     @Cache()
     def tracks(self):
-        return [Track(item["id"]) for item in self.info["tracks"]["items"]]
+        return [
+            Track(info={**item, "album": self.info})
+            for item in self.info["tracks"]["items"]
+        ]
 
     def __eq__(self, other):
         return hash(self) == hash(other)
