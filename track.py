@@ -1,45 +1,55 @@
 # -*- coding: utf-8 -*-
-from collections import namedtuple
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from cache import Cache
 from utils import no_timeout
 
 
-_Track = namedtuple("_Track", ("id", "name", "album_id", "artist_ids"))
+TRACK_FIELDS = ("id", "name", "album_id", "artist_ids")
 
 
-class Track(_Track):
-    __slots__ = ()
+def _cache_key(cls, id=None, *, info=None):
+    if isinstance(id, cls):
+        return id
+    if info is None:
+        return id
+    return info["id"]
+
+
+class Track(object):
+    __slots__ = (*TRACK_FIELDS, "info")
 
     _sp = spotipy.Spotify(
         client_credentials_manager=SpotifyClientCredentials()
     )
 
-    _use_name_for_repr = False  # Use to replace namedtuple's repr with name.
+    _use_name_for_repr = False  # Use to replace default repr with name.
 
-    @Cache(key_func=lambda *args, **kwargs:  # Let kwargs fail in __new__.
-           args[1] if len(args) == 2 else args[1:])
-    def __new__(cls, track_id, *args):
-        if not args:
-            if isinstance(track_id, Track):
-                return track_id  # Track(Track(x)) == Track(x)
+    def __init__(self, track_id=None, *, info=None):
+        self.info = info if info else self.full_response(track_id)
 
-            track = no_timeout(cls._sp.track)(track_id)
+        self.id = self.info["id"]
 
-            return super().__new__(cls,
-                                   track_id,
-                                   track["name"],
-                                   track["album"]["id"],
-                                   tuple(artist["id"]
-                                         for artist in track["artists"])
-                                   )
+        self.name = self.info["name"]
 
-        return super().__new__(cls, track_id, *args)
+        self.album_id = self.info["album"]["id"]
+
+        self.artist_ids = tuple(
+            artist["id"] for artist in self.info["artists"]
+        )
+
+    @Cache(key_func=_cache_key)
+    def __new__(cls, track_id=None, *, info=None):  # TODO: kwargs
+        if track_id is None and info is None:
+            raise ValueError("Must supply either track_id or info")
+        return super().__new__(cls)
 
     @classmethod
-    def clear(cls):
-        cls.__new__.clear()
+    @no_timeout
+    def full_response(cls, track_id):
+        return cls._sp.track(
+            track_id if not isinstance(track_id, cls) else track_id.id
+        )
 
     @no_timeout
     @Cache()
@@ -56,7 +66,15 @@ class Track(_Track):
         return self.name < str(other)
 
     def __repr__(self):
-        return self.name if self._use_name_for_repr else super().__repr__()
+        return (
+            self.name if self._use_name_for_repr
+            else "Track({})".format(
+                ", ".join(
+                    "{}={}".format(field, repr(getattr(self, field)))
+                    for field in TRACK_FIELDS
+                )
+            )
+        )
 
     def __str__(self):
         return self.name

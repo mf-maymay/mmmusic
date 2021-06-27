@@ -40,8 +40,13 @@ print(f"Found {len(dump_tracks)} tracks in 'dump'")
 if dump_tracks:
     print("Identifying playlists for tracks ...")
 
-    dump_frame = pd.DataFrame(dump_tracks)
-    dump_frame["album"] = [Album(x) for x in dump_frame["album_id"]]
+    dump_frame = pd.DataFrame()
+    dump_frame["track"] = dump_tracks
+    dump_frame["id"] = [track.id for track in dump_frame["track"]]
+    dump_frame["album"] = [
+        Album(track.album_id)
+        for track in dump_frame["track"]
+    ]
     dump_frame["genres"] = [
         tuple(sorted(set(
             genre for artist_id in album.artist_ids
