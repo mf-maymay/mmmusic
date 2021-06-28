@@ -2,9 +2,9 @@
 from playlist import Playlist
 from playlist_utils import (
     all_user_tracks,
+    tracks_by_artist_attribute,
     tracks_by_audio_feature,
-    tracks_by_genre_pattern,
-    tracks_from_playlist
+    tracks_by_genre_pattern
 )
 
 playlists = {
@@ -84,13 +84,21 @@ playlists = {
             lambda x: x["danceability"] >= .75
         )
     ),
-    "high-energy": Playlist(
-        "high-energy",
-        get_tracks_func=tracks_by_audio_feature(lambda x: x["energy"] >= .9)
-    ),
     "low-valence": Playlist(
         "low-valence",
         get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= .1)
+    ),
+    "popular": Playlist(
+        "popular",
+        get_tracks_func=tracks_by_artist_attribute(
+            lambda x: x.popularity >= 70
+        )
+    ),
+    "unpopular": Playlist(
+        "unpopular",
+        get_tracks_func=tracks_by_artist_attribute(
+            lambda x: x.popularity <= 30
+        )
     )
 }
 
