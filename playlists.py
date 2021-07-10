@@ -12,13 +12,13 @@ playlists = {
         "ALL",
         get_tracks_func=all_user_tracks
     ),
-    "black": Playlist(
-        "black",
-        get_tracks_func=tracks_by_genre_pattern(".*black.*")
+    "afr": Playlist(
+        "afr",
+        get_tracks_func=tracks_by_genre_pattern(".*afr.*")
     ),
-    "blues": Playlist(
-        "blues",
-        get_tracks_func=tracks_by_genre_pattern("^(?!.*?punk).*blue.*")
+    "black metal": Playlist(
+        "black metal",
+        get_tracks_func=tracks_by_genre_pattern(".*black.*")
     ),
     "classical": Playlist(
         "classical",
@@ -41,7 +41,7 @@ playlists = {
     ),
     "indie": Playlist(
         "indie",
-        get_tracks_func=tracks_by_genre_pattern(".*indie.*")
+        get_tracks_func=tracks_by_genre_pattern("^(?!.*?hip hop).*indie.*")
     ),
     "japan": Playlist(
         "japan",
@@ -64,13 +64,13 @@ playlists = {
             "world).*"
         )
     ),
+    "post-rock": Playlist(
+        "post-rock",
+        get_tracks_func=tracks_by_genre_pattern(".*post-rock.*")
+    ),
     "punkish": Playlist(
         "punkish",
         get_tracks_func=tracks_by_genre_pattern(".*punk.*")
-    ),
-    "slow": Playlist(
-        "slow",
-        get_tracks_func=tracks_by_genre_pattern(".*slow.*")
     ),
     "tropical": Playlist(
         "tropical",
@@ -78,20 +78,20 @@ playlists = {
             ".*(brazil|latin|mpb|reggae).*"
         )
     ),
-    "high-danceability": Playlist(
-        "high-danceability",
+    "good vibes": Playlist(
+        "good vibes",
         get_tracks_func=tracks_by_audio_feature(
-            lambda x: x["danceability"] >= .75
+            lambda x: x["danceability"] >= .6 and x["valence"] >= .75
         )
     ),
     "low-valence": Playlist(
         "low-valence",
-        get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= .1)
+        get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= .05)
     ),
     "popular": Playlist(
         "popular",
         get_tracks_func=tracks_by_artist_attribute(
-            lambda x: x.popularity >= 70
+            lambda x: x.popularity >= 75
         )
     ),
     "unpopular": Playlist(
