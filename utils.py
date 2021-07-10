@@ -18,7 +18,7 @@ def no_timeout(func):
     return wrapped
 
 
-def record_calls(func):
+def record_calls(func):  # TODO: delete?
     @wraps(func)
     def wrapped(*args, **kwargs):
         args_list = ", ".join([repr(arg) for arg in args] +
@@ -27,3 +27,9 @@ def record_calls(func):
         print(f"{func.__name__}({args_list})")
         return func(*args, **kwargs)
     return wrapped
+
+
+def take_x_at_a_time(sequence, x):
+    quotient, remainder = divmod(len(sequence), x)
+    for i in range(quotient + bool(remainder)):
+        yield sequence[i * x:(i + 1) * x]

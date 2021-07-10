@@ -2,7 +2,7 @@
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from cache import Cache
-from utils import no_timeout
+from utils import no_timeout, take_x_at_a_time
 
 
 TRACK_FIELDS = ("id", "name", "album_id", "artist_ids")
@@ -82,10 +82,10 @@ class Track(object):
 
 def get_audio_features(tracks):
     out = []
-    for i in range(len(tracks) // 100 + bool(len(tracks) % 100)):
+    for subset in take_x_at_a_time(tracks, 100):
         out += no_timeout(Track._sp.audio_features)(
             tracks=[track if not isinstance(track, Track) else track.id
-                    for track in tracks[i * 100:(i + 1) * 100]]
+                    for track in subset]
         )
     return out
 

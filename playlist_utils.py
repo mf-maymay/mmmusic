@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from math import ceil
 from cache import Cache
 from genres import artists_of_genres_matching
 from shuffling import smart_shuffle
 from track import Track, get_audio_features, get_tracks_from_albums
-from utils import no_timeout
+from utils import no_timeout, take_x_at_a_time
 
 
 def albums_from_artists(user, artists):
@@ -85,8 +84,8 @@ def shuffle_playlist(user, playlist_id):
     # get tracks
     tracks = tracks_from_playlist(playlist_id)(user)
     # clear playlist
-    for i in range(ceil(len(tracks) / 100)):
-        to_remove = [track.id for track in tracks[(100 * i):(100 * (i + 1))]]
+    for subset in take_x_at_a_time(tracks, 100):
+        to_remove = [track.id for track in subset]
         no_timeout(user.sp.user_playlist_remove_all_occurrences_of_tracks)(
             user._username,
             playlist_id,
@@ -95,8 +94,8 @@ def shuffle_playlist(user, playlist_id):
     # shuffle tracks
     shuffled = smart_shuffle(tracks, user)
     # write back to playlist
-    for i in range(ceil(len(shuffled) / 100)):
-        to_add = [track.id for track in shuffled[(100 * i):(100 * (i + 1))]]
+    for subset in take_x_at_a_time(shuffled, 100):
+        to_add = [track.id for track in subset]
         no_timeout(user.sp.user_playlist_add_tracks)(
             user._username,
             playlist_id,
