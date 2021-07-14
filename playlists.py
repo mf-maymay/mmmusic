@@ -2,6 +2,7 @@
 from playlist import Playlist
 from playlist_utils import (
     all_user_tracks,
+    tracks_by_album_attribute,
     tracks_by_artist_attribute,
     tracks_by_audio_feature,
     tracks_by_genre_pattern
@@ -98,6 +99,36 @@ playlists = {
         "unpopular",
         get_tracks_func=tracks_by_artist_attribute(
             lambda x: x.popularity <= 30
+        )
+    ),
+    "1970s": Playlist(
+        "1970s",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: x.info["release_date"].startswith("197")
+        )
+    ),
+    "1980s": Playlist(
+        "1980s",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: x.info["release_date"].startswith("198")
+        )
+    ),
+    "1990s": Playlist(
+        "1990s",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: x.info["release_date"].startswith("199")
+        )
+    ),
+    "2000s": Playlist(
+        "2000s",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: x.info["release_date"].startswith("200")
+        )
+    ),
+    "2010s": Playlist(
+        "2010s",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: x.info["release_date"].startswith("201")
         )
     )
 }
