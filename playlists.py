@@ -6,6 +6,7 @@ from playlist_utils import (
     tracks_by_artist_attribute,
     tracks_by_audio_feature,
     tracks_by_genre_pattern,
+    tracks_by_track_attribute,
 )
 
 playlists = {
@@ -75,11 +76,11 @@ playlists = {
         ),
     ),
     "popular artists": Playlist(
-        "popular",
+        "popular artists",
         get_tracks_func=tracks_by_artist_attribute(lambda x: x.popularity >= 75),
     ),
     "unpopular artists": Playlist(
-        "unpopular",
+        "unpopular artists",
         get_tracks_func=tracks_by_artist_attribute(lambda x: x.popularity <= 25),
     ),
     "1970s": Playlist(
@@ -121,12 +122,16 @@ if __name__ == "__main__":
     user = User(input("username: "))
     print()
 
-    for key, playlist in playlists.items():
+    to_create = sorted(playlists)
+
+    for key in to_create:
+        playlist = playlists[key]
         print(f"Getting '{playlist.name}' tracks ...")
         playlist.get_tracks(user)
         print(f"Ordering '{playlist.name}' tracks ...")
         playlist.order_tracks(user)
         print()
 
-    for key, playlist in sorted(playlists.items(), reverse=True):
+    for key in to_create:
+        playlist = playlists[key]
         playlist.create(user, confirm=True)
