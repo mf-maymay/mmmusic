@@ -13,14 +13,6 @@ playlists = {
         "ALL",
         get_tracks_func=all_user_tracks
     ),
-    "afr": Playlist(
-        "afr",
-        get_tracks_func=tracks_by_genre_pattern(".*afr.*")
-    ),
-    "black metal": Playlist(
-        "black metal",
-        get_tracks_func=tracks_by_genre_pattern(".*black.*")
-    ),
     "classical": Playlist(
         "classical",
         get_tracks_func=tracks_by_genre_pattern(
@@ -36,9 +28,9 @@ playlists = {
         "escape room",
         get_tracks_func=tracks_by_genre_pattern(".*escape room.*")
     ),
-    "hops": Playlist(
-        "hops",
-        get_tracks_func=tracks_by_genre_pattern(".*hop.*")
+    "hip hop": Playlist(
+        "hip hop",
+        get_tracks_func=tracks_by_genre_pattern(".*hip hop.*")
     ),
     "indie": Playlist(
         "indie",
@@ -87,48 +79,57 @@ playlists = {
     ),
     "low-valence": Playlist(
         "low-valence",
-        get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= .05)
+        get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= .04)
     ),
-    "popular": Playlist(
+    "studying": Playlist(
+        "studying",
+        get_tracks_func=tracks_by_audio_feature(
+            lambda x:
+                x["instrumentalness"] >= .8
+                and x["energy"] <= .5
+                and x["tempo"] <= 120
+        )
+    ),
+    "popular artists": Playlist(
         "popular",
         get_tracks_func=tracks_by_artist_attribute(
             lambda x: x.popularity >= 75
         )
     ),
-    "unpopular": Playlist(
+    "unpopular artists": Playlist(
         "unpopular",
         get_tracks_func=tracks_by_artist_attribute(
-            lambda x: x.popularity <= 30
+            lambda x: x.popularity <= 25
         )
     ),
     "1970s": Playlist(
         "1970s",
         get_tracks_func=tracks_by_album_attribute(
-            lambda x: x.info["release_date"].startswith("197")
+            lambda x: x["release_date"].startswith("197")
         )
     ),
     "1980s": Playlist(
         "1980s",
         get_tracks_func=tracks_by_album_attribute(
-            lambda x: x.info["release_date"].startswith("198")
+            lambda x: x["release_date"].startswith("198")
         )
     ),
     "1990s": Playlist(
         "1990s",
         get_tracks_func=tracks_by_album_attribute(
-            lambda x: x.info["release_date"].startswith("199")
+            lambda x: x["release_date"].startswith("199")
         )
     ),
     "2000s": Playlist(
         "2000s",
         get_tracks_func=tracks_by_album_attribute(
-            lambda x: x.info["release_date"].startswith("200")
+            lambda x: x["release_date"].startswith("200")
         )
     ),
     "2010s": Playlist(
         "2010s",
         get_tracks_func=tracks_by_album_attribute(
-            lambda x: x.info["release_date"].startswith("201")
+            lambda x: x["release_date"].startswith("201")
         )
     )
 }
