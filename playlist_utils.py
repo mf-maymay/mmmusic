@@ -8,9 +8,7 @@ from utils import no_timeout, take_x_at_a_time
 
 def albums_from_artists(user, artists):
     artists = set(artists)
-    return sorted(
-        {album for album in user.albums() if set(album.artist_ids) & artists}
-    )
+    return sorted({album for album in user.albums() if set(album.artist_ids) & artists})
 
 
 @Cache()
@@ -20,8 +18,7 @@ def all_user_tracks(user):
 
 def tracks_by_album_attribute(album_filter_func):  # XXX
     def get_tracks(user):
-        albums = [album for album in user.albums()
-                  if album_filter_func(album)]
+        albums = [album for album in user.albums() if album_filter_func(album)]
         return get_tracks_from_albums(albums)
 
     get_tracks.__doc__ = "tracks_by_artist_attribute(...)"
@@ -30,11 +27,22 @@ def tracks_by_album_attribute(album_filter_func):  # XXX
 
 def tracks_by_artist_attribute(artist_filter_func):  # XXX
     def get_tracks(user):
-        artists = [artist for artist in user.artists()
-                   if artist_filter_func(artist)]
+        artists = [artist for artist in user.artists() if artist_filter_func(artist)]
         return get_tracks_from_albums(albums_from_artists(user, artists))
 
     get_tracks.__doc__ = "tracks_by_artist_attribute(...)"
+    return get_tracks
+
+
+def tracks_by_track_attribute(track_filter_func, base=None):  # XXX
+    def get_tracks(user):
+        if base is None:
+            all_tracks = all_user_tracks(user)
+        else:
+            all_tracks = base(user)
+        return [track for track in all_tracks if track_filter_func(track)]
+
+    get_tracks.__doc__ = "tracks_by_track_attribute(...)"
     return get_tracks
 
 
@@ -45,8 +53,11 @@ def tracks_by_audio_feature(features_filter_func, base=None):  # XXX
         else:
             all_tracks = base(user)
         all_features = get_audio_features(all_tracks)
-        return [track for track, features in zip(all_tracks, all_features)
-                if features_filter_func(features)]
+        return [
+            track
+            for track, features in zip(all_tracks, all_features)
+            if features_filter_func(features)
+        ]
 
     get_tracks.__doc__ = "tracks_by_audio_feature(...)"
     return get_tracks
@@ -54,9 +65,8 @@ def tracks_by_audio_feature(features_filter_func, base=None):  # XXX
 
 def tracks_by_genre_pattern(pattern, artists_to_exclude=()):
     def get_tracks(user):
-        artists = (
-            artists_of_genres_matching(pattern, user.artists())
-            - set(artists_to_exclude)
+        artists = artists_of_genres_matching(pattern, user.artists()) - set(
+            artists_to_exclude
         )
         albums = albums_from_artists(user, artists)
         return get_tracks_from_albums(albums)
@@ -87,9 +97,7 @@ def shuffle_playlist(user, playlist_id):
     for subset in take_x_at_a_time(tracks, 100):
         to_remove = [track.id for track in subset]
         no_timeout(user.sp.user_playlist_remove_all_occurrences_of_tracks)(
-            user._username,
-            playlist_id,
-            to_remove
+            user._username, playlist_id, to_remove
         )
     # shuffle tracks
     shuffled = smart_shuffle(tracks, user)
@@ -97,7 +105,5 @@ def shuffle_playlist(user, playlist_id):
     for subset in take_x_at_a_time(shuffled, 100):
         to_add = [track.id for track in subset]
         no_timeout(user.sp.user_playlist_add_tracks)(
-            user._username,
-            playlist_id,
-            to_add
+            user._username, playlist_id, to_add
         )
