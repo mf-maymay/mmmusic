@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from base_class import SpotifyObjectBase
-from cache import Cache
 from track import Track
 from utils import no_timeout
 
@@ -19,7 +18,6 @@ class Album(SpotifyObjectBase):
     def full_response(cls, album_id):
         return cls._sp.album(album_id if not isinstance(album_id, cls) else album_id.id)
 
-    @Cache()
     def tracks(self):
         return [
             Track(info={**item, "album": self.info})
