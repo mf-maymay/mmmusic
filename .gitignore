@@ -1,4 +1,4 @@
-# Byte-compiled / optimized / DLL files
+# byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 
@@ -6,8 +6,13 @@ __pycache__/
 credentials.py
 .cache*
 
+# jupyter
+.ipynb_checkpoints/
+
 # output folder
 output/
 
-# jupyter
-.ipynb_checkpoints/
+# shelve files
+.bak
+.dat
+.dir
