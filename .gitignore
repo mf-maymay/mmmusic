@@ -13,6 +13,6 @@ credentials.py
 output/
 
 # shelve files
-.bak
-.dat
-.dir
+*.bak
+*.dat
+*.dir
