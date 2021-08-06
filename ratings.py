@@ -14,7 +14,7 @@ valid_vote = re.compile("([0-9]|,)+ Votes")
 search_str = "http://www.sputnikmusic.com/search_results.php?search_text="
 
 
-@Cache()
+@Cache
 @no_timeout
 def sputnik_rating(artist, album):
     search = search_str + artist
@@ -54,17 +54,15 @@ def sputnik_rating(artist, album):
 
 def get_user_album_ratings(user):
     for album in user.albums():  # TODO: make name URL friendly
-        _ = sputnik_rating(Artist(album.artist_ids[0]).name,
-                           album.name)
+        _ = sputnik_rating(Artist(album.artist_ids[0]).name, album.name)
 
-    ratings = [(artist, album, rating, votes)
-               for (artist, album), (rating, votes) in sputnik_rating.items()
-               if rating is not None]
+    ratings = [
+        (artist, album, rating, votes)
+        for (artist, album), (rating, votes) in sputnik_rating.dict.items()
+        if rating is not None
+    ]
 
-    return pd.DataFrame(
-        ratings,
-        columns=["Artist", "Album", "Rating", "Votes"]
-    )
+    return pd.DataFrame(ratings, columns=["Artist", "Album", "Rating", "Votes"])
 
 
 if __name__ == "__main__":

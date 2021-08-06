@@ -25,7 +25,7 @@ class SpotifyObjectBase:
         self.id = self.info["id"]
         self.name = self.info["name"]
 
-    @Cache(key_func=_cache_key)
+    @Cache.with_key_func(_cache_key)
     def __new__(cls, id=None, *, info=None):  # TODO: kwargs
         if id is None and info is None:
             raise ValueError("Must supply either id or info")

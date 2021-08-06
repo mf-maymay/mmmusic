@@ -22,7 +22,7 @@ class Artist(SpotifyObjectBase):
             artist_id if not isinstance(artist_id, cls) else artist_id.id
         )
 
-    @Cache()
+    @Cache
     def related(self):
         return set(
             Artist(a["id"]) for a in self._sp.artist_related_artists(self.id)["artists"]

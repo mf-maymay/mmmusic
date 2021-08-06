@@ -21,7 +21,7 @@ class Track(SpotifyObjectBase):
         return cls._sp.track(track_id if not isinstance(track_id, cls) else track_id.id)
 
     @no_timeout
-    @Cache()
+    @Cache
     def audio_features(self):
         return self._sp.audio_features(self.id)[0]
 
