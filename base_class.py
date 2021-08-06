@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
+import atexit
+import shelve
+
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
 from cache import Cache
+
+_SHELVE_NAME = "shelf"
 
 
 def _cache_key(cls, id=None, *, info=None):
@@ -11,6 +16,21 @@ def _cache_key(cls, id=None, *, info=None):
     if info is None:
         return cls, id
     return cls, info["id"]
+
+
+def _shelve_key(cls, id=None, *, info=None):
+    cls, id = _cache_key(cls, id=id, info=info)
+    return f"{cls.__name__}-{id}"
+
+
+def _from_shelve(func):
+    def wrapped(cls, id=None, *, info=None):
+        key = _shelve_key(cls, id=id, info=info)
+        with shelve.open(_SHELVE_NAME) as shelf:
+            if key in shelf:
+                return func(cls, info=shelf[key])
+        return func(cls, id=id, info=info)
+    return wrapped
 
 
 class SpotifyObjectBase:
@@ -26,6 +46,7 @@ class SpotifyObjectBase:
         self.name = self.info["name"]
 
     @Cache.with_key_func(_cache_key)
+    @_from_shelve
     def __new__(cls, id=None, *, info=None):  # TODO: kwargs
         if id is None and info is None:
             raise ValueError("Must supply either id or info")
@@ -62,3 +83,10 @@ class SpotifyObjectBase:
 
     def __str__(self):
         return self.name
+
+
+@atexit.register
+def shelve_spotify_objects():
+    with shelve.open(_SHELVE_NAME) as shelf:
+        for (cls, id), spotify_object in SpotifyObjectBase.__new__.dict.items():
+            shelf[f"{cls.__name__}-{id}"] = spotify_object.info
