@@ -11,7 +11,7 @@ def albums_from_artists(user, artists):
     return sorted({album for album in user.albums() if set(album.artist_ids) & artists})
 
 
-@Cache()
+@Cache
 def all_user_tracks(user):
     return get_tracks_from_albums(user.albums())
 
