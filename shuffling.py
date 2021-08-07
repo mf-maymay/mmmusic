@@ -45,8 +45,7 @@ def quick_pick(items: list, add_to_left: callable) -> list:
     return quick_pick(left, add_to_left) + quick_pick(right, add_to_left)
 
 
-def _get_average_values(left, right, to_add, values):
-    # add item to left if diff less with item in left than in right
+def _get_average_values(left, right, to_add, values) -> dict:
     averages = {}
 
     left_values = [values[x] for x in left]
@@ -64,9 +63,17 @@ def _get_average_values(left, right, to_add, values):
     return averages
 
 
-def _picker(left, right, to_add, values):
+def _balanced_picker(left, right, to_add, values) -> bool:
+    # add item to left if diff less with item in left than in right
     averages = _get_average_values(left, right, to_add, values)
     return cosine(averages["left with new"], averages["right"]) < cosine(
+        averages["left"], averages["right with new"]
+    )
+
+
+def _story_picker(left, right, to_add, values) -> bool:
+    averages = _get_average_values(left, right, to_add, values)
+    return cosine(averages["left with new"], averages["right"]) > cosine(
         averages["left"], averages["right with new"]
     )
 
@@ -130,7 +137,12 @@ def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
     return swap_for_cosine
 
 
-def smart_shuffle(tracks, user):
+def smart_shuffle(tracks, user, mode="balanced"):
+    if mode not in ("balanced", "story"):
+        raise ValueError("Invalid mode")  # XXX
+
+    picker = _balanced_picker if mode == "balanced" else _story_picker
+
     features = dict(zip(tracks, get_audio_features(tracks)))
     metrics = np.array(
         [[features[track][metric] for metric in METRICS] for track in tracks]
@@ -141,7 +153,7 @@ def smart_shuffle(tracks, user):
 
     track_scores = dict(zip(tracks, scores))
 
-    func = partial(_picker, values=track_scores)
+    func = partial(picker, values=track_scores)
 
     order = quick_pick(tracks, func)
 
