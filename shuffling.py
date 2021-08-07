@@ -5,11 +5,21 @@ from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
 from track import get_audio_features
 
-MAX_SMOOTH_CYCLES = 12
+MAX_SMOOTH_CYCLES = 20
 
-METRICS = ("danceability", "energy", "key", "loudness", "mode",
-           "speechiness", "acousticness", "instrumentalness", "liveness",
-           "valence", "tempo")
+METRICS = (
+    "danceability",
+    "energy",
+    "key",
+    "loudness",
+    "mode",
+    "speechiness",
+    "acousticness",
+    "instrumentalness",
+    "liveness",
+    "valence",
+    "tempo",
+)
 
 shuffle = np.random.default_rng().shuffle
 
@@ -35,23 +45,19 @@ def quick_pick(items: list, add_to_left: callable) -> list:
     return quick_pick(left, add_to_left) + quick_pick(right, add_to_left)
 
 
-def _picker(left, right, item):
+def _picker(left, right, to_add, values):
     # add item to left if diff less with item in left than in right
-    left_score = np.average(left, 0)
-    left_score_with_item = np.average(np.vstack((left, item)), 0)
-    right_score = np.average(right, 0)
-    right_score_with_item = np.average(np.vstack((right, item)), 0)
+    left_values = [values[x] for x in left]
+    left_avg = np.average(left_values, axis=0)
+    left_avg_new = np.average(np.vstack((left_values, values[to_add])), axis=0)
 
-    left_less_diff = (cosine(left_score_with_item, right_score)
-                      < cosine(left_score, right_score_with_item))
+    right_values = [values[x] for x in right]
+    right_avg = np.average(right_values, axis=0)
+    right_avg_new = np.average(np.vstack((right_values, values[to_add])), axis=0)
+
+    left_less_diff = cosine(left_avg_new, right_avg) < cosine(left_avg, right_avg_new)
 
     return left_less_diff
-
-
-def _song_picker(left, right, item, item_scores):
-    return _picker([item_scores[x] for x in left],
-                   [item_scores[x] for x in right],
-                   item_scores[item])
 
 
 def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
@@ -72,28 +78,32 @@ def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
 
     # if key of 1 is inappropriate for 0 and the key of 2 is appropriate, swap
     # if vice versa, keep
-    good_keys = features[track_0]["key"] + (
-        np.array([0, 2, 4, 5, 7, 9, 11]) if features[track_0]["mode"]
-        else np.array([0, 2, 3, 5, 7, 8, 10])
-    ) % 12
+    good_keys = (
+        features[track_0]["key"]
+        + (
+            np.array([0, 2, 4, 5, 7, 9, 11])
+            if features[track_0]["mode"]
+            else np.array([0, 2, 3, 5, 7, 8, 10])
+        )
+        % 12
+    )
     good_modes = (
-        (1, 0, 0, 1, 1, 0, 0) if features[track_0]["mode"]
-        else (0, 0, 1, 0, 0, 1, 1)
+        (1, 0, 0, 1, 1, 0, 0) if features[track_0]["mode"] else (0, 0, 1, 0, 0, 1, 1)
     )
     key_1 = features[track_1]["key"]
     mode_1 = features[track_1]["mode"]
     key_2 = features[track_2]["key"]
     mode_2 = features[track_2]["mode"]
 
-    swap_for_key = (
-        (key_1, mode_1) not in zip(good_keys, good_modes)
-        and (key_2, mode_2) in zip(good_keys, good_modes)
-    )
+    swap_for_key = (key_1, mode_1) not in zip(good_keys, good_modes) and (
+        key_2,
+        mode_2,
+    ) in zip(good_keys, good_modes)
 
-    keep_for_key = (
-        (key_2, mode_2) not in zip(good_keys, good_modes)
-        and (key_1, mode_1) in zip(good_keys, good_modes)
-    )
+    keep_for_key = (key_2, mode_2) not in zip(good_keys, good_modes) and (
+        key_1,
+        mode_1,
+    ) in zip(good_keys, good_modes)
 
     if swap_for_key:
         return True
@@ -111,15 +121,16 @@ def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
 
 def smart_shuffle(tracks, user):
     features = dict(zip(tracks, get_audio_features(tracks)))
-    metrics = np.array([[features[track][metric] for metric in METRICS]
-                        for track in tracks])
+    metrics = np.array(
+        [[features[track][metric] for metric in METRICS] for track in tracks]
+    )
     scores = metrics.copy()  # XXX
     for j, col in enumerate(metrics.T):
         scores[:, j] = [percentileofscore(col, x, kind="mean") for x in col]
 
     track_scores = dict(zip(tracks, scores))
 
-    func = partial(_song_picker, item_scores=track_scores)
+    func = partial(_picker, values=track_scores)
 
     order = quick_pick(tracks, func)
 
@@ -134,11 +145,11 @@ def smart_shuffle(tracks, user):
             order[(i + 1) % cycle_len],
             order[(i + 2) % cycle_len],
             item_scores=track_scores,
-            features=features
+            features=features,
         ):
             order[(i + 1) % cycle_len], order[(i + 2) % cycle_len] = (
                 order[(i + 2) % cycle_len],
-                order[(i + 1) % cycle_len]
+                order[(i + 1) % cycle_len],
             )
             last_swap = i
 
@@ -152,11 +163,21 @@ def smart_shuffle(tracks, user):
 
 
 if __name__ == "__main__":
+    from track import Track
     from user import User
+
     user = User(input("username: "))
 
-    songs = ["0vFabeTqtOtj918sjc5vYo", "3HWxpLKnTlz6jE3Vi5dTF2",
-             "6PSma9xvYhGabJNrbUAE4e", "3qSJD2hjnZ7YDOQx9ieQ0m",
-             "09uV1Sli9wapcKQmmyaG4E", "5vaCmKjItq2Da5BKNFHlEb"]
+    tracks = [
+        Track(x)
+        for x in [
+            "0vFabeTqtOtj918sjc5vYo",
+            "3HWxpLKnTlz6jE3Vi5dTF2",
+            "6PSma9xvYhGabJNrbUAE4e",
+            "3qSJD2hjnZ7YDOQx9ieQ0m",
+            "09uV1Sli9wapcKQmmyaG4E",
+            "5vaCmKjItq2Da5BKNFHlEb",
+        ]
+    ]
 
-    ordered = smart_shuffle(songs, user)
+    ordered = smart_shuffle(tracks, user)
