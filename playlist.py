@@ -23,11 +23,11 @@ class Playlist(object):
     def get_tracks(self, user):
         self.tracks = self._get_tracks_func(user)
 
-    def order_tracks(self, user):
+    def order_tracks(self):
         if not self.tracks:
             raise ValueError("self.tracks is empty")
 
-        self.tracks = self._order_tracks_func(self.tracks, user)
+        self.tracks = self._order_tracks_func(self.tracks)
 
     @no_timeout
     def create(self, user, confirm=True):

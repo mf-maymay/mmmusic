@@ -125,7 +125,7 @@ if __name__ == "__main__":
         print(f"Getting '{playlist.name}' tracks ...")
         playlist.get_tracks(user)
         print(f"Ordering '{playlist.name}' tracks ...")
-        playlist.order_tracks(user)
+        playlist.order_tracks()
         print()
 
     for key in to_create:

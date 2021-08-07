@@ -137,7 +137,7 @@ def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
     return swap_for_cosine
 
 
-def smart_shuffle(tracks, user, mode="balanced"):
+def smart_shuffle(tracks, mode="balanced"):
     if mode not in ("balanced", "story"):
         raise ValueError("Invalid mode")  # XXX
 
@@ -187,9 +187,6 @@ def smart_shuffle(tracks, user, mode="balanced"):
 
 if __name__ == "__main__":
     from track import Track
-    from user import User
-
-    user = User(input("username: "))
 
     tracks = [
         Track(x)
@@ -203,4 +200,4 @@ if __name__ == "__main__":
         ]
     ]
 
-    ordered = smart_shuffle(tracks, user)
+    ordered = smart_shuffle(tracks)
