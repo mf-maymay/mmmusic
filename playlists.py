@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from functools import partial
+
 from playlist import Playlist
 from playlist_utils import (
     all_user_tracks,
@@ -7,6 +9,8 @@ from playlist_utils import (
     tracks_by_audio_feature,
     tracks_by_genre_pattern,
 )
+from shuffling import smart_shuffle
+
 
 playlists = {
     "ALL": Playlist("ALL", get_tracks_func=all_user_tracks),
@@ -109,6 +113,11 @@ playlists = {
             lambda x: x["release_date"].startswith("201")
         ),
     ),
+    "ALL - story mode": Playlist(
+        "ALL - story mode",
+        get_tracks_func=all_user_tracks,
+        order_tracks_func=partial(smart_shuffle, mode="story"),
+    ),
 }
 
 
@@ -119,6 +128,7 @@ if __name__ == "__main__":
     print()
 
     to_create = sorted(playlists)
+    to_create = ["ALL - story mode"]
 
     for key in to_create:
         playlist = playlists[key]
