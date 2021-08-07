@@ -6,7 +6,6 @@ from playlist_utils import (
     tracks_by_artist_attribute,
     tracks_by_audio_feature,
     tracks_by_genre_pattern,
-    tracks_by_track_attribute,
 )
 
 playlists = {
@@ -27,9 +26,6 @@ playlists = {
     ),
     "hip hop": Playlist(
         "hip hop", get_tracks_func=tracks_by_genre_pattern(".*hip hop.*")
-    ),
-    "indie": Playlist(
-        "indie", get_tracks_func=tracks_by_genre_pattern("^(?!.*?hip hop).*indie.*")
     ),
     "japan": Playlist(
         "japan", get_tracks_func=tracks_by_genre_pattern(".*(japan|j-).*")
