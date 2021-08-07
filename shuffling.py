@@ -45,19 +45,30 @@ def quick_pick(items: list, add_to_left: callable) -> list:
     return quick_pick(left, add_to_left) + quick_pick(right, add_to_left)
 
 
-def _picker(left, right, to_add, values):
+def _get_average_values(left, right, to_add, values):
     # add item to left if diff less with item in left than in right
+    averages = {}
+
     left_values = [values[x] for x in left]
-    left_avg = np.average(left_values, axis=0)
-    left_avg_new = np.average(np.vstack((left_values, values[to_add])), axis=0)
+    averages["left"] = np.average(left_values, axis=0)
+    averages["left with new"] = np.average(
+        np.vstack((left_values, values[to_add])), axis=0
+    )
 
     right_values = [values[x] for x in right]
-    right_avg = np.average(right_values, axis=0)
-    right_avg_new = np.average(np.vstack((right_values, values[to_add])), axis=0)
+    averages["right"] = np.average(right_values, axis=0)
+    averages["right with new"] = np.average(
+        np.vstack((right_values, values[to_add])), axis=0
+    )
 
-    left_less_diff = cosine(left_avg_new, right_avg) < cosine(left_avg, right_avg_new)
+    return averages
 
-    return left_less_diff
+
+def _picker(left, right, to_add, values):
+    averages = _get_average_values(left, right, to_add, values)
+    return cosine(averages["left with new"], averages["right"]) < cosine(
+        averages["left"], averages["right with new"]
+    )
 
 
 def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
