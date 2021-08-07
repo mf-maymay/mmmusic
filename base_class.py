@@ -89,4 +89,6 @@ class SpotifyObjectBase:
 def shelve_spotify_objects():
     with shelve.open(_SHELVE_NAME) as shelf:
         for (cls, id), spotify_object in SpotifyObjectBase.__new__.dict.items():
-            shelf[f"{cls.__name__}-{id}"] = spotify_object.info
+            key = f"{cls.__name__}-{id}"
+            if key not in shelf:
+                shelf[key] = spotify_object.info
