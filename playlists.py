@@ -11,6 +11,8 @@ from playlist_utils import (
 )
 from shuffling import smart_shuffle
 
+story_mode_shuffle = partial(smart_shuffle, mode="story")
+
 
 playlists = {
     "ALL": Playlist("ALL", get_tracks_func=all_user_tracks),
@@ -116,12 +118,17 @@ playlists = {
     "ALL - story mode": Playlist(
         "ALL - story mode",
         get_tracks_func=all_user_tracks,
-        order_tracks_func=partial(smart_shuffle, mode="story"),
+        order_tracks_func=story_mode_shuffle,
     ),
-    "ALL - experimental mode": Playlist(
-        "ALL - experimental mode",
+    "popular artists - story mode": Playlist(
+        "popular artists - story mode",
+        get_tracks_func=tracks_by_artist_attribute(lambda x: x.popularity >= 70),
+        order_tracks_func=story_mode_shuffle,
+    ),
+    "ALL - RAW": Playlist(
+        "ALL - RAW",
         get_tracks_func=all_user_tracks,
-        order_tracks_func=partial(smart_shuffle, mode="custom"),
+        order_tracks_func=partial(smart_shuffle, use_scores=False),
     ),
 }
 
