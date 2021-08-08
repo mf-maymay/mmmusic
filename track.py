@@ -30,10 +30,10 @@ def get_audio_features(tracks):
     out = []
     for subset in take_x_at_a_time(tracks, 100):
         out += no_timeout(Track._sp.audio_features)(
-            tracks=[
-                track if not isinstance(track, Track) else track.id for track in subset
-            ]
+            tracks=[Track(track).id for track in subset]
         )
+    for track, features in zip(tracks, out):
+        Track.audio_features.dict[Track(track)] = features
     return out
 
 
