@@ -5,7 +5,7 @@ from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
 from track import get_audio_features
 
-MAX_SMOOTH_CYCLES = 20
+MAX_SMOOTH_CYCLES = 30
 
 METRICS = (
     "danceability",
@@ -78,6 +78,19 @@ def _story_picker(left, right, to_add, values) -> bool:
     )
 
 
+def _custom_picker():
+    level = -1
+
+    def picker(left, right, to_add, values):
+        nonlocal level
+        level += 1
+        if level in (0, 1):
+            return _balanced_picker(left, right, to_add, values)
+        return _story_picker(left, right, to_add, values)
+
+    return picker
+
+
 def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
     # if 0 and 1 share artists and 0 and 2 do not, swap
     # if vice versa, keep
@@ -138,10 +151,16 @@ def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
 
 
 def smart_shuffle(tracks, mode="balanced"):
-    if mode not in ("balanced", "story"):
+    if mode not in ("balanced", "story", "custom"):
         raise ValueError("Invalid mode")  # XXX
 
-    picker = _balanced_picker if mode == "balanced" else _story_picker
+    picker = (
+        _balanced_picker
+        if mode == "balanced"
+        else _story_picker
+        if mode == "story"
+        else _custom_picker()
+    )
 
     features = dict(zip(tracks, get_audio_features(tracks)))
     metrics = np.array(

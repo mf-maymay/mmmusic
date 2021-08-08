@@ -118,6 +118,11 @@ playlists = {
         get_tracks_func=all_user_tracks,
         order_tracks_func=partial(smart_shuffle, mode="story"),
     ),
+    "ALL - experimental mode": Playlist(
+        "ALL - experimental mode",
+        get_tracks_func=all_user_tracks,
+        order_tracks_func=partial(smart_shuffle, mode="custom"),
+    ),
 }
 
 
@@ -128,7 +133,6 @@ if __name__ == "__main__":
     print()
 
     to_create = sorted(playlists)
-    to_create = ["ALL - story mode"]
 
     for key in to_create:
         playlist = playlists[key]
