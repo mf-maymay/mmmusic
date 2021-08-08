@@ -71,23 +71,11 @@ def _balanced_picker(left, right, to_add, values) -> bool:
 
 
 def _story_picker(left, right, to_add, values) -> bool:
+    # maximize polarity
     averages = _get_average_values(left, right, to_add, values)
     return cosine(averages["left with new"], averages["right"]) > cosine(
         averages["left"], averages["right with new"]
     )
-
-
-def _custom_picker():
-    level = -1
-
-    def picker(left, right, to_add, values):
-        nonlocal level
-        level += 1
-        if level in (0, 1):
-            return _balanced_picker(left, right, to_add, values)
-        return _story_picker(left, right, to_add, values)
-
-    return picker
 
 
 def _swap_to_smooth(track_0, track_1, track_2, *, values):
@@ -161,16 +149,10 @@ def _scores(tracks, metrics):
 def smart_shuffle(tracks, mode="balanced", use_scores=True):
     tracks = list(tracks)  # XXX
 
-    if mode not in ("balanced", "story", "custom"):
-        raise ValueError("Invalid mode")  # XXX
+    if mode not in ("balanced", "story"):
+        raise ValueError("Invalid mode")
 
-    picker = (
-        _balanced_picker
-        if mode == "balanced"
-        else _story_picker
-        if mode == "story"
-        else _custom_picker()
-    )
+    picker = _balanced_picker if mode == "balanced" else _story_picker
 
     metrics = np.array(
         [[track.audio_features()[metric] for metric in METRICS] for track in tracks]
