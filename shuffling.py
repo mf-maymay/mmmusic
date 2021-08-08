@@ -3,7 +3,6 @@ from functools import partial
 import numpy as np
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
-from track import get_audio_features
 
 MAX_SMOOTH_CYCLES = 30
 
@@ -91,7 +90,7 @@ def _custom_picker():
     return picker
 
 
-def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
+def _swap_to_smooth(track_0, track_1, track_2, *, values):
     # if 0 and 1 share artists and 0 and 2 do not, swap
     # if vice versa, keep
     artists_0 = set(track_0.artist_ids)
@@ -110,21 +109,23 @@ def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
     # if key of 1 is inappropriate for 0 and the key of 2 is appropriate, swap
     # if vice versa, keep
     good_keys = (
-        features[track_0]["key"]
+        track_0.audio_features()["key"]
         + (
             np.array([0, 2, 4, 5, 7, 9, 11])
-            if features[track_0]["mode"]
+            if track_0.audio_features()["mode"]
             else np.array([0, 2, 3, 5, 7, 8, 10])
         )
         % 12
     )
     good_modes = (
-        (1, 0, 0, 1, 1, 0, 0) if features[track_0]["mode"] else (0, 0, 1, 0, 0, 1, 1)
+        (1, 0, 0, 1, 1, 0, 0)
+        if track_0.audio_features()["mode"]
+        else (0, 0, 1, 0, 0, 1, 1)
     )
-    key_1 = features[track_1]["key"]
-    mode_1 = features[track_1]["mode"]
-    key_2 = features[track_2]["key"]
-    mode_2 = features[track_2]["mode"]
+    key_1 = track_1.audio_features()["key"]
+    mode_1 = track_1.audio_features()["mode"]
+    key_2 = track_2.audio_features()["key"]
+    mode_2 = track_2.audio_features()["mode"]
 
     swap_for_key = (key_1, mode_1) not in zip(good_keys, good_modes) and (
         key_2,
@@ -142,8 +143,8 @@ def _swap_to_smooth(track_0, track_1, track_2, *, item_scores, features):
         return False
 
     # if 0 and 2 are (significantly) more similar than 0 and 1
-    cos_0_1 = cosine(item_scores[track_0], item_scores[track_1])
-    cos_0_2 = cosine(item_scores[track_0], item_scores[track_2])
+    cos_0_1 = cosine(values[track_0], values[track_1])
+    cos_0_2 = cosine(values[track_0], values[track_2])
 
     swap_for_cosine = cos_0_2 - cos_0_1 > 0.1
 
@@ -162,9 +163,8 @@ def smart_shuffle(tracks, mode="balanced"):
         else _custom_picker()
     )
 
-    features = dict(zip(tracks, get_audio_features(tracks)))
     metrics = np.array(
-        [[features[track][metric] for metric in METRICS] for track in tracks]
+        [[track.audio_features()[metric] for metric in METRICS] for track in tracks]
     )
     scores = metrics.copy()  # XXX
     for j, col in enumerate(metrics.T):
@@ -186,8 +186,7 @@ def smart_shuffle(tracks, mode="balanced"):
             order[i % cycle_len],
             order[(i + 1) % cycle_len],
             order[(i + 2) % cycle_len],
-            item_scores=track_scores,
-            features=features,
+            values=track_scores,
         ):
             order[(i + 1) % cycle_len], order[(i + 2) % cycle_len] = (
                 order[(i + 2) % cycle_len],
