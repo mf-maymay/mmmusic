@@ -11,65 +11,98 @@ from playlist_utils import (
 )
 from shuffling import smart_shuffle
 
-story_mode_shuffle = partial(smart_shuffle, mode="story")
 
-
-playlists = {
-    "ALL": Playlist("ALL", get_tracks_func=all_user_tracks),
-    "classical": Playlist(
+_playlists = [
+    Playlist(
+        "1970s",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: x["release_date"].startswith("197")
+        ),
+    ),
+    Playlist(
+        "1980s",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: x["release_date"].startswith("198")
+        ),
+    ),
+    Playlist(
+        "1990s",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: x["release_date"].startswith("199")
+        ),
+    ),
+    Playlist(
+        "2000s",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: x["release_date"].startswith("200")
+        ),
+    ),
+    Playlist(
+        "2010s",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: x["release_date"].startswith("201")
+        ),
+    ),
+    Playlist("ALL", get_tracks_func=all_user_tracks),
+    Playlist(
+        "ALL - story mode",
+        get_tracks_func=all_user_tracks,
+        order_tracks_func=partial(smart_shuffle, mode="story"),
+    ),
+    Playlist(
         "classical",
         get_tracks_func=tracks_by_genre_pattern(
             ".*(classical|compositional).*",
             artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"],  # adrian younge
         ),
+        order_tracks_func=partial(smart_shuffle, mode="story"),
     ),
-    "countryish": Playlist(
+    Playlist(
+        "classical - story mode",
+        get_tracks_func=tracks_by_genre_pattern(
+            ".*(classical|compositional).*",
+            artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"],  # adrian younge
+        ),
+    ),
+    Playlist(
         "countryish",
         get_tracks_func=tracks_by_genre_pattern(".*(americana|country|cow).*"),
     ),
-    "escape room": Playlist(
-        "escape room", get_tracks_func=tracks_by_genre_pattern(".*escape room.*")
-    ),
-    "hip hop": Playlist(
-        "hip hop", get_tracks_func=tracks_by_genre_pattern(".*hip hop.*")
-    ),
-    "japan": Playlist(
-        "japan", get_tracks_func=tracks_by_genre_pattern(".*(japan|j-).*")
-    ),
-    "jazz": Playlist(
-        "jazz",
-        get_tracks_func=tracks_by_genre_pattern(
-            "^(?!.*?(dark|nu|jazz metal|jazz rap|jazztronica)).*jazz.*"
-        ),
-    ),
-    "metal": Playlist(
-        "metal", get_tracks_func=tracks_by_genre_pattern(".*(doom|metal|zeuhl).*")
-    ),
-    "oblivion": Playlist(
-        "oblivion",
-        get_tracks_func=tracks_by_genre_pattern(
-            "^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|neofolk|" "world).*"
-        ),
-    ),
-    "post-rock": Playlist(
-        "post-rock", get_tracks_func=tracks_by_genre_pattern(".*post-rock.*")
-    ),
-    "punkish": Playlist("punkish", get_tracks_func=tracks_by_genre_pattern(".*punk.*")),
-    "tropical": Playlist(
-        "tropical",
-        get_tracks_func=tracks_by_genre_pattern(".*(brazil|latin|mpb|reggae).*"),
-    ),
-    "good vibes": Playlist(
+    Playlist("escape room", get_tracks_func=tracks_by_genre_pattern(".*escape room.*")),
+    Playlist(
         "good vibes",
         get_tracks_func=tracks_by_audio_feature(
             lambda x: x["danceability"] >= 0.6 and x["valence"] >= 0.75
         ),
     ),
-    "low-valence": Playlist(
+    Playlist("hip hop", get_tracks_func=tracks_by_genre_pattern(".*hip hop.*")),
+    Playlist("japan", get_tracks_func=tracks_by_genre_pattern(".*(japan|j-).*")),
+    Playlist(
+        "jazz",
+        get_tracks_func=tracks_by_genre_pattern(
+            "^(?!.*?(dark|nu|jazz metal|jazz rap|jazztronica)).*jazz.*"
+        ),
+    ),
+    Playlist(
         "low-valence",
         get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= 0.04),
     ),
-    "studying": Playlist(
+    Playlist(
+        "metal", get_tracks_func=tracks_by_genre_pattern(".*(doom|metal|zeuhl).*")
+    ),
+    Playlist(
+        "oblivion",
+        get_tracks_func=tracks_by_genre_pattern(
+            "^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|neofolk|" "world).*"
+        ),
+    ),
+    Playlist(
+        "popular artists",
+        get_tracks_func=tracks_by_artist_attribute(lambda x: x.popularity >= 75),
+    ),
+    Playlist("post-rock", get_tracks_func=tracks_by_genre_pattern(".*post-rock.*")),
+    Playlist("punkish", get_tracks_func=tracks_by_genre_pattern(".*punk.*")),
+    Playlist(
         "studying",
         get_tracks_func=tracks_by_audio_feature(
             lambda x: x["instrumentalness"] >= 0.8
@@ -77,60 +110,17 @@ playlists = {
             and x["tempo"] <= 120
         ),
     ),
-    "popular artists": Playlist(
-        "popular artists",
-        get_tracks_func=tracks_by_artist_attribute(lambda x: x.popularity >= 75),
+    Playlist(
+        "tropical",
+        get_tracks_func=tracks_by_genre_pattern(".*(brazil|latin|mpb|reggae).*"),
     ),
-    "unpopular artists": Playlist(
+    Playlist(
         "unpopular artists",
         get_tracks_func=tracks_by_artist_attribute(lambda x: x.popularity <= 25),
     ),
-    "1970s": Playlist(
-        "1970s",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: x["release_date"].startswith("197")
-        ),
-    ),
-    "1980s": Playlist(
-        "1980s",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: x["release_date"].startswith("198")
-        ),
-    ),
-    "1990s": Playlist(
-        "1990s",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: x["release_date"].startswith("199")
-        ),
-    ),
-    "2000s": Playlist(
-        "2000s",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: x["release_date"].startswith("200")
-        ),
-    ),
-    "2010s": Playlist(
-        "2010s",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: x["release_date"].startswith("201")
-        ),
-    ),
-    "ALL - story mode": Playlist(
-        "ALL - story mode",
-        get_tracks_func=all_user_tracks,
-        order_tracks_func=story_mode_shuffle,
-    ),
-    "popular artists - story mode": Playlist(
-        "popular artists - story mode",
-        get_tracks_func=tracks_by_artist_attribute(lambda x: x.popularity >= 70),
-        order_tracks_func=story_mode_shuffle,
-    ),
-    "ALL - RAW": Playlist(
-        "ALL - RAW",
-        get_tracks_func=all_user_tracks,
-        order_tracks_func=partial(smart_shuffle, use_scores=False),
-    ),
-}
+]
+
+playlists = {playlist.name: playlist for playlist in _playlists}
 
 
 if __name__ == "__main__":
