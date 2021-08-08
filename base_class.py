@@ -18,17 +18,17 @@ def _cache_key(cls, id=None, *, info=None):
     return cls, info["id"]
 
 
-def _shelve_key(cls, id=None, *, info=None):
-    cls, id = _cache_key(cls, id=id, info=info)
+def _shelve_key(cls, id):
     return f"{cls.__name__}-{id}"
 
 
 def _from_shelve(func):
     def wrapped(cls, id=None, *, info=None):
-        key = _shelve_key(cls, id=id, info=info)
-        with shelve.open(_SHELVE_NAME) as shelf:
-            if key in shelf:
-                return func(cls, info=shelf[key])
+        if id is not None and info is None:
+            key = _shelve_key(cls, id=id)
+            with shelve.open(_SHELVE_NAME) as shelf:
+                if key in shelf:
+                    return func(cls, info=shelf[key])
         return func(cls, id=id, info=info)
     return wrapped
 
@@ -89,6 +89,6 @@ class SpotifyObjectBase:
 def shelve_spotify_objects():
     with shelve.open(_SHELVE_NAME) as shelf:
         for (cls, id), spotify_object in SpotifyObjectBase.__new__.dict.items():
-            key = f"{cls.__name__}-{id}"
+            key = _shelve_key(cls, id)
             if key not in shelf:
                 shelf[key] = spotify_object.info
