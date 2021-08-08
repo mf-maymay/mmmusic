@@ -151,7 +151,16 @@ def _swap_to_smooth(track_0, track_1, track_2, *, values):
     return swap_for_cosine
 
 
-def smart_shuffle(tracks, mode="balanced"):
+def _scores(tracks, metrics):
+    scores = metrics.copy()
+    for j, col in enumerate(metrics.T):
+        scores[:, j] = [percentileofscore(col, x, kind="mean") for x in col]
+    return dict(zip(tracks, scores))
+
+
+def smart_shuffle(tracks, mode="balanced", use_scores=True):
+    tracks = list(tracks)  # XXX
+
     if mode not in ("balanced", "story", "custom"):
         raise ValueError("Invalid mode")  # XXX
 
@@ -166,13 +175,13 @@ def smart_shuffle(tracks, mode="balanced"):
     metrics = np.array(
         [[track.audio_features()[metric] for metric in METRICS] for track in tracks]
     )
-    scores = metrics.copy()  # XXX
-    for j, col in enumerate(metrics.T):
-        scores[:, j] = [percentileofscore(col, x, kind="mean") for x in col]
 
-    track_scores = dict(zip(tracks, scores))
+    if use_scores:
+        values = _scores(tracks, metrics)
+    else:
+        values = dict(zip(tracks, metrics))
 
-    func = partial(picker, values=track_scores)
+    func = partial(picker, values=values)
 
     order = quick_pick(tracks, func)
 
@@ -186,7 +195,7 @@ def smart_shuffle(tracks, mode="balanced"):
             order[i % cycle_len],
             order[(i + 1) % cycle_len],
             order[(i + 2) % cycle_len],
-            values=track_scores,
+            values=values,
         ):
             order[(i + 1) % cycle_len], order[(i + 2) % cycle_len] = (
                 order[(i + 2) % cycle_len],
