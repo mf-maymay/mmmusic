@@ -6,12 +6,10 @@ from scipy.stats import percentileofscore
 
 MAX_SMOOTH_CYCLES = 30
 
-METRICS = (
+STORY_METRICS = (
     "danceability",
     "energy",
-    "key",
     "loudness",
-    "mode",
     "speechiness",
     "acousticness",
     "instrumentalness",
@@ -19,6 +17,8 @@ METRICS = (
     "valence",
     "tempo",
 )
+
+BALANCE_METRICS = STORY_METRICS + ("key", "mode")
 
 shuffle = np.random.default_rng().shuffle
 
@@ -152,11 +152,22 @@ def smart_shuffle(tracks, mode="balanced", use_scores=True):
     if mode not in ("balanced", "story"):
         raise ValueError("Invalid mode")
 
-    picker = _balanced_picker if mode == "balanced" else _story_picker
-
-    metrics = np.array(
-        [[track.audio_features()[metric] for metric in METRICS] for track in tracks]
-    )
+    if mode == "balanced":
+        picker = _balanced_picker
+        metrics = np.array(
+            [
+                [track.audio_features()[metric] for metric in BALANCE_METRICS]
+                for track in tracks
+            ]
+        )
+    else:
+        picker = _story_picker
+        metrics = np.array(
+            [
+                [track.audio_features()[metric] for metric in STORY_METRICS]
+                for track in tracks
+            ]
+        )
 
     if use_scores:
         values = _scores(tracks, metrics)
@@ -210,3 +221,4 @@ if __name__ == "__main__":
     ]
 
     ordered = smart_shuffle(tracks)
+    ordered_by_story_mode = smart_shuffle(tracks, mode="story")
