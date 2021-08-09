@@ -6,7 +6,7 @@ from scipy.stats import percentileofscore
 
 MAX_SMOOTH_CYCLES = 30
 
-STORY_METRICS = (
+METRICS = (
     "danceability",
     "energy",
     "loudness",
@@ -17,8 +17,6 @@ STORY_METRICS = (
     "valence",
     "tempo",
 )
-
-BALANCE_METRICS = STORY_METRICS + ("key", "mode")
 
 shuffle = np.random.default_rng().shuffle
 
@@ -76,6 +74,14 @@ def _story_picker(left, right, to_add, values) -> bool:
     return cosine(averages["left with new"], averages["right"]) > cosine(
         averages["left"], averages["right with new"]
     )
+
+
+def _balanced_metrics(track):
+    return [track[metric] for metric in METRICS] + [track["key"], track["mode"]]
+
+
+def _story_metrics(track):
+    return [track[metric] for metric in METRICS]
 
 
 def _swap_to_smooth(track_0, track_1, track_2, *, values):
@@ -144,14 +150,10 @@ def smart_shuffle(tracks, mode="balanced", use_scores=True):
 
     if mode == "balanced":
         picker = _balanced_picker
-        metrics = np.array(
-            [[track[metric] for metric in BALANCE_METRICS] for track in tracks]
-        )
+        metrics = np.array([_balanced_metrics(track) for track in tracks])
     else:
         picker = _story_picker
-        metrics = np.array(
-            [[track[metric] for metric in STORY_METRICS] for track in tracks]
-        )
+        metrics = np.array([_story_metrics(track) for track in tracks])
 
     if use_scores:
         values = _scores(tracks, metrics)
