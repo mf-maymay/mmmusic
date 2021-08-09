@@ -58,13 +58,6 @@ _playlists = [
         order_tracks_func=partial(smart_shuffle, mode="story"),
     ),
     Playlist(
-        "classical - story mode",
-        get_tracks_func=tracks_by_genre_pattern(
-            ".*(classical|compositional).*",
-            artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"],  # adrian younge
-        ),
-    ),
-    Playlist(
         "countryish",
         get_tracks_func=tracks_by_genre_pattern(".*(americana|country|cow).*"),
     ),
@@ -101,6 +94,12 @@ _playlists = [
         get_tracks_func=tracks_by_artist_attribute(lambda x: x.popularity >= 75),
     ),
     Playlist("post-rock", get_tracks_func=tracks_by_genre_pattern(".*post-rock.*")),
+    Playlist(
+        "pre-1970",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: int(x["release_date"].split("-")[0]) < 1970
+        ),
+    ),
     Playlist("punkish", get_tracks_func=tracks_by_genre_pattern(".*punk.*")),
     Playlist(
         "studying",
