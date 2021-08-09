@@ -45,6 +45,11 @@ _playlists = [
     ),
     Playlist("ALL", get_tracks_func=all_user_tracks),
     Playlist(
+        "ALL - smart mode",
+        get_tracks_func=all_user_tracks,
+        order_tracks_func=partial(smart_shuffle, mode="smart"),
+    ),
+    Playlist(
         "ALL - story mode",
         get_tracks_func=all_user_tracks,
         order_tracks_func=partial(smart_shuffle, mode="story"),

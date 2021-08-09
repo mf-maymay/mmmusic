@@ -34,7 +34,7 @@ def quick_pick(items: list, add_to_left: callable) -> list:
     right = [items.pop()]
 
     for item in items:
-        if add_to_left(left, right, item):
+        if add_to_left(left, right, item, items=items):
             left.append(item)
         else:
             right.append(item)
@@ -60,7 +60,7 @@ def _get_average_values(left, right, to_add, values) -> dict:
     return averages
 
 
-def _balanced_picker(left, right, to_add, values) -> bool:
+def _balanced_picker(left, right, to_add, values, items) -> bool:
     # add item to left if diff less with item in left than in right
     averages = _get_average_values(left, right, to_add, values)
     return cosine(averages["left with new"], averages["right"]) < cosine(
@@ -68,12 +68,21 @@ def _balanced_picker(left, right, to_add, values) -> bool:
     )
 
 
-def _story_picker(left, right, to_add, values) -> bool:
+def _story_picker(left, right, to_add, values, items) -> bool:
     # maximize polarity
     averages = _get_average_values(left, right, to_add, values)
     return cosine(averages["left with new"], averages["right"]) > cosine(
         averages["left"], averages["right with new"]
     )
+
+
+def _smart_picker(balanced_picker, story_picker):
+    def picker(left, right, to_add, items) -> bool:
+        if len(items) > 325:  # average no. tracks per day
+            return balanced_picker(left, right, to_add, items=items)
+        return story_picker(left, right, to_add, items=items)
+
+    return picker
 
 
 def _balanced_metrics(track):
@@ -145,24 +154,30 @@ def _scores(tracks, metrics):
 def smart_shuffle(tracks, mode="balanced", use_scores=True):
     tracks = list(tracks)  # XXX
 
-    if mode not in ("balanced", "story"):
+    if mode not in ("balanced", "story", "smart"):
         raise ValueError("Invalid mode")
 
-    if mode == "balanced":
-        picker = _balanced_picker
-        metrics = np.array([_balanced_metrics(track) for track in tracks])
-    else:
-        picker = _story_picker
-        metrics = np.array([_story_metrics(track) for track in tracks])
+    balanced_metrics = np.array([_balanced_metrics(track) for track in tracks])
+    story_metrics = np.array([_story_metrics(track) for track in tracks])
 
     if use_scores:
-        values = _scores(tracks, metrics)
+        balanced_values = _scores(tracks, balanced_metrics)
+        story_values = _scores(tracks, story_metrics)
     else:
-        values = dict(zip(tracks, metrics))
+        balanced_values = dict(zip(tracks, balanced_metrics))
+        story_values = dict(zip(tracks, story_metrics))
 
-    func = partial(picker, values=values)
+    balanced_func = partial(_balanced_picker, values=balanced_values)
+    story_func = partial(_story_picker, values=story_values)
 
-    order = quick_pick(tracks, func)
+    if mode == "balanced":
+        picker = balanced_func
+    elif mode == "story":
+        picker = story_func
+    else:
+        picker = _smart_picker(balanced_func, story_func)
+
+    order = quick_pick(tracks, picker)
 
     # playlist smoothing
     cycle_len = len(order)
@@ -174,7 +189,7 @@ def smart_shuffle(tracks, mode="balanced", use_scores=True):
             order[i % cycle_len],
             order[(i + 1) % cycle_len],
             order[(i + 2) % cycle_len],
-            values=values,
+            values=balanced_values,
         ):
             order[(i + 1) % cycle_len], order[(i + 2) % cycle_len] = (
                 order[(i + 2) % cycle_len],
@@ -208,3 +223,4 @@ if __name__ == "__main__":
 
     ordered = smart_shuffle(tracks)
     ordered_by_story_mode = smart_shuffle(tracks, mode="story")
+    ordered_by_smart_mode = smart_shuffle(tracks, mode="smart")
