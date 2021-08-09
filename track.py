@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from collections import ChainMap
+
 from base_class import SpotifyObjectBase
 from utils import no_timeout
 
@@ -35,6 +37,8 @@ class Track(SpotifyObjectBase):
         self.artist_ids = tuple(artist["id"] for artist in self.info["artists"])
 
         self._audio_features = None
+
+        self.info = ChainMap(self.info, self.audio_features.info)
 
     @classmethod
     @no_timeout

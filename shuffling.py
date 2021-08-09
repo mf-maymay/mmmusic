@@ -97,33 +97,23 @@ def _swap_to_smooth(track_0, track_1, track_2, *, values):
     # if key of 1 is inappropriate for 0 and the key of 2 is appropriate, swap
     # if vice versa, keep
     good_keys = (
-        track_0.audio_features["key"]
+        track_0["key"]
         + (
             np.array([0, 2, 4, 5, 7, 9, 11])
-            if track_0.audio_features["mode"]
+            if track_0["mode"]
             else np.array([0, 2, 3, 5, 7, 8, 10])
         )
         % 12
     )
-    good_modes = (
-        (1, 0, 0, 1, 1, 0, 0)
-        if track_0.audio_features["mode"]
-        else (0, 0, 1, 0, 0, 1, 1)
-    )
-    key_1 = track_1.audio_features["key"]
-    mode_1 = track_1.audio_features["mode"]
-    key_2 = track_2.audio_features["key"]
-    mode_2 = track_2.audio_features["mode"]
+    good_modes = (1, 0, 0, 1, 1, 0, 0) if track_0["mode"] else (0, 0, 1, 0, 0, 1, 1)
 
-    swap_for_key = (key_1, mode_1) not in zip(good_keys, good_modes) and (
-        key_2,
-        mode_2,
-    ) in zip(good_keys, good_modes)
+    swap_for_key = (track_1["key"], track_1["mode"]) not in zip(
+        good_keys, good_modes
+    ) and (track_2["key"], track_2["mode"],) in zip(good_keys, good_modes)
 
-    keep_for_key = (key_2, mode_2) not in zip(good_keys, good_modes) and (
-        key_1,
-        mode_1,
-    ) in zip(good_keys, good_modes)
+    keep_for_key = (track_2["key"], track_2["mode"]) not in zip(
+        good_keys, good_modes
+    ) and (track_1["key"], track_1["mode"],) in zip(good_keys, good_modes)
 
     if swap_for_key:
         return True
@@ -155,18 +145,12 @@ def smart_shuffle(tracks, mode="balanced", use_scores=True):
     if mode == "balanced":
         picker = _balanced_picker
         metrics = np.array(
-            [
-                [track.audio_features[metric] for metric in BALANCE_METRICS]
-                for track in tracks
-            ]
+            [[track[metric] for metric in BALANCE_METRICS] for track in tracks]
         )
     else:
         picker = _story_picker
         metrics = np.array(
-            [
-                [track.audio_features[metric] for metric in STORY_METRICS]
-                for track in tracks
-            ]
+            [[track[metric] for metric in STORY_METRICS] for track in tracks]
         )
 
     if use_scores:
