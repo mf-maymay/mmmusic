@@ -1,11 +1,30 @@
 # -*- coding: utf-8 -*-
 from base_class import SpotifyObjectBase
-from cache import Cache
-from utils import no_timeout, take_x_at_a_time
+from utils import no_timeout
+
+
+class AudioFeatures(SpotifyObjectBase):
+    FIELDS = ("id",)
+    __slots__ = (*FIELDS, "info")  # XXX
+
+    def __init__(self, track_id=None, *, info=None):
+        if info is not None and "name" not in info:
+            info = {"name": info["id"], **info}  # add name
+
+        super().__init__(id=track_id, info=info)
+
+    @classmethod
+    @no_timeout
+    def full_response(cls, track_id):
+        features = cls._sp.audio_features(
+            track_id if not isinstance(track_id, SpotifyObjectBase) else track_id.id
+        )[0]
+        features["name"] = features["id"]
+        return features
 
 
 class Track(SpotifyObjectBase):
-    FIELDS = ("id", "name", "album_id", "artist_ids")
+    FIELDS = ("id", "name", "album_id", "artist_ids", "_audio_features")
     __slots__ = (*FIELDS, "info")  # XXX
 
     def __init__(self, track_id=None, *, info=None):
@@ -15,27 +34,40 @@ class Track(SpotifyObjectBase):
 
         self.artist_ids = tuple(artist["id"] for artist in self.info["artists"])
 
+        self._audio_features = None
+
     @classmethod
     @no_timeout
     def full_response(cls, track_id):
         return cls._sp.track(track_id if not isinstance(track_id, cls) else track_id.id)
 
-    @no_timeout
-    @Cache
+    @property
     def audio_features(self):
-        return self._sp.audio_features(self.id)[0]
+        if self._audio_features is None:
+            self._audio_features = AudioFeatures(self.id)
+        return self._audio_features
 
 
 def get_audio_features(tracks):
-    out = []
-    for subset in take_x_at_a_time(tracks, 100):
-        out += no_timeout(Track._sp.audio_features)(
-            tracks=[Track(track).id for track in subset]
-        )
-    for track, features in zip(tracks, out):
-        Track.audio_features.dict[Track(track)] = features
-    return out
+    return [AudioFeatures(track) for track in tracks]
 
 
 def get_tracks_from_albums(albums):
     return tuple(track for album in albums for track in album.tracks())
+
+
+if __name__ == "__main__":
+    track_ids = [
+        "0vFabeTqtOtj918sjc5vYo",
+        "3HWxpLKnTlz6jE3Vi5dTF2",
+        "6PSma9xvYhGabJNrbUAE4e",
+        "3qSJD2hjnZ7YDOQx9ieQ0m",
+        "09uV1Sli9wapcKQmmyaG4E",
+        "5vaCmKjItq2Da5BKNFHlEb",
+    ]
+
+    tracks = [Track(x) for x in track_ids]
+
+    track = tracks[0]
+
+    features = track.audio_features

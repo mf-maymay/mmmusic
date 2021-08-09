@@ -97,23 +97,23 @@ def _swap_to_smooth(track_0, track_1, track_2, *, values):
     # if key of 1 is inappropriate for 0 and the key of 2 is appropriate, swap
     # if vice versa, keep
     good_keys = (
-        track_0.audio_features()["key"]
+        track_0.audio_features["key"]
         + (
             np.array([0, 2, 4, 5, 7, 9, 11])
-            if track_0.audio_features()["mode"]
+            if track_0.audio_features["mode"]
             else np.array([0, 2, 3, 5, 7, 8, 10])
         )
         % 12
     )
     good_modes = (
         (1, 0, 0, 1, 1, 0, 0)
-        if track_0.audio_features()["mode"]
+        if track_0.audio_features["mode"]
         else (0, 0, 1, 0, 0, 1, 1)
     )
-    key_1 = track_1.audio_features()["key"]
-    mode_1 = track_1.audio_features()["mode"]
-    key_2 = track_2.audio_features()["key"]
-    mode_2 = track_2.audio_features()["mode"]
+    key_1 = track_1.audio_features["key"]
+    mode_1 = track_1.audio_features["mode"]
+    key_2 = track_2.audio_features["key"]
+    mode_2 = track_2.audio_features["mode"]
 
     swap_for_key = (key_1, mode_1) not in zip(good_keys, good_modes) and (
         key_2,
@@ -156,7 +156,7 @@ def smart_shuffle(tracks, mode="balanced", use_scores=True):
         picker = _balanced_picker
         metrics = np.array(
             [
-                [track.audio_features()[metric] for metric in BALANCE_METRICS]
+                [track.audio_features[metric] for metric in BALANCE_METRICS]
                 for track in tracks
             ]
         )
@@ -164,7 +164,7 @@ def smart_shuffle(tracks, mode="balanced", use_scores=True):
         picker = _story_picker
         metrics = np.array(
             [
-                [track.audio_features()[metric] for metric in STORY_METRICS]
+                [track.audio_features[metric] for metric in STORY_METRICS]
                 for track in tracks
             ]
         )
