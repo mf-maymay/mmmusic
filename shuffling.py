@@ -164,7 +164,7 @@ def smart_shuffle(tracks, mode="balanced", use_scores=True):
 
     # playlist smoothing
     cycle_len = len(order)
-
+    swap_count = 0
     last_swap = 0
 
     for i in range(MAX_SMOOTH_CYCLES * cycle_len - 2):
@@ -179,12 +179,12 @@ def smart_shuffle(tracks, mode="balanced", use_scores=True):
                 order[(i + 1) % cycle_len],
             )
             last_swap = i
+            swap_count += 1
 
         elif i - last_swap > cycle_len:
-            print(f"final swap after {i // cycle_len} cycles")
             break
-    else:
-        print("max smooth cycles reached")
+
+    print(f"smoothed after {i // cycle_len} cycles and {swap_count} swaps")
 
     return order
 
