@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from functools import partial
 import numpy as np
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
@@ -34,7 +33,7 @@ def quick_pick(items: list, add_to_left: callable) -> list:
     right = [items.pop()]
 
     for item in items:
-        if add_to_left(left, right, item, items=items):
+        if add_to_left(left, right, item, items):
             left.append(item)
         else:
             right.append(item)
@@ -60,27 +59,33 @@ def _get_average_values(left, right, to_add, values) -> dict:
     return averages
 
 
-def _balanced_picker(left, right, to_add, values, items) -> bool:
-    # add item to left if diff less with item in left than in right
-    averages = _get_average_values(left, right, to_add, values)
-    return cosine(averages["left with new"], averages["right"]) < cosine(
-        averages["left"], averages["right with new"]
-    )
+def _balanced_picker(values):
+    def picker(left, right, to_add, items) -> bool:
+        # add item to left if diff less with item in left than in right
+        averages = _get_average_values(left, right, to_add, values)
+        return cosine(averages["left with new"], averages["right"]) < cosine(
+            averages["left"], averages["right with new"]
+        )
+
+    return picker
 
 
-def _story_picker(left, right, to_add, values, items) -> bool:
-    # maximize polarity
-    averages = _get_average_values(left, right, to_add, values)
-    return cosine(averages["left with new"], averages["right"]) > cosine(
-        averages["left"], averages["right with new"]
-    )
+def _story_picker(values):
+    def picker(left, right, to_add, items) -> bool:
+        # maximize polarity
+        averages = _get_average_values(left, right, to_add, values)
+        return cosine(averages["left with new"], averages["right"]) > cosine(
+            averages["left"], averages["right with new"]
+        )
+
+    return picker
 
 
 def _smart_picker(balanced_picker, story_picker):
     def picker(left, right, to_add, items) -> bool:
         if len(items) > 325:  # average no. tracks per day
-            return balanced_picker(left, right, to_add, items=items)
-        return story_picker(left, right, to_add, items=items)
+            return balanced_picker(left, right, to_add, items)
+        return story_picker(left, right, to_add, items)
 
     return picker
 
@@ -167,15 +172,15 @@ def smart_shuffle(tracks, mode="balanced", use_scores=True):
         balanced_values = dict(zip(tracks, balanced_metrics))
         story_values = dict(zip(tracks, story_metrics))
 
-    balanced_func = partial(_balanced_picker, values=balanced_values)
-    story_func = partial(_story_picker, values=story_values)
+    balanced_picker = _balanced_picker(balanced_values)
+    story_picker = _story_picker(story_values)
 
     if mode == "balanced":
-        picker = balanced_func
+        picker = balanced_picker
     elif mode == "story":
-        picker = story_func
+        picker = story_picker
     else:
-        picker = _smart_picker(balanced_func, story_func)
+        picker = _smart_picker(balanced_picker, story_picker)
 
     order = quick_pick(tracks, picker)
 
