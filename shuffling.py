@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import numpy as np
+from pandas import to_datetime
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
+
+from album import Album
 
 MAX_SMOOTH_CYCLES = 30
 
@@ -91,11 +94,19 @@ def _smart_picker(balanced_picker, story_picker):
 
 
 def _balanced_metrics(track):
-    return [track[metric] for metric in METRICS] + [track["key"], track["mode"]]
+    return [track[metric] for metric in METRICS] + [
+        track["key"],
+        track["mode"],
+        track["duration_ms"],
+        to_datetime(Album(track.album_id)["release_date"]).toordinal(),
+    ]
 
 
 def _story_metrics(track):
-    return [track[metric] for metric in METRICS]
+    return (
+        [track[metric] for metric in METRICS]
+        + [to_datetime(Album(track.album_id)["release_date"]).toordinal()],
+    )
 
 
 def _swap_to_smooth(track_0, track_1, track_2, *, values):
