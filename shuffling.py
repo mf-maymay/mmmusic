@@ -103,10 +103,7 @@ def _balanced_metrics(track):
 
 
 def _story_metrics(track):
-    return (
-        [track[metric] for metric in METRICS]
-        + [to_datetime(Album(track.album_id)["release_date"]).toordinal()],
-    )
+    return [track[metric] for metric in METRICS]
 
 
 def _swap_to_smooth(track_0, track_1, track_2, *, values):
