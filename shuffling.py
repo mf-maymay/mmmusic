@@ -86,9 +86,9 @@ def _story_picker(values):
 
 def _smart_picker(balanced_picker, story_picker):
     def picker(left, right, to_add, items) -> bool:
-        if len(items) > 325:  # average no. tracks per day
-            return balanced_picker(left, right, to_add, items)
-        return story_picker(left, right, to_add, items)
+        if len(items) < 2276:  # average no. tracks per week
+            return story_picker(left, right, to_add, items)
+        return balanced_picker(left, right, to_add, items)
 
     return picker
 
