@@ -55,6 +55,11 @@ _playlists = [
         order_tracks_func=partial(smart_shuffle, mode="story"),
     ),
     Playlist(
+        "ALL - test mode",
+        get_tracks_func=all_user_tracks,
+        order_tracks_func=partial(smart_shuffle, mode="test"),
+    ),
+    Playlist(
         "classical",
         get_tracks_func=tracks_by_genre_pattern(
             ".*(classical|compositional).*",

@@ -93,6 +93,19 @@ def _smart_picker(balanced_picker, story_picker):
     return picker
 
 
+def _test_picker(balanced_picker, story_picker):
+    def picker(left, right, to_add, items) -> bool:
+        artists_seen = set()
+        for track in items:
+            artists = set(track.artist_ids)
+            if artists & artists_seen:
+                return balanced_picker(left, right, to_add, items)
+            artists_seen.update(artists)
+        return story_picker(left, right, to_add, items)
+
+    return picker
+
+
 def _balanced_metrics(track):
     return [track[metric] for metric in METRICS] + [
         track["key"],
@@ -167,9 +180,6 @@ def _scores(tracks, metrics):
 def smart_shuffle(tracks, mode="balanced", use_scores=True):
     tracks = list(tracks)  # XXX
 
-    if mode not in ("balanced", "story", "smart"):
-        raise ValueError("Invalid mode")
-
     balanced_metrics = np.array([_balanced_metrics(track) for track in tracks])
     story_metrics = np.array([_story_metrics(track) for track in tracks])
 
@@ -187,8 +197,12 @@ def smart_shuffle(tracks, mode="balanced", use_scores=True):
         picker = balanced_picker
     elif mode == "story":
         picker = story_picker
-    else:
+    elif mode == "smart":
         picker = _smart_picker(balanced_picker, story_picker)
+    elif mode == "test":
+        picker = _test_picker(balanced_picker, story_picker)
+    else:
+        raise ValueError("Invalid mode")
 
     order = quick_pick(tracks, picker)
 
