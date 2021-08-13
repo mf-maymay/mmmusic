@@ -23,8 +23,8 @@ METRICS = (
 shuffle = np.random.default_rng().shuffle
 
 
-def quick_pick(items: list, add_to_left: callable) -> list:
-    items = list(items)  # XXX
+def quick_pick(items: list, add_to_left: callable, left_seed=None) -> list:
+    items = list(items)
 
     if len(items) > 1:
         shuffle(items)
@@ -35,13 +35,22 @@ def quick_pick(items: list, add_to_left: callable) -> list:
     left = [items.pop()]
     right = [items.pop()]
 
+    if left_seed is not None:
+        left.insert(0, left_seed)
+
     for item in items:
         if add_to_left(left, right, item, items):
             left.append(item)
         else:
             right.append(item)
 
-    return quick_pick(left, add_to_left) + quick_pick(right, add_to_left)
+    if left_seed is not None:
+        del left[0]
+
+    new_left = quick_pick(left, add_to_left)
+    new_right = quick_pick(right, add_to_left, left_seed=new_left[-1])
+
+    return new_left + new_right
 
 
 def _get_average_values(left, right, to_add, values) -> dict:
