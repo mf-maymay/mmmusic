@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from functools import partial
-
 from playlist import Playlist
 from playlist_utils import (
     all_user_tracks,
@@ -9,7 +7,6 @@ from playlist_utils import (
     tracks_by_audio_feature,
     tracks_by_genre_pattern,
 )
-from shuffling import smart_shuffle
 
 
 _playlists = [
@@ -45,27 +42,11 @@ _playlists = [
     ),
     Playlist("ALL", get_tracks_func=all_user_tracks),
     Playlist(
-        "ALL - smart mode",
-        get_tracks_func=all_user_tracks,
-        order_tracks_func=partial(smart_shuffle, mode="smart"),
-    ),
-    Playlist(
-        "ALL - story mode",
-        get_tracks_func=all_user_tracks,
-        order_tracks_func=partial(smart_shuffle, mode="story"),
-    ),
-    Playlist(
-        "ALL - test mode",
-        get_tracks_func=all_user_tracks,
-        order_tracks_func=partial(smart_shuffle, mode="test"),
-    ),
-    Playlist(
         "classical",
         get_tracks_func=tracks_by_genre_pattern(
             ".*(classical|compositional).*",
             artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"],  # adrian younge
         ),
-        order_tracks_func=partial(smart_shuffle, mode="story"),
     ),
     Playlist(
         "countryish",

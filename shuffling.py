@@ -177,7 +177,7 @@ def _scores(tracks, metrics):
     return dict(zip(tracks, scores))
 
 
-def smart_shuffle(tracks, mode="balanced", use_scores=True):
+def smart_shuffle(tracks, mode="smart", use_scores=True):
     tracks = list(tracks)  # XXX
 
     balanced_metrics = np.array([_balanced_metrics(track) for track in tracks])
