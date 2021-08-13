@@ -95,15 +95,6 @@ def _story_picker(values):
 
 def _smart_picker(balanced_picker, story_picker):
     def picker(left, right, to_add, items) -> bool:
-        if len(items) < 2276:  # average no. tracks per week
-            return story_picker(left, right, to_add, items)
-        return balanced_picker(left, right, to_add, items)
-
-    return picker
-
-
-def _test_picker(balanced_picker, story_picker):
-    def picker(left, right, to_add, items) -> bool:
         artists_seen = set()
         for track in items:
             artists = set(track.artist_ids)
@@ -208,8 +199,6 @@ def smart_shuffle(tracks, mode="balanced", use_scores=True):
         picker = story_picker
     elif mode == "smart":
         picker = _smart_picker(balanced_picker, story_picker)
-    elif mode == "test":
-        picker = _test_picker(balanced_picker, story_picker)
     else:
         raise ValueError("Invalid mode")
 
