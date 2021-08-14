@@ -100,7 +100,7 @@ def shuffle_playlist(user, playlist_id):
             user._username, playlist_id, to_remove
         )
     # shuffle tracks
-    shuffled = smart_shuffle(tracks, user)
+    shuffled = smart_shuffle(tracks)
     # write back to playlist
     for subset in take_x_at_a_time(shuffled, 100):
         to_add = [track.id for track in subset]
