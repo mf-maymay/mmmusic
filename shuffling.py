@@ -204,6 +204,9 @@ def smart_shuffle(tracks, mode="smart", use_scores=True):
 
     order = quick_pick(tracks, picker)
 
+    if len(order) <= 2:
+        return order
+
     # playlist smoothing
     cycle_len = len(order)
     swap_count = 0
