@@ -42,6 +42,12 @@ _playlists = [
     ),
     Playlist("ALL", get_tracks_func=all_user_tracks),
     Playlist(
+        "bad vibes",
+        get_tracks_func=tracks_by_audio_feature(
+            lambda x: x["valence"] <= 0.10 and x["energy"] > 0.6
+        ),
+    ),
+    Playlist(
         "classical",
         get_tracks_func=tracks_by_genre_pattern(
             ".*(classical|compositional).*",
@@ -60,16 +66,18 @@ _playlists = [
         ),
     ),
     Playlist("hip hop", get_tracks_func=tracks_by_genre_pattern(".*hip hop.*")),
-    Playlist("japan", get_tracks_func=tracks_by_genre_pattern(".*(japan|j-).*")),
+    Playlist(
+        "japan",
+        get_tracks_func=tracks_by_genre_pattern(
+            ".*(japan|j-).*",
+            artists_to_exclude=["3BG0nwVh3Gc7cuT4XdsLtt"],  # joe henderson
+        ),
+    ),
     Playlist(
         "jazz",
         get_tracks_func=tracks_by_genre_pattern(
             "^(?!.*?(dark|nu|jazz metal|jazz rap|jazztronica)).*jazz.*"
         ),
-    ),
-    Playlist(
-        "low-valence",
-        get_tracks_func=tracks_by_audio_feature(lambda x: x["valence"] <= 0.04),
     ),
     Playlist(
         "metal", get_tracks_func=tracks_by_genre_pattern(".*(doom|metal|zeuhl).*")
