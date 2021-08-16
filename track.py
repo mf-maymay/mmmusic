@@ -25,6 +25,9 @@ class AudioFeatures(SpotifyObjectBase):
         return features
 
 
+AudioFeatures.fetch_from_shelve()
+
+
 class Track(SpotifyObjectBase):
     FIELDS = ("id", "name", "album_id", "artist_ids", "_audio_features")
     __slots__ = (*FIELDS, "info")  # XXX
@@ -50,6 +53,9 @@ class Track(SpotifyObjectBase):
         if self._audio_features is None:
             self._audio_features = AudioFeatures(self.id)
         return self._audio_features
+
+
+# Track.fetch_from_shelve()
 
 
 def get_audio_features(tracks):

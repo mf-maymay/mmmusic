@@ -18,21 +18,6 @@ def _cache_key(cls, id=None, *, info=None):
     return cls, info["id"]
 
 
-def _shelve_key(cls, id):
-    return f"{cls.__name__}-{id}"
-
-
-def _from_shelve(func):
-    def wrapped(cls, id=None, *, info=None):
-        if id is not None and info is None:
-            key = _shelve_key(cls, id=id)
-            with shelve.open(_SHELVE_NAME) as shelf:
-                if key in shelf:
-                    return func(cls, info=shelf[key])
-        return func(cls, id=id, info=info)
-    return wrapped
-
-
 class SpotifyObjectBase:
     FIELDS: tuple
 
@@ -46,7 +31,6 @@ class SpotifyObjectBase:
         self.name = self.info["name"]
 
     @Cache.with_key_func(_cache_key)
-    @_from_shelve
     def __new__(cls, id=None, *, info=None):  # TODO: kwargs
         if id is None and info is None:
             raise ValueError("Must supply either id or info")
@@ -55,6 +39,15 @@ class SpotifyObjectBase:
     @classmethod
     def full_response(cls, id):
         raise NotImplementedError
+
+    @classmethod
+    def fetch_from_shelve(cls):
+        with shelve.open(_SHELVE_NAME) as shelf:
+            for key, info in shelf.items():
+                key_cls, key_id = key.split("-")
+                if key_cls == cls.__name__:
+                    # print("shelve hit!")  # XXX
+                    _ = cls(info=info)
 
     def __eq__(self, other):
         return hash(self) == hash(other)
@@ -89,6 +82,6 @@ class SpotifyObjectBase:
 def shelve_spotify_objects():
     with shelve.open(_SHELVE_NAME) as shelf:
         for (cls, id), spotify_object in SpotifyObjectBase.__new__.dict.items():
-            key = _shelve_key(cls, id)
+            key = f"{cls.__name__}-{id}"
             if key not in shelf:
                 shelf[key] = spotify_object.info

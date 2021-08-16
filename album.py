@@ -25,6 +25,8 @@ class Album(SpotifyObjectBase):
         ]
 
 
+Album.fetch_from_shelve()
+
 if __name__ == "__main__":
     album = Album("2w1YJXWMIco6EBf0CovvVN")
 
