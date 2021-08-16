@@ -23,20 +23,16 @@ METRICS = (
 shuffle = np.random.default_rng().shuffle
 
 
-def quick_pick(items: list, add_to_left: callable, left_seed=None) -> list:
+def quick_pick(items: list, add_to_left: callable, left_neighbor=None) -> list:
     items = list(items)
 
-    if len(items) > 1:
-        shuffle(items)
-
-    if len(items) <= 2:
+    if len(items) < 2:
         return items
+
+    shuffle(items)
 
     left = [items.pop()]
     right = [items.pop()]
-
-    if left_seed is not None:
-        left.insert(0, left_seed)
 
     for item in items:
         if add_to_left(left, right, item, items):
@@ -44,11 +40,12 @@ def quick_pick(items: list, add_to_left: callable, left_seed=None) -> list:
         else:
             right.append(item)
 
-    if left_seed is not None:
-        del left[0]
+    # If left_neighbor would not belong to left, then swap left and right.
+    if left_neighbor is not None and not add_to_left(left, right, left_neighbor, items):
+        left, right = right, left
 
     new_left = quick_pick(left, add_to_left)
-    new_right = quick_pick(right, add_to_left, left_seed=new_left[-1])
+    new_right = quick_pick(right, add_to_left, left_neighbor=new_left[-1])
 
     return new_left + new_right
 
