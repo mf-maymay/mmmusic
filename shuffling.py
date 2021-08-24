@@ -68,15 +68,54 @@ def _get_average_values(left, right, to_add, values) -> dict:
     return averages
 
 
+def _get_categorical_scores(left, right, to_add) -> dict:
+    scores = {}
+
+    # key, mode, artist
+    left_values = [
+        sum(track["key"] == to_add["key"] for track in left),
+        sum(track["mode"] == to_add["mode"] for track in left),
+        sum(track.artist_ids[0] == to_add.artist_ids[0] for track in left),
+    ]
+    scores["left"] = [x / len(left) for x in left_values]
+    scores["left with new"] = [(x + 1) / (len(left) + 1) for x in left_values]
+
+    right_values = [
+        sum(track["key"] == to_add["key"] for track in right),
+        sum(track["mode"] == to_add["mode"] for track in right),
+        sum(track.artist_ids[0] == to_add.artist_ids[0] for track in right),
+    ]
+    scores["right"] = [x / len(right) for x in right_values]
+    scores["right with new"] = [(x + 1) / (len(right) + 1) for x in right_values]
+
+    return scores
+
+
+def _balanced_metrics(track):
+    return [track[metric] for metric in METRICS] + [
+        track["duration_ms"],
+        to_datetime(Album(track.album_id)["release_date"]).toordinal(),
+    ]
+
+
 def _balanced_picker(values):
     def picker(left, right, to_add, items) -> bool:
         # add item to left if diff less with item in left than in right
         averages = _get_average_values(left, right, to_add, values)
-        return cosine(averages["left with new"], averages["right"]) < cosine(
-            averages["left"], averages["right with new"]
+        scores = _get_categorical_scores(left, right, to_add)
+        return cosine(
+            np.append(averages["left with new"], scores["left with new"]),
+            np.append(averages["right"], scores["right"]),
+        ) < cosine(
+            np.append(averages["left"], scores["left"]),
+            np.append(averages["right with new"], scores["right with new"]),
         )
 
     return picker
+
+
+def _story_metrics(track):
+    return [track[metric] for metric in METRICS]
 
 
 def _story_picker(values):
@@ -101,19 +140,6 @@ def _smart_picker(balanced_picker, story_picker):
         return story_picker(left, right, to_add, items)
 
     return picker
-
-
-def _balanced_metrics(track):
-    return [track[metric] for metric in METRICS] + [
-        track["key"],
-        track["mode"],
-        track["duration_ms"],
-        to_datetime(Album(track.album_id)["release_date"]).toordinal(),
-    ]
-
-
-def _story_metrics(track):
-    return [track[metric] for metric in METRICS]
 
 
 def _swap_to_smooth(track_0, track_1, track_2, *, values):
@@ -247,5 +273,4 @@ if __name__ == "__main__":
     ]
 
     ordered = smart_shuffle(tracks)
-    ordered_by_story_mode = smart_shuffle(tracks, mode="story")
-    ordered_by_smart_mode = smart_shuffle(tracks, mode="smart")
+    ordered_by_story_mode = smart_shuffle(tracks, mode="balanced")
