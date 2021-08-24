@@ -62,7 +62,7 @@ _playlists = [
     Playlist(
         "good vibes",
         get_tracks_func=tracks_by_audio_feature(
-            lambda x: x["danceability"] >= 0.6 and x["valence"] >= 0.75
+            lambda x: x["danceability"] >= 0.5 and x["valence"] >= 0.85
         ),
     ),
     Playlist("hip hop", get_tracks_func=tracks_by_genre_pattern(".*hip hop.*")),
@@ -87,10 +87,6 @@ _playlists = [
         get_tracks_func=tracks_by_genre_pattern(
             "^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|neofolk|" "world).*"
         ),
-    ),
-    Playlist(
-        "popular artists",
-        get_tracks_func=tracks_by_artist_attribute(lambda x: x.popularity >= 75),
     ),
     Playlist("post-rock", get_tracks_func=tracks_by_genre_pattern(".*post-rock.*")),
     Playlist(
