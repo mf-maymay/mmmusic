@@ -1,23 +1,18 @@
 # -*- coding: utf-8 -*-
-from math import ceil
 from shuffling import smart_shuffle
-from utils import no_timeout
+from utils import no_timeout, take_x_at_a_time
 
 
 class Playlist(object):
     def __init__(
-        self,
-        name,
-        *,
-        get_tracks_func,
-        order_tracks_func=smart_shuffle
+        self, name, *, description="", get_tracks_func, order_tracks_func=smart_shuffle
     ):
         self.name = name
+        self.description = description
 
         self._get_tracks_func = get_tracks_func
         self._order_tracks_func = order_tracks_func
 
-        self.description = self._get_tracks_func.__doc__ or ""
         self.tracks = []
 
     def get_tracks(self, user):
@@ -25,7 +20,7 @@ class Playlist(object):
 
     def order_tracks(self):
         if not self.tracks:
-            raise ValueError("self.tracks is empty")
+            raise ValueError("No tracks to order")
 
         self.tracks = self._order_tracks_func(self.tracks)
 
@@ -35,28 +30,14 @@ class Playlist(object):
             self.get_tracks(user)
             self.order_tracks(user)
 
-        if (
-            not confirm or
-            input(f"Create playlist '{self.name}'? (y/n): ")[0] in "yY"
-        ):
-            print(f"Creating '{self.name}'...")
+        if not confirm or input(f"Create playlist '{self.name}'? (y/n): ")[0] in "yY":
+            print(f"Creating '{self.name}' ...")
 
-            user.setup_sp(scope="playlist-modify-private")  # XXX
+            user.setup_sp(scope="playlist-modify-private")
 
             playlist = user.sp.user_playlist_create(
-                user._username,
-                self.name,
-                public=False,
-                description=self.description
+                user._username, self.name, public=False, description=self.description
             )
 
-            for i in range(ceil(len(self.tracks) / 100)):
-                to_add = [
-                    track.id
-                    for track in self.tracks[(100 * i):(100 * (i + 1))]
-                ]
-                user.sp.user_playlist_add_tracks(
-                    user._username,
-                    playlist["id"],
-                    to_add
-                )
+            for to_add in take_x_at_a_time([track.id for track in self.tracks], 100):
+                user.sp.user_playlist_add_tracks(user._username, playlist["id"], to_add)
