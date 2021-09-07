@@ -34,12 +34,6 @@ _playlists = [
             lambda x: x["release_date"].startswith("200")
         ),
     ),
-    Playlist(
-        "2010s",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: x["release_date"].startswith("201")
-        ),
-    ),
     Playlist("ALL", get_tracks_func=all_user_tracks),
     Playlist(
         "bad vibes",
@@ -61,8 +55,9 @@ _playlists = [
     Playlist("escape room", get_tracks_func=tracks_by_genre_pattern(".*escape room.*")),
     Playlist(
         "good vibes",
+        description="high danceability. extreme valence",
         get_tracks_func=tracks_by_audio_feature(
-            lambda x: x["danceability"] >= 0.5 and x["valence"] >= 0.85
+            lambda x: x["danceability"] >= 0.5 and x["valence"] >= 0.9
         ),
     ),
     Playlist("hip hop", get_tracks_func=tracks_by_genre_pattern(".*hip hop.*")),
@@ -76,7 +71,8 @@ _playlists = [
     Playlist(
         "jazz",
         get_tracks_func=tracks_by_genre_pattern(
-            "^(?!.*?(dark|nu|jazz metal|jazz rap|jazztronica)).*jazz.*"
+            "^(?!.*?(core|dark|fusion|nu|jazz metal|jazz rap|jazztronica)).*jazz.*",
+            artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"],  # adrian younge
         ),
     ),
     Playlist(
@@ -96,6 +92,12 @@ _playlists = [
         ),
     ),
     Playlist("punkish", get_tracks_func=tracks_by_genre_pattern(".*punk.*")),
+    Playlist(
+        "since 2010",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: int(x["release_date"].split("-")[0]) >= 2010
+        ),
+    ),
     Playlist(
         "studying",
         get_tracks_func=tracks_by_audio_feature(
