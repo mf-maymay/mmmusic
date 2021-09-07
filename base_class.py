@@ -26,6 +26,9 @@ class SpotifyObjectBase:
     use_name_for_repr = False  # Use to replace default repr with name.
 
     def __init__(self, id=None, *, info=None):
+        # Skip already-initialized objects
+        if hasattr(self, "id"):
+            return
         self.info = info if info else self.full_response(id)
         self.id = self.info["id"]
         self.name = self.info["name"]
@@ -46,8 +49,7 @@ class SpotifyObjectBase:
             for key, info in shelf.items():
                 key_cls, key_id = key.split("-")
                 if key_cls == cls.__name__:
-                    # print("shelve hit!")  # XXX
-                    _ = cls(info=info)
+                    cls(info=info)  # Implicitly create object in cache from info.
 
     def __eq__(self, other):
         return hash(self) == hash(other)
