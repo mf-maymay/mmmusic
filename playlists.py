@@ -37,6 +37,7 @@ _playlists = [
     Playlist("ALL", get_tracks_func=all_user_tracks),
     Playlist(
         "bad vibes",
+        description="high energy, low valence",
         get_tracks_func=tracks_by_audio_feature(
             lambda x: x["valence"] <= 0.10 and x["energy"] > 0.6
         ),
@@ -44,54 +45,81 @@ _playlists = [
     Playlist(
         "classical",
         get_tracks_func=tracks_by_genre_pattern(
-            ".*(classical|compositional).*",
+            pattern := ".*(classical|compositional).*",
             artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"],  # adrian younge
         ),
+        description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "countryish",
-        get_tracks_func=tracks_by_genre_pattern(".*(americana|country|cow).*"),
+        get_tracks_func=tracks_by_genre_pattern(
+            pattern := ".*(americana|country|cow).*"
+        ),
+        description=f"genre matches '{pattern}'",
     ),
-    Playlist("escape room", get_tracks_func=tracks_by_genre_pattern(".*escape room.*")),
+    Playlist(
+        "escape room",
+        get_tracks_func=tracks_by_genre_pattern(pattern := ".*escape room.*"),
+        description=f"genre matches '{pattern}'",
+    ),
     Playlist(
         "good vibes",
-        description="high danceability. extreme valence",
+        description="high danceability, high valence",
         get_tracks_func=tracks_by_audio_feature(
             lambda x: x["danceability"] >= 0.5 and x["valence"] >= 0.9
         ),
     ),
-    Playlist("hip hop", get_tracks_func=tracks_by_genre_pattern(".*hip hop.*")),
+    Playlist(
+        "hip hop",
+        get_tracks_func=tracks_by_genre_pattern(pattern := ".*hip hop.*"),
+        description=f"genre matches '{pattern}'",
+    ),
     Playlist(
         "japan",
         get_tracks_func=tracks_by_genre_pattern(
-            ".*(japan|j-).*",
+            pattern := ".*(japan|j-).*",
             artists_to_exclude=["3BG0nwVh3Gc7cuT4XdsLtt"],  # joe henderson
         ),
+        description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "jazz",
         get_tracks_func=tracks_by_genre_pattern(
-            "^(?!.*?(core|dark|fusion|nu|jazz metal|jazz rap|jazztronica)).*jazz.*",
+            pattern := "^(?!.*?(core|dark|fusion|nu|jazz metal|jazz rap|jazztronica))"
+            ".*jazz.*",
             artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"],  # adrian younge
         ),
+        description=f"genre matches '{pattern}'",
     ),
     Playlist(
-        "metal", get_tracks_func=tracks_by_genre_pattern(".*(doom|metal|zeuhl).*")
+        "metal",
+        get_tracks_func=tracks_by_genre_pattern(pattern := ".*(doom|metal|zeuhl).*"),
+        description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "oblivion",
         get_tracks_func=tracks_by_genre_pattern(
-            "^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|neofolk|" "world).*"
+            pattern := "^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|neofolk|"
+            "world).*"
         ),
+        description=f"genre matches '{pattern}'",
     ),
-    Playlist("post-rock", get_tracks_func=tracks_by_genre_pattern(".*post-rock.*")),
+    Playlist(
+        "post-rock",
+        get_tracks_func=tracks_by_genre_pattern(pattern := ".*post-rock.*"),
+        description=f"genre matches '{pattern}'",
+    ),
     Playlist(
         "pre-1970",
         get_tracks_func=tracks_by_album_attribute(
             lambda x: int(x["release_date"].split("-")[0]) < 1970
         ),
     ),
-    Playlist("punkish", get_tracks_func=tracks_by_genre_pattern(".*punk.*")),
+    Playlist(
+        "punkish",
+        get_tracks_func=tracks_by_genre_pattern(pattern := ".*punk.*"),
+        description=f"genre matches '{pattern}'",
+    ),
     Playlist(
         "since 2010",
         get_tracks_func=tracks_by_album_attribute(
@@ -100,6 +128,7 @@ _playlists = [
     ),
     Playlist(
         "studying",
+        description="instrumental, low energy, tempo <= 120 bpm",
         get_tracks_func=tracks_by_audio_feature(
             lambda x: x["instrumentalness"] >= 0.8
             and x["energy"] <= 0.5
@@ -108,7 +137,10 @@ _playlists = [
     ),
     Playlist(
         "tropical",
-        get_tracks_func=tracks_by_genre_pattern(".*(brazil|latin|mpb|reggae).*"),
+        get_tracks_func=tracks_by_genre_pattern(
+            pattern := ".*(brazil|latin|mpb|reggae).*"
+        ),
+        description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "unpopular artists",
