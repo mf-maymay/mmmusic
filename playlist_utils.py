@@ -16,21 +16,19 @@ def all_user_tracks(user):
     return get_tracks_from_albums(user.albums())
 
 
-def tracks_by_album_attribute(album_filter_func):  # XXX
+def tracks_by_album_attribute(album_filter_func):
     def get_tracks(user):
         albums = [album for album in user.albums() if album_filter_func(album)]
         return get_tracks_from_albums(albums)
 
-    get_tracks.__doc__ = "tracks_by_artist_attribute(...)"
     return get_tracks
 
 
-def tracks_by_artist_attribute(artist_filter_func):  # XXX
+def tracks_by_artist_attribute(artist_filter_func):
     def get_tracks(user):
         artists = [artist for artist in user.artists() if artist_filter_func(artist)]
         return get_tracks_from_albums(albums_from_artists(user, artists))
 
-    get_tracks.__doc__ = "tracks_by_artist_attribute(...)"
     return get_tracks
 
 
@@ -42,7 +40,6 @@ def tracks_by_track_attribute(track_filter_func, base=None):  # XXX
             all_tracks = base(user)
         return [track for track in all_tracks if track_filter_func(track)]
 
-    get_tracks.__doc__ = "tracks_by_track_attribute(...)"
     return get_tracks
 
 
@@ -59,7 +56,6 @@ def tracks_by_audio_feature(features_filter_func, base=None):  # XXX
             if features_filter_func(features)
         ]
 
-    get_tracks.__doc__ = "tracks_by_audio_feature(...)"
     return get_tracks
 
 
@@ -71,7 +67,6 @@ def tracks_by_genre_pattern(pattern, artists_to_exclude=()):
         albums = albums_from_artists(user, artists)
         return get_tracks_from_albums(albums)
 
-    get_tracks.__doc__ = f"tracks_by_genre_pattern({repr(pattern)})"
     return get_tracks
 
 
@@ -100,7 +95,6 @@ def tracks_from_playlist(playlist_id):
 
         return tracks
 
-    get_tracks.__doc__ = f"tracks_from_playlist({repr(playlist_id)})"
     return get_tracks
 
 
