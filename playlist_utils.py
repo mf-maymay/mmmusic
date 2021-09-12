@@ -75,6 +75,20 @@ def tracks_by_genre_pattern(pattern, artists_to_exclude=()):
     return get_tracks
 
 
+def tracks_by_release_year(start_year, end_year):
+    if start_year is None:
+        start_year = float("-inf")
+    if end_year is None:
+        end_year = float("inf")
+
+    def release_date_filter(album):
+        return album["album_type"] != "compilation" and (
+            start_year <= int(album["release_date"].split("-")[0]) <= end_year
+        )
+
+    return tracks_by_album_attribute(release_date_filter)
+
+
 def tracks_from_playlist(playlist_id):
     def get_tracks(user):
         tracks = []
