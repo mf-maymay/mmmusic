@@ -28,7 +28,7 @@ class Playlist(object):
     def create(self, user, confirm=True):
         if not self.tracks:
             self.get_tracks(user)
-            self.order_tracks(user)
+            self.order_tracks()
 
         if not confirm or input(f"Create playlist '{self.name}'? (y/n): ")[0] in "yY":
             print(f"Creating '{self.name}' ...")
