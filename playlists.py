@@ -2,38 +2,18 @@
 from playlist import Playlist
 from playlist_utils import (
     all_user_tracks,
-    tracks_by_album_attribute,
     tracks_by_artist_attribute,
     tracks_by_audio_feature,
     tracks_by_genre_pattern,
+    tracks_by_release_year,
 )
 
 
 _playlists = [
-    Playlist(
-        "1970s",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: x["release_date"].startswith("197")
-        ),
-    ),
-    Playlist(
-        "1980s",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: x["release_date"].startswith("198")
-        ),
-    ),
-    Playlist(
-        "1990s",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: x["release_date"].startswith("199")
-        ),
-    ),
-    Playlist(
-        "2000s",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: x["release_date"].startswith("200")
-        ),
-    ),
+    Playlist("1970s", get_tracks_func=tracks_by_release_year(1970, 1979)),
+    Playlist("1980s", get_tracks_func=tracks_by_release_year(1980, 1989)),
+    Playlist("1990s", get_tracks_func=tracks_by_release_year(1990, 1999)),
+    Playlist("2000s", get_tracks_func=tracks_by_release_year(2000, 2009)),
     Playlist("ALL", get_tracks_func=all_user_tracks),
     Playlist(
         "bad vibes",
@@ -97,35 +77,17 @@ _playlists = [
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
-        "oblivion",
-        get_tracks_func=tracks_by_genre_pattern(
-            pattern := "^(?!.*?trap).*(ambient|dark|instrumental rock|medieval|neofolk|"
-            "world).*"
-        ),
-        description=f"genre matches '{pattern}'",
-    ),
-    Playlist(
         "post-rock",
         get_tracks_func=tracks_by_genre_pattern(pattern := ".*post-rock.*"),
         description=f"genre matches '{pattern}'",
     ),
-    Playlist(
-        "pre-1970",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: int(x["release_date"].split("-")[0]) < 1970
-        ),
-    ),
+    Playlist("pre-1970", get_tracks_func=tracks_by_release_year(None, 1969)),
     Playlist(
         "punkish",
         get_tracks_func=tracks_by_genre_pattern(pattern := ".*punk.*"),
         description=f"genre matches '{pattern}'",
     ),
-    Playlist(
-        "since 2010",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: int(x["release_date"].split("-")[0]) >= 2010
-        ),
-    ),
+    Playlist("since 2010", get_tracks_func=tracks_by_release_year(2010, None)),
     Playlist(
         "studying",
         description="instrumental, low energy, tempo <= 120 bpm",
