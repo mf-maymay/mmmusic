@@ -3,9 +3,9 @@ from playlist import Playlist
 from playlist_utils import (
     all_user_tracks,
     tracks_by_artist_attribute,
-    tracks_by_audio_feature,
     tracks_by_genre_pattern,
     tracks_by_release_year,
+    tracks_by_track_attribute,
 )
 
 
@@ -18,7 +18,7 @@ _playlists = [
     Playlist(
         "bad vibes",
         description="high energy, low valence",
-        get_tracks_func=tracks_by_audio_feature(
+        get_tracks_func=tracks_by_track_attribute(
             lambda x: x["valence"] <= 0.10 and x["energy"] > 0.6
         ),
     ),
@@ -45,7 +45,7 @@ _playlists = [
     Playlist(
         "good vibes",
         description="high danceability, high valence",
-        get_tracks_func=tracks_by_audio_feature(
+        get_tracks_func=tracks_by_track_attribute(
             lambda x: x["danceability"] >= 0.5 and x["valence"] >= 0.9
         ),
     ),
@@ -91,7 +91,7 @@ _playlists = [
     Playlist(
         "studying",
         description="instrumental, low energy, tempo <= 120 bpm",
-        get_tracks_func=tracks_by_audio_feature(
+        get_tracks_func=tracks_by_track_attribute(
             lambda x: x["instrumentalness"] >= 0.8
             and x["energy"] <= 0.5
             and x["tempo"] <= 120

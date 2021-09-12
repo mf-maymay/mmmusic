@@ -43,22 +43,6 @@ def tracks_by_track_attribute(track_filter_func, base=None):  # XXX
     return get_tracks
 
 
-def tracks_by_audio_feature(features_filter_func, base=None):  # XXX
-    def get_tracks(user):
-        if base is None:
-            all_tracks = all_user_tracks(user)
-        else:
-            all_tracks = base(user)
-        all_features = get_audio_features(all_tracks)
-        return [
-            track
-            for track, features in zip(all_tracks, all_features)
-            if features_filter_func(features)
-        ]
-
-    return get_tracks
-
-
 def tracks_by_genre_pattern(pattern, artists_to_exclude=()):
     def get_tracks(user):
         artists = artists_of_genres_matching(pattern, user.artists()) - set(
