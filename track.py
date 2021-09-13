@@ -58,10 +58,6 @@ class Track(SpotifyObjectBase):
 # Track.fetch_from_shelve()
 
 
-def get_audio_features(tracks):
-    return [AudioFeatures(track) for track in tracks]
-
-
 def get_tracks_from_albums(albums):
     return tuple(track for album in albums for track in album.tracks())
 
