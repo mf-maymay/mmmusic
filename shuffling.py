@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from pandas import to_datetime
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
 
@@ -20,7 +19,7 @@ METRICS = (
     "tempo",
 )
 
-shuffle = np.random.default_rng().shuffle
+_shuffle = np.random.default_rng().shuffle
 
 
 def quick_pick(items: list, add_to_left: callable, left_neighbor=None) -> list:
@@ -29,7 +28,7 @@ def quick_pick(items: list, add_to_left: callable, left_neighbor=None) -> list:
     if len(items) < 2:
         return items
 
-    shuffle(items)
+    _shuffle(items)
 
     left = [items.pop()]
     right = [items.pop()]
@@ -94,7 +93,7 @@ def _get_categorical_scores(left, right, to_add) -> dict:
 def _balanced_metrics(track):
     return [track[metric] for metric in METRICS] + [
         track["duration_ms"],
-        to_datetime(Album(track.album_id)["release_date"]).toordinal(),
+        int(Album(track.album_id)["release_date"].split("-")[0]),
     ]
 
 
@@ -115,7 +114,9 @@ def _balanced_picker(values):
 
 
 def _story_metrics(track):
-    return [track[metric] for metric in METRICS]
+    return [track[metric] for metric in METRICS] + [
+        int(Album(track.album_id)["release_date"].split("-")[0])
+    ]
 
 
 def _story_picker(values):
