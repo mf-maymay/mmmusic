@@ -258,7 +258,7 @@ def plot(
     if save:
         os.makedirs("output", exist_ok=True)
         fig.savefig(
-            "output/" + "-".join(a.id for a in sorted(seeds)) + ".png",
+            "output/" + "-".join(sorted(a.id for a in seeds)) + ".png",
             facecolor=fig_color,
         )
 
