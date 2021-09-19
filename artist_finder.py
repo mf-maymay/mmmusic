@@ -31,8 +31,7 @@ def expand(artists, graph=None) -> nx.Graph:
     graph.add_nodes_from(artists)
 
     for artist in artists:
-        graph.add_edges_from((artist, related)
-                             for related in artist.related())
+        graph.add_edges_from((artist, related) for related in artist.related())
 
     return graph
 
@@ -62,8 +61,9 @@ def grow(seeds, graph=None) -> nx.Graph:
 
     new_artists = seeds
 
-    while not all(nx.has_path(graph, source, target)
-                  for source, target in combinations(seeds, 2)):
+    while not all(
+        nx.has_path(graph, source, target) for source, target in combinations(seeds, 2)
+    ):
         new_graph = expand(new_artists, graph)
         new_artists = new_graph.nodes - graph.nodes
         graph = new_graph
@@ -95,8 +95,7 @@ def trim(graph, keepers=()) -> nx.Graph:
 
     # Remove leaves until none left.
     while True:
-        to_remove = [x for x in graph.nodes
-                     if graph.degree(x) < 2 and x not in keepers]
+        to_remove = [x for x in graph.nodes if graph.degree(x) < 2 and x not in keepers]
         if to_remove:
             graph.remove_nodes_from(to_remove)
         else:
@@ -156,16 +155,17 @@ def paths_subgraph(graph, seeds, max_len=None) -> (nx.Graph, dict):
     return graph, paths
 
 
-def plot(graph,
-         seeds=(),  # for coloring purposes
-         near_color="#6177aa",
-         far_color="#0e1b3a",
-         edge_color="#000102",
-         font_color="#b9cdfb",
-         fig_color="#2e4272",
-         save=False,
-         **plot_kwargs  # passed to nx.draw
-         ) -> (plt.Figure, plt.Axes):
+def plot(
+    graph,
+    seeds=(),  # for coloring purposes
+    near_color="#6177aa",
+    far_color="#0e1b3a",
+    edge_color="#000102",
+    font_color="#b9cdfb",
+    fig_color="#2e4272",
+    save=False,
+    **plot_kwargs  # passed to nx.draw
+) -> (plt.Figure, plt.Axes):
     """
     Plots the graph.
 
@@ -205,8 +205,9 @@ def plot(graph,
 
     dist = {seed: 0 for seed in seeds}
 
-    if seeds and all(nx.has_path(graph, source, target)
-                     for source, target in combinations(seeds, 2)):  # XXX
+    if seeds and all(
+        nx.has_path(graph, source, target) for source, target in combinations(seeds, 2)
+    ):  # XXX
         pres = []
         dists = []
 
@@ -219,8 +220,7 @@ def plot(graph,
                 dists[i][artist] = dists[i][pre] + 1
 
         for artist_id in graph.nodes:
-            dist[artist_id] = min(map(lambda d: d.get(artist_id, 1),
-                                      dists))
+            dist[artist_id] = min(map(lambda d: d.get(artist_id, 1), dists))
 
     for artist_id in graph.nodes:
         if artist_id not in dist:
@@ -230,26 +230,26 @@ def plot(graph,
 
     color = {k: dist[k] / max_dist for k in graph.nodes}
 
-    node_labels = {artist_id:
-                   Artist(artist_id).name.replace(r"$", r"\$")
-                   for artist_id in graph.nodes}
+    node_labels = {
+        artist_id: Artist(artist_id).name.replace(r"$", r"\$")
+        for artist_id in graph.nodes
+    }
 
-    cmap = LinearSegmentedColormap.from_list("music",
-                                             [near_color,
-                                              far_color])
+    cmap = LinearSegmentedColormap.from_list("music", [near_color, far_color])
 
     fig, ax = plt.subplots(figsize=(16, 9))
 
-    nx.draw_kamada_kawai(graph,
-                         with_labels=True,
-                         ax=ax,
-                         cmap=cmap,
-                         node_color=[color[k] for k in graph.nodes],
-                         edge_color=edge_color,
-                         font_color=font_color,
-                         labels=node_labels,
-                         **plot_kwargs
-                         )
+    nx.draw_kamada_kawai(
+        graph,
+        with_labels=True,
+        ax=ax,
+        cmap=cmap,
+        node_color=[color[k] for k in graph.nodes],
+        edge_color=edge_color,
+        font_color=font_color,
+        labels=node_labels,
+        **plot_kwargs
+    )
 
     fig.set_facecolor(fig_color)
 
@@ -257,17 +257,15 @@ def plot(graph,
 
     if save:
         os.makedirs("output", exist_ok=True)
-        fig.savefig("output/" +
-                    "-".join(a.id for a in sorted(seeds)) +
-                    ".png",
-                    facecolor=fig_color)
+        fig.savefig(
+            "output/" + "-".join(a.id for a in sorted(seeds)) + ".png",
+            facecolor=fig_color,
+        )
 
     return fig, ax
 
 
-def grow_and_plot(*seeds,
-                  graph=None,
-                  **plot_kw) -> (nx.Graph, (plt.Figure, plt.Axes)):
+def grow_and_plot(*seeds, graph=None, **plot_kw) -> (nx.Graph, (plt.Figure, plt.Axes)):
     """
     Grows and plots the graph grown from seeds.
 
