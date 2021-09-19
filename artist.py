@@ -23,6 +23,7 @@ class Artist(SpotifyObjectBase):
         )
 
     @Cache
+    @no_timeout
     def related(self):
         return set(
             Artist(a["id"]) for a in self._sp.artist_related_artists(self.id)["artists"]
