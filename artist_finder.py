@@ -256,11 +256,13 @@ def plot(
     fig.tight_layout()
 
     if save:
-        os.makedirs("output", exist_ok=True)
-        fig.savefig(
-            "output/" + "-".join(sorted(a.id for a in seeds)) + ".png",
-            facecolor=fig_color,
+        filename = (
+            save
+            if not isinstance(save, bool)
+            else "output/" + "-".join(sorted(a.id for a in seeds)) + ".png"
         )
+        os.makedirs("output", exist_ok=True)  # XXX
+        fig.savefig(filename, facecolor=fig_color)
 
     return fig, ax
 
