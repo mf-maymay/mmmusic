@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+from calendar import month_name
+from datetime import datetime as dt
+
 from playlist import Playlist
 from playlist_utils import (
     all_user_tracks,
+    tracks_by_album_attribute,
     tracks_by_artist_attribute,
     tracks_by_genre_pattern,
     tracks_by_release_year,
@@ -35,6 +39,11 @@ _playlists = [
         get_tracks_func=tracks_by_genre_pattern(
             pattern := ".*(americana|country|cow).*"
         ),
+        description=f"genre matches '{pattern}'",
+    ),
+    Playlist(
+        "emo/math",
+        get_tracks_func=tracks_by_genre_pattern(pattern := ".*(emo|math).*"),
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
@@ -107,6 +116,16 @@ _playlists = [
     Playlist(
         "unpopular artists",
         get_tracks_func=tracks_by_artist_attribute(lambda x: x.popularity <= 25),
+    ),
+    Playlist(
+        month_name[(month := dt.today().month)],
+        description=f"albums released in {month_name[month]}",
+        get_tracks_func=tracks_by_album_attribute(
+            lambda x: x["release_date_precision"] == "day"
+            and dt.strptime(x["release_date"], "%Y-%m-%d").month == month
+            or x["release_date_precision"] == "month"
+            and dt.strptime(x["release_date"], "%Y-%m").month == month
+        ),
     ),
 ]
 
