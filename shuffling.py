@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+import json
+
 import numpy as np
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
 
 from album import Album
+from artist import Artist
 
 MAX_SMOOTH_CYCLES = 30
 
@@ -20,6 +23,12 @@ METRICS = (
 )
 
 _shuffle = np.random.default_rng().shuffle
+
+with open("genre_positions.json") as f:
+    _GENRE_POSITIONS = json.load(f)
+
+_DEFAULT_TOP = np.mean([pos["top"] for pos in _GENRE_POSITIONS.values()])
+_DEFAULT_LEFT = np.mean([pos["left"] for pos in _GENRE_POSITIONS.values()])
 
 
 def quick_pick(items: list, add_to_left: callable, left_neighbor=None) -> list:
@@ -90,10 +99,24 @@ def _get_categorical_scores(left, right, to_add) -> dict:
     return scores
 
 
+def _genre_position(track):
+    genres = set()
+    for artist in track.artist_ids:
+        genres |= Artist(artist).genres & _GENRE_POSITIONS.keys()
+
+    if not genres:
+        return _DEFAULT_TOP, _DEFAULT_LEFT
+
+    top = np.mean([_GENRE_POSITIONS[genre]["top"] for genre in genres])
+    left = np.mean([_GENRE_POSITIONS[genre]["left"] for genre in genres])
+    return top, left
+
+
 def _balanced_metrics(track):
     return [track[metric] for metric in METRICS] + [
         track["duration_ms"],
         int(Album(track.album_id)["release_date"].split("-")[0]),
+        *_genre_position(track),
     ]
 
 
@@ -115,7 +138,8 @@ def _balanced_picker(values):
 
 def _story_metrics(track):
     return [track[metric] for metric in METRICS] + [
-        int(Album(track.album_id)["release_date"].split("-")[0])
+        int(Album(track.album_id)["release_date"].split("-")[0]),
+        *_genre_position(track),
     ]
 
 
@@ -274,4 +298,3 @@ if __name__ == "__main__":
     ]
 
     ordered = smart_shuffle(tracks)
-    ordered_by_story_mode = smart_shuffle(tracks, mode="balanced")
