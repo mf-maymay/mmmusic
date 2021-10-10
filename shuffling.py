@@ -146,19 +146,6 @@ def _balanced_picker(tracks):
     return picker
 
 
-def _genre_picker(tracks):
-    values = _scores(tracks, _genre_position)
-
-    def picker(left, right, to_add, items) -> bool:
-        # maximize polarity
-        averages = _get_average_values(left, right, to_add, values)
-        return cosine(averages["left with new"], averages["right"]) > cosine(
-            averages["left"], averages["right with new"]
-        )
-
-    return picker
-
-
 def _story_metrics(track):
     return [track[metric] for metric in METRICS] + [
         int(Album(track.album_id)["release_date"].split("-")[0]),
@@ -166,8 +153,9 @@ def _story_metrics(track):
     ]
 
 
-def _story_picker(tracks):
-    values = _scores(tracks, _story_metrics)
+def _story_picker(tracks, values=None):
+    if values is None:
+        values = _scores(tracks, _story_metrics)
 
     def picker(left, right, to_add, items) -> bool:
         # maximize polarity
@@ -179,9 +167,26 @@ def _story_picker(tracks):
     return picker
 
 
-def _smart_picker(tracks):
-    balanced_picker = _balanced_picker(tracks)
+def _genre_picker(tracks):
+    genre_picker = _story_picker(tracks, values=_scores(tracks, _genre_position))
     story_picker = _story_picker(tracks)
+
+    ms_per_3_hours = 3.6e6 * 3
+
+    def picker(left, right, to_add, items) -> bool:
+        total_duration = sum(track["duration_ms"] for track in items)
+        if total_duration > ms_per_3_hours:
+            return genre_picker(left, right, to_add, items)
+        return story_picker(left, right, to_add, items)
+
+    return picker
+
+
+def _smart_picker(tracks, story_picker=None):
+    balanced_picker = _balanced_picker(tracks)
+
+    if story_picker is None:
+        story_picker = _story_picker(tracks)
 
     def picker(left, right, to_add, items) -> bool:
         artists_seen = set()
@@ -197,18 +202,8 @@ def _smart_picker(tracks):
 
 def _radio_picker(tracks):
     genre_picker = _genre_picker(tracks)
-    smart_picker = _smart_picker(tracks)
 
-    ms_per_hour = 3.6e6
-    ms_per_day = 8.62e7
-
-    def picker(left, right, to_add, items) -> bool:
-        total_duration = sum(track["duration_ms"] for track in items)
-        if ms_per_hour < total_duration < ms_per_day:
-            return genre_picker(left, right, to_add, items)
-        return smart_picker(left, right, to_add, items)
-
-    return picker
+    return _smart_picker(tracks, story_picker=genre_picker)
 
 
 def _swap_to_smooth(track_0, track_1, track_2, *, values):
@@ -328,3 +323,5 @@ if __name__ == "__main__":
     ]
 
     ordered = smart_shuffle(tracks)
+    ordered_by_genre = smart_shuffle(tracks, mode="genre")
+    ordered_by_radio = smart_shuffle(tracks, mode="radio")
