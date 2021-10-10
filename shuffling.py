@@ -99,6 +99,14 @@ def _get_categorical_scores(left, right, to_add) -> dict:
     return scores
 
 
+def _scores(tracks, metrics_func):
+    metrics = np.array([metrics_func(track) for track in tracks])
+    scores = metrics.copy()
+    for j, col in enumerate(metrics.T):
+        scores[:, j] = [percentileofscore(col, x, kind="mean") for x in col]
+    return dict(zip(tracks, scores))
+
+
 def _genre_position(track):
     genres = set()
     for artist in track.artist_ids:
@@ -120,7 +128,9 @@ def _balanced_metrics(track):
     ]
 
 
-def _balanced_picker(values):
+def _balanced_picker(tracks):
+    values = _scores(tracks, _balanced_metrics)
+
     def picker(left, right, to_add, items) -> bool:
         # add item to left if diff less with item in left than in right
         averages = _get_average_values(left, right, to_add, values)
@@ -136,14 +146,9 @@ def _balanced_picker(values):
     return picker
 
 
-def _story_metrics(track):
-    return [track[metric] for metric in METRICS] + [
-        int(Album(track.album_id)["release_date"].split("-")[0]),
-        *_genre_position(track),
-    ]
+def _genre_picker(tracks):
+    values = _scores(tracks, _genre_position)
 
-
-def _story_picker(values):
     def picker(left, right, to_add, items) -> bool:
         # maximize polarity
         averages = _get_average_values(left, right, to_add, values)
@@ -154,7 +159,30 @@ def _story_picker(values):
     return picker
 
 
-def _smart_picker(balanced_picker, story_picker):
+def _story_metrics(track):
+    return [track[metric] for metric in METRICS] + [
+        int(Album(track.album_id)["release_date"].split("-")[0]),
+        *_genre_position(track),
+    ]
+
+
+def _story_picker(tracks):
+    values = _scores(tracks, _story_metrics)
+
+    def picker(left, right, to_add, items) -> bool:
+        # maximize polarity
+        averages = _get_average_values(left, right, to_add, values)
+        return cosine(averages["left with new"], averages["right"]) > cosine(
+            averages["left"], averages["right with new"]
+        )
+
+    return picker
+
+
+def _smart_picker(tracks):
+    balanced_picker = _balanced_picker(tracks)
+    story_picker = _story_picker(tracks)
+
     def picker(left, right, to_add, items) -> bool:
         artists_seen = set()
         for track in items:
@@ -167,7 +195,10 @@ def _smart_picker(balanced_picker, story_picker):
     return picker
 
 
-def _radio_picker(smart_picker, genre_picker):
+def _radio_picker(tracks):
+    genre_picker = _genre_picker(tracks)
+    smart_picker = _smart_picker(tracks)
+
     ms_per_hour = 3.6e6
     ms_per_day = 8.62e7
 
@@ -231,37 +262,19 @@ def _swap_to_smooth(track_0, track_1, track_2, *, values):
     return swap_for_cosine
 
 
-def _scores(tracks, metrics_func):
-    metrics = np.array([metrics_func(track) for track in tracks])
-    scores = metrics.copy()
-    for j, col in enumerate(metrics.T):
-        scores[:, j] = [percentileofscore(col, x, kind="mean") for x in col]
-    return dict(zip(tracks, scores))
-
-
 def smart_shuffle(tracks, mode="smart"):
     tracks = list(tracks)
 
-    balanced_scores = _scores(tracks, _balanced_metrics)
-    genre_scores = _scores(tracks, _genre_position)
-    story_scores = _scores(tracks, _story_metrics)
-
-    balanced_picker = _balanced_picker(balanced_scores)
-    genre_picker = _story_picker(genre_scores)
-    story_picker = _story_picker(story_scores)
-    smart_picker = _smart_picker(balanced_picker, story_picker)
-    radio_picker = _radio_picker(smart_picker, genre_picker)
-
     if mode == "balanced":
-        picker = balanced_picker
+        picker = _balanced_picker(tracks)
     elif mode == "genre":
-        picker = genre_picker
-    elif mode == "story":
-        picker = story_picker
-    elif mode == "smart":
-        picker = smart_picker
+        picker = _genre_picker(tracks)
     elif mode == "radio":
-        picker = radio_picker
+        picker = _radio_picker(tracks)
+    elif mode == "smart":
+        picker = _smart_picker(tracks)
+    elif mode == "story":
+        picker = _story_picker(tracks)
     else:
         raise ValueError("Invalid mode")
 
@@ -275,12 +288,14 @@ def smart_shuffle(tracks, mode="smart"):
     swap_count = 0
     last_swap = 0
 
+    scores_for_swaps = _scores(tracks, _balanced_metrics)
+
     for i in range(MAX_SMOOTH_CYCLES * cycle_len - 2):
         if _swap_to_smooth(
             order[i % cycle_len],
             order[(i + 1) % cycle_len],
             order[(i + 2) % cycle_len],
-            values=balanced_scores,
+            values=scores_for_swaps,
         ):
             order[(i + 1) % cycle_len], order[(i + 2) % cycle_len] = (
                 order[(i + 2) % cycle_len],
