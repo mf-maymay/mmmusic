@@ -27,6 +27,11 @@ _playlists = [
         order_tracks_func=partial(smart_shuffle, mode="genre"),
     ),
     Playlist(
+        "RADIO",
+        get_tracks_func=all_user_tracks,
+        order_tracks_func=partial(smart_shuffle, mode="radio"),
+    ),
+    Playlist(
         "bad vibes",
         description="high energy, low valence",
         get_tracks_func=tracks_by_track_attribute(
