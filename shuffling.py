@@ -225,25 +225,20 @@ def _scores(tracks, metrics):
     return dict(zip(tracks, scores))
 
 
-def smart_shuffle(tracks, mode="smart", use_scores=True):
-    tracks = list(tracks)  # XXX
+def smart_shuffle(tracks, mode="smart"):
+    tracks = list(tracks)
 
     balanced_metrics = np.array([_balanced_metrics(track) for track in tracks])
     genre_metrics = np.array([_genre_position(track) for track in tracks])
     story_metrics = np.array([_story_metrics(track) for track in tracks])
 
-    if use_scores:
-        balanced_values = _scores(tracks, balanced_metrics)
-        genre_values = _scores(tracks, genre_metrics)
-        story_values = _scores(tracks, story_metrics)
-    else:
-        balanced_values = dict(zip(tracks, balanced_metrics))
-        genre_values = dict(zip(tracks, genre_metrics))
-        story_values = dict(zip(tracks, story_metrics))
+    balanced_scores = _scores(tracks, balanced_metrics)
+    genre_scores = _scores(tracks, genre_metrics)
+    story_scores = _scores(tracks, story_metrics)
 
-    balanced_picker = _balanced_picker(balanced_values)
-    genre_picker = _story_picker(genre_values)
-    story_picker = _story_picker(story_values)
+    balanced_picker = _balanced_picker(balanced_scores)
+    genre_picker = _story_picker(genre_scores)
+    story_picker = _story_picker(story_scores)
 
     if mode == "balanced":
         picker = balanced_picker
@@ -271,7 +266,7 @@ def smart_shuffle(tracks, mode="smart", use_scores=True):
             order[i % cycle_len],
             order[(i + 1) % cycle_len],
             order[(i + 2) % cycle_len],
-            values=balanced_values,
+            values=balanced_scores,
         ):
             order[(i + 1) % cycle_len], order[(i + 2) % cycle_len] = (
                 order[(i + 2) % cycle_len],
