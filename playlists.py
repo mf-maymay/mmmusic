@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from calendar import month_name
 from datetime import datetime as dt
+from functools import partial
 
 from playlist import Playlist
 from playlist_utils import (
@@ -11,6 +12,7 @@ from playlist_utils import (
     tracks_by_release_year,
     tracks_by_track_attribute,
 )
+from shuffling import smart_shuffle
 
 
 _playlists = [
@@ -19,6 +21,11 @@ _playlists = [
     Playlist("1990s", get_tracks_func=tracks_by_release_year(1990, 1999)),
     Playlist("2000s", get_tracks_func=tracks_by_release_year(2000, 2009)),
     Playlist("ALL", get_tracks_func=all_user_tracks),
+    Playlist(
+        "ALL, by genre",
+        get_tracks_func=all_user_tracks,
+        order_tracks_func=partial(smart_shuffle, mode="genre"),
+    ),
     Playlist(
         "bad vibes",
         description="high energy, low valence",

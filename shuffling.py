@@ -229,20 +229,26 @@ def smart_shuffle(tracks, mode="smart", use_scores=True):
     tracks = list(tracks)  # XXX
 
     balanced_metrics = np.array([_balanced_metrics(track) for track in tracks])
+    genre_metrics = np.array([_genre_position(track) for track in tracks])
     story_metrics = np.array([_story_metrics(track) for track in tracks])
 
     if use_scores:
         balanced_values = _scores(tracks, balanced_metrics)
+        genre_values = _scores(tracks, genre_metrics)
         story_values = _scores(tracks, story_metrics)
     else:
         balanced_values = dict(zip(tracks, balanced_metrics))
+        genre_values = dict(zip(tracks, genre_metrics))
         story_values = dict(zip(tracks, story_metrics))
 
     balanced_picker = _balanced_picker(balanced_values)
+    genre_picker = _story_picker(genre_values)
     story_picker = _story_picker(story_values)
 
     if mode == "balanced":
         picker = balanced_picker
+    elif mode == "genre":
+        picker = genre_picker
     elif mode == "story":
         picker = story_picker
     elif mode == "smart":
