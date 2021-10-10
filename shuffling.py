@@ -218,7 +218,8 @@ def _swap_to_smooth(track_0, track_1, track_2, *, values):
     return swap_for_cosine
 
 
-def _scores(tracks, metrics):
+def _scores(tracks, metrics_func):
+    metrics = np.array([metrics_func(track) for track in tracks])
     scores = metrics.copy()
     for j, col in enumerate(metrics.T):
         scores[:, j] = [percentileofscore(col, x, kind="mean") for x in col]
@@ -228,13 +229,9 @@ def _scores(tracks, metrics):
 def smart_shuffle(tracks, mode="smart"):
     tracks = list(tracks)
 
-    balanced_metrics = np.array([_balanced_metrics(track) for track in tracks])
-    genre_metrics = np.array([_genre_position(track) for track in tracks])
-    story_metrics = np.array([_story_metrics(track) for track in tracks])
-
-    balanced_scores = _scores(tracks, balanced_metrics)
-    genre_scores = _scores(tracks, genre_metrics)
-    story_scores = _scores(tracks, story_metrics)
+    balanced_scores = _scores(tracks, _balanced_metrics)
+    genre_scores = _scores(tracks, _genre_position)
+    story_scores = _scores(tracks, _story_metrics)
 
     balanced_picker = _balanced_picker(balanced_scores)
     genre_picker = _story_picker(genre_scores)
