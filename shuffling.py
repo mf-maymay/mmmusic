@@ -168,9 +168,12 @@ def _smart_picker(balanced_picker, story_picker):
 
 
 def _radio_picker(smart_picker, genre_picker):
+    ms_per_hour = 3.6e6
+    ms_per_day = 8.62e7
+
     def picker(left, right, to_add, items) -> bool:
-        # tracks per hour: ~14, tracks per day: ~325
-        if 14 < len(items) < 325:
+        total_duration = sum(track["duration_ms"] for track in items)
+        if ms_per_hour < total_duration < ms_per_day:
             return genre_picker(left, right, to_add, items)
         return smart_picker(left, right, to_add, items)
 
