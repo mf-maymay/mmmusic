@@ -257,6 +257,40 @@ def _swap_to_smooth(track_0, track_1, track_2, *, values):
     return swap_for_cosine
 
 
+def smooth_playlist(tracks):
+    tracks = list(tracks)
+
+    if len(tracks) <= 2:
+        return tracks
+
+    cycle_len = len(tracks)
+    swap_count = 0
+    last_swap = 0
+
+    scores_for_swaps = _scores(tracks, _story_metrics)
+
+    for i in range(MAX_SMOOTH_CYCLES * cycle_len - 2):
+        if _swap_to_smooth(
+            tracks[i % cycle_len],
+            tracks[(i + 1) % cycle_len],
+            tracks[(i + 2) % cycle_len],
+            values=scores_for_swaps,
+        ):
+            tracks[(i + 1) % cycle_len], tracks[(i + 2) % cycle_len] = (
+                tracks[(i + 2) % cycle_len],
+                tracks[(i + 1) % cycle_len],
+            )
+            last_swap = i
+            swap_count += 1
+
+        elif i - last_swap > cycle_len:
+            break
+
+    print(f"smoothed after {i // cycle_len} cycles and {swap_count} swaps")
+
+    return tracks
+
+
 def smart_shuffle(tracks, mode="smart"):
     tracks = list(tracks)
 
@@ -273,38 +307,11 @@ def smart_shuffle(tracks, mode="smart"):
     else:
         raise ValueError("Invalid mode")
 
-    order = quick_pick(tracks, picker)
+    ordered = quick_pick(tracks, picker)
 
-    if len(order) <= 2:
-        return order
+    smoothed = smooth_playlist(ordered)
 
-    # playlist smoothing
-    cycle_len = len(order)
-    swap_count = 0
-    last_swap = 0
-
-    scores_for_swaps = _scores(tracks, _story_metrics)
-
-    for i in range(MAX_SMOOTH_CYCLES * cycle_len - 2):
-        if _swap_to_smooth(
-            order[i % cycle_len],
-            order[(i + 1) % cycle_len],
-            order[(i + 2) % cycle_len],
-            values=scores_for_swaps,
-        ):
-            order[(i + 1) % cycle_len], order[(i + 2) % cycle_len] = (
-                order[(i + 2) % cycle_len],
-                order[(i + 1) % cycle_len],
-            )
-            last_swap = i
-            swap_count += 1
-
-        elif i - last_swap > cycle_len:
-            break
-
-    print(f"smoothed after {i // cycle_len} cycles and {swap_count} swaps")
-
-    return order
+    return smoothed
 
 
 if __name__ == "__main__":
