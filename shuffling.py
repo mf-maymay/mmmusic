@@ -291,7 +291,7 @@ def smooth_playlist(tracks):
     return tracks
 
 
-def smart_shuffle(tracks, mode="smart"):
+def smart_shuffle(tracks, mode="smart", smooth=True):
     tracks = list(tracks)
 
     if mode == "balanced":
@@ -309,9 +309,10 @@ def smart_shuffle(tracks, mode="smart"):
 
     ordered = quick_pick(tracks, picker)
 
-    smoothed = smooth_playlist(ordered)
+    if smooth:
+        return smooth_playlist(ordered)
 
-    return smoothed
+    return ordered
 
 
 if __name__ == "__main__":
@@ -330,5 +331,3 @@ if __name__ == "__main__":
     ]
 
     ordered = smart_shuffle(tracks)
-    ordered_by_genre = smart_shuffle(tracks, mode="genre")
-    ordered_by_radio = smart_shuffle(tracks, mode="radio")

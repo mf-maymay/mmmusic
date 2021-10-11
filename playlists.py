@@ -22,14 +22,24 @@ _playlists = [
     Playlist("2000s", get_tracks_func=tracks_by_release_year(2000, 2009)),
     Playlist("ALL", get_tracks_func=all_user_tracks),
     Playlist(
-        "ALL, by genre",
+        "ALL, without smoothing",
+        get_tracks_func=all_user_tracks,
+        order_tracks_func=partial(smart_shuffle, smooth=False),
+    ),
+    Playlist(
+        "ALL - genre mode",
         get_tracks_func=all_user_tracks,
         order_tracks_func=partial(smart_shuffle, mode="genre"),
     ),
     Playlist(
-        "RADIO",
+        "ALL - radio mode",
         get_tracks_func=all_user_tracks,
         order_tracks_func=partial(smart_shuffle, mode="radio"),
+    ),
+    Playlist(
+        "ALL - radio mode, without smoothing",
+        get_tracks_func=all_user_tracks,
+        order_tracks_func=partial(smart_shuffle, mode="radio", smooth=False),
     ),
     Playlist(
         "bad vibes",
