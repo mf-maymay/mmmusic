@@ -248,11 +248,11 @@ def _swap_to_smooth(track_0, track_1, track_2, *, values):
     if keep_for_key:
         return False
 
-    # if 0 and 2 are (significantly) more similar than 0 and 1
+    # if 0 and 2 are more similar than 0 and 1
     cos_0_1 = cosine(values[track_0], values[track_1])
     cos_0_2 = cosine(values[track_0], values[track_2])
 
-    swap_for_cosine = cos_0_2 - cos_0_1 > 0.1
+    swap_for_cosine = cos_0_2 > cos_0_1
 
     return swap_for_cosine
 
@@ -283,7 +283,7 @@ def smart_shuffle(tracks, mode="smart"):
     swap_count = 0
     last_swap = 0
 
-    scores_for_swaps = _scores(tracks, _balanced_metrics)
+    scores_for_swaps = _scores(tracks, _story_metrics)
 
     for i in range(MAX_SMOOTH_CYCLES * cycle_len - 2):
         if _swap_to_smooth(
