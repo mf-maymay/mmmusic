@@ -145,7 +145,14 @@ playlists = {playlist.name: playlist for playlist in _playlists}
 
 
 if __name__ == "__main__":
+    from album import Album
+    from artist import Artist
     from user import User
+    from track import AudioFeatures
+
+    Artist.fetch_from_shelve()
+    Album.fetch_from_shelve()
+    AudioFeatures.fetch_from_shelve()
 
     user = User(input("username: "))
     print()
