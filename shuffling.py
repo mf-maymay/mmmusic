@@ -206,6 +206,18 @@ def _radio_picker(tracks):
     return _smart_picker(tracks, story_picker=genre_picker)
 
 
+def _test_picker(tracks):
+    story_picker = _story_picker(tracks)
+    smart_picker = _smart_picker(tracks)
+
+    def picker(left, right, to_add, items) -> bool:
+        if len(items) > 100:
+            return story_picker(left, right, to_add, items)
+        return smart_picker(left, right, to_add, items)
+
+    return picker
+
+
 def _swap_to_smooth(track_0, track_1, track_2, *, values):
     # if 0 and 1 share artists and 0 and 2 do not, swap
     # if vice versa, keep
@@ -304,6 +316,8 @@ def smart_shuffle(tracks, mode="smart", smooth=True):
         picker = _smart_picker(tracks)
     elif mode == "story":
         picker = _story_picker(tracks)
+    elif mode == "test":
+        picker = _test_picker(tracks)
     else:
         raise ValueError("Invalid mode")
 
