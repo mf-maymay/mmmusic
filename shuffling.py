@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collections import Counter
 import json
 
 import numpy as np
@@ -218,6 +219,32 @@ def _test_picker(tracks):
     return picker
 
 
+def _artists_of_tracks(tracks):
+    artists = Counter()
+    for track in tracks:
+        artists.update(track.artist_ids)
+    return artists
+
+
+def _smart_story_picker(tracks):
+    story_picker = _story_picker(tracks)
+
+    def picker(left, right, to_add, items) -> bool:
+        left_artists = _artists_of_tracks(left)
+        right_artists = _artists_of_tracks(right)
+
+        primary_artist = to_add.artist_ids[0]  # XXX: assumes first is primary
+        primary_in_left = left_artists.get(primary_artist, 0)
+        primary_in_right = right_artists.get(primary_artist, 0)
+
+        if primary_in_left != primary_in_right:
+            return primary_in_left < primary_in_right
+
+        return story_picker(left, right, to_add, items)
+
+    return picker
+
+
 def _swap_to_smooth(track_0, track_1, track_2, *, values):
     # if 0 and 1 share artists and 0 and 2 do not, swap
     # if vice versa, keep
@@ -314,6 +341,8 @@ def smart_shuffle(tracks, mode="smart", smooth=True):
         picker = _radio_picker(tracks)
     elif mode == "smart":
         picker = _smart_picker(tracks)
+    elif mode == "smart-story":
+        picker = _smart_story_picker(tracks)
     elif mode == "story":
         picker = _story_picker(tracks)
     elif mode == "test":
