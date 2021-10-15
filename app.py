@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 
-from flask import Flask, render_template, request, send_file
+from flask import Flask, redirect, render_template, request, send_file
 import matplotlib
 
 from app_config import BASE_DIR
@@ -14,9 +14,17 @@ matplotlib.use("Agg")
 app = Flask(__name__)
 
 
+@app.route("/connect-artists", methods=("GET", "POST"))
+def finder():
+    if request.method == "POST":
+        seeds = sorted([request.form["artist_1"], request.form["artist_2"]])
+        return redirect("/connect-artists/" + "/".join(seeds))
+
+    return render_template("finder_page.html")
+
+
 @app.route("/connect-artists/<path:varargs>")
 def finder_output(varargs=None):
-    print(varargs)
     if varargs is None:
         return ""
     seeds = sorted(varargs.split("/"))

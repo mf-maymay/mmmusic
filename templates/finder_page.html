@@ -1,0 +1,20 @@
+<!doctype html>
+<title>Connect Artists</title>
+<form method="post">
+    <p>
+        <img src="{{ url_for('static', filename='plause.jpg') }}" alt="this is my mascot, Plause">
+    </p>
+    <p>Connect artists through their related artists.</p>
+    <p>
+        <label for="artist_1">Spotify ID of first seed artist:</label>
+        <input name="artist_1" id="artist_1" required>
+    </p>
+    <p>
+        <label for="artist_2">Spotify ID of second seed artist:</label>
+        <input name="artist_2" id="artist_2" required>
+    </p>
+    <p>
+        <input type="submit" value="Connect artists">
+    </p>
+    <p>(It may take a while to find a connection between the artists.)</p>
+</form>
