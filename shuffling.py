@@ -32,7 +32,9 @@ _DEFAULT_TOP = np.mean([pos["top"] for pos in _GENRE_POSITIONS.values()])
 _DEFAULT_LEFT = np.mean([pos["left"] for pos in _GENRE_POSITIONS.values()])
 
 
-def quick_pick(items: list, add_to_left: callable, left_neighbor=None) -> list:
+def quick_pick(
+    items: list, add_to_left: callable, seed_picker: callable = None, left_neighbor=None
+) -> list:
     items = list(items)
 
     if len(items) < 2:
@@ -40,8 +42,16 @@ def quick_pick(items: list, add_to_left: callable, left_neighbor=None) -> list:
 
     _shuffle(items)
 
-    left = [items.pop()]
-    right = [items.pop()]
+    if seed_picker is None:
+        left_seed, right_seed = items[:2]
+    else:
+        left_seed, right_seed = seed_picker(items, left_neighbor=left_neighbor)
+
+    left = [left_seed]
+    right = [right_seed]
+
+    items.remove(left_seed)
+    items.remove(right_seed)
 
     for item in items:
         if add_to_left(left, right, item, items):
@@ -53,8 +63,10 @@ def quick_pick(items: list, add_to_left: callable, left_neighbor=None) -> list:
     if left_neighbor is not None and not add_to_left(left, right, left_neighbor, items):
         left, right = right, left
 
-    new_left = quick_pick(left, add_to_left)
-    new_right = quick_pick(right, add_to_left, left_neighbor=new_left[-1])
+    new_left = quick_pick(left, add_to_left, seed_picker=seed_picker)
+    new_right = quick_pick(
+        right, add_to_left, seed_picker=seed_picker, left_neighbor=new_left[-1]
+    )
 
     return new_left + new_right
 
@@ -245,6 +257,29 @@ def _smart_story_picker(tracks):
     return picker
 
 
+def _smart_seed_picker(tracks):
+    values = _scores(tracks, _story_metrics)
+
+    def picker(items, left_neighbor):
+
+        if left_neighbor is None:
+            left_seed = items[0]
+        else:
+            # Pick item most similar to left neighbor
+            neighbor_value = values[left_neighbor]
+            left_seed = min(
+                items, key=lambda item: cosine(neighbor_value, values[item])
+            )
+
+        # Pick item least similar to left seed
+        left_value = values[left_seed]
+        right_seed = max(items, key=lambda item: cosine(left_value, values[item]))
+
+        return left_seed, right_seed
+
+    return picker
+
+
 def _swap_to_smooth(track_0, track_1, track_2, *, values):
     # if 0 and 1 share artists and 0 and 2 do not, swap
     # if vice versa, keep
@@ -333,6 +368,8 @@ def smooth_playlist(tracks):
 def smart_shuffle(tracks, mode="smart", smooth=True):
     tracks = list(tracks)
 
+    seed_picker = None
+
     if mode == "balanced":
         picker = _balanced_picker(tracks)
     elif mode == "genre":
@@ -343,6 +380,7 @@ def smart_shuffle(tracks, mode="smart", smooth=True):
         picker = _smart_picker(tracks)
     elif mode == "smart-story":
         picker = _smart_story_picker(tracks)
+        seed_picker = _smart_seed_picker(tracks)
     elif mode == "story":
         picker = _story_picker(tracks)
     elif mode == "test":
@@ -350,7 +388,7 @@ def smart_shuffle(tracks, mode="smart", smooth=True):
     else:
         raise ValueError("Invalid mode")
 
-    ordered = quick_pick(tracks, picker)
+    ordered = quick_pick(tracks, picker, seed_picker=seed_picker)
 
     if smooth:
         return smooth_playlist(ordered)
@@ -373,4 +411,4 @@ if __name__ == "__main__":
         ]
     ]
 
-    ordered = smart_shuffle(tracks)
+    ordered = smart_shuffle(tracks, mode="smart-story")
