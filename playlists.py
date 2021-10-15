@@ -42,6 +42,16 @@ _playlists = [
         order_tracks_func=partial(smart_shuffle, mode="radio", smooth=False),
     ),
     Playlist(
+        "ALL - smart-story mode",
+        get_tracks_func=all_user_tracks,
+        order_tracks_func=partial(smart_shuffle, mode="smart-story"),
+    ),
+    Playlist(
+        "ALL - smart-story mode, without smoothing",
+        get_tracks_func=all_user_tracks,
+        order_tracks_func=partial(smart_shuffle, mode="smart-story", smooth=False),
+    ),
+    Playlist(
         "ALL - test mode",
         get_tracks_func=all_user_tracks,
         order_tracks_func=partial(smart_shuffle, mode="test"),
