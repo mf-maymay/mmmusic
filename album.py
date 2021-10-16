@@ -25,6 +25,10 @@ class Album(SpotifyObjectBase):
         ]
 
 
+def get_tracks_from_albums(albums):
+    return tuple(track for album in albums for track in album.tracks())
+
+
 if __name__ == "__main__":
     Album.use_json()
 

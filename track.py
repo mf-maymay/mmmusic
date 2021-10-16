@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from collections import ChainMap
-
 from base_class import SpotifyObjectBase
 from utils import no_timeout
 
@@ -26,7 +24,7 @@ class AudioFeatures(SpotifyObjectBase):
 
 
 class Track(SpotifyObjectBase):
-    FIELDS = ("id", "name", "album_id", "artist_ids", "_audio_features")
+    FIELDS = ("id", "name", "album_id", "artist_ids")
     __slots__ = (*FIELDS, "info")  # XXX
 
     def __init__(self, track_id=None, *, info=None):
@@ -53,10 +51,6 @@ class Track(SpotifyObjectBase):
         if key in self.info:
             return self.info[key]
         return self.audio_features[key]
-
-
-def get_tracks_from_albums(albums):
-    return tuple(track for album in albums for track in album.tracks())
 
 
 if __name__ == "__main__":
