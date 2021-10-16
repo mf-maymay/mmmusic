@@ -38,8 +38,6 @@ class Track(SpotifyObjectBase):
 
         self._audio_features = None
 
-        self.info = ChainMap(self.info, self.audio_features.info)
-
     @classmethod
     @no_timeout
     def full_response(cls, track_id):
@@ -51,6 +49,11 @@ class Track(SpotifyObjectBase):
             self._audio_features = AudioFeatures(self.id)
         return self._audio_features
 
+    def __getitem__(self, key):
+        if key in self.info:
+            return self.info[key]
+        return self.audio_features[key]
+
 
 def get_tracks_from_albums(albums):
     return tuple(track for album in albums for track in album.tracks())
@@ -58,6 +61,7 @@ def get_tracks_from_albums(albums):
 
 if __name__ == "__main__":
     AudioFeatures.use_json()
+    Track.use_json()
 
     track_ids = [
         "0vFabeTqtOtj918sjc5vYo",
