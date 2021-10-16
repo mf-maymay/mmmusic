@@ -9,10 +9,8 @@ credentials.py
 # jupyter
 .ipynb_checkpoints/
 
-# output folder
-output/
+# object folder (json files)
+objects/
 
-# shelve files
-*.bak
-*.dat
-*.dir
+# output folder (images)
+output/
