@@ -4,7 +4,7 @@ import os
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
-from artist import Artist
+from artist import Artist, RelatedArtists
 
 
 def expand(artists, graph=None) -> nx.Graph:
@@ -299,6 +299,7 @@ def grow_and_plot(*seeds, graph=None, **plot_kw) -> (nx.Graph, (plt.Figure, plt.
 if __name__ == "__main__":
     from artist_ids import ids
 
-    grow_and_plot(ids["alice coltrane"], ids["erykah badu"])
+    Artist.use_json()
+    RelatedArtists.use_json()
 
-    grow_and_plot(ids["alice coltrane"], ids["erykah badu"], ids["sun ra"])
+    graph, (fig, ax) = grow_and_plot(ids["alice coltrane"], ids["stan getz"])

@@ -1,7 +1,26 @@
 # -*- coding: utf-8 -*-
-from cache import Cache
 from base_class import SpotifyObjectBase
 from utils import no_timeout
+
+
+class RelatedArtists(SpotifyObjectBase):
+    FIELDS = ("id", "artist_ids")
+    __slots__ = (*FIELDS, "info")  # XXX
+
+    def __init__(self, artist_id=None, *, info=None):
+        if info is not None and "id" not in info:
+            raise ValueError("info is missing required 'id' key")
+
+        super().__init__(id=artist_id, info=info)
+
+        self.artist_ids = tuple(artist["id"] for artist in self.info["artists"])
+
+    @classmethod
+    @no_timeout
+    def full_response(cls, artist_id):
+        response = cls._sp.artist_related_artists(artist_id)
+        response["name"] = response["id"] = artist_id
+        return response
 
 
 class Artist(SpotifyObjectBase):
@@ -15,6 +34,8 @@ class Artist(SpotifyObjectBase):
 
         self.popularity = self.info["popularity"]
 
+        self._related_artists = None
+
     @classmethod
     @no_timeout
     def full_response(cls, artist_id):
@@ -22,12 +43,12 @@ class Artist(SpotifyObjectBase):
             artist_id if not isinstance(artist_id, cls) else artist_id.id
         )
 
-    @Cache
-    @no_timeout
     def related(self):
-        return set(
-            Artist(a["id"]) for a in self._sp.artist_related_artists(self.id)["artists"]
-        )
+        if self._related_artists is None:
+            self._related_artists = tuple(
+                Artist(artist_id) for artist_id in RelatedArtists(self.id).artist_ids
+            )
+        return self._related_artists
 
 
 if __name__ == "__main__":
