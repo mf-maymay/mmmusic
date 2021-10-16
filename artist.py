@@ -31,6 +31,6 @@ class Artist(SpotifyObjectBase):
 
 
 if __name__ == "__main__":
-    Artist.fetch_from_shelve()
+    Artist.use_json()
 
     artist = Artist("0oSGxfWSnnOXhD2fKuz2Gy")

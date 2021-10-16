@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import atexit
-import shelve
+import json
+from pathlib import Path
 
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
 from cache import Cache
-
-_SHELVE_NAME = "shelf"
 
 
 def _cache_key(cls, id=None, *, info=None):
@@ -44,12 +43,49 @@ class SpotifyObjectBase:
         raise NotImplementedError
 
     @classmethod
-    def fetch_from_shelve(cls):
-        with shelve.open(_SHELVE_NAME) as shelf:
-            for key, info in shelf.items():
-                key_cls, key_id = key.split("-")
-                if key_cls == cls.__name__:
-                    cls(info=info)  # Implicitly create object in cache from info.
+    def _json_path(cls, base_dir: Path):
+        return (base_dir / "objects" / f"{cls.__name__}.json").absolute()
+
+    @classmethod
+    def dump_to_json(cls, base_dir: Path = None):
+        if base_dir is None:
+            base_dir = Path(".")
+
+        objects_to_dump = [
+            _object.info
+            for (_cls, _id), _object in cls.__new__.dict.items()
+            if _cls is cls
+        ]
+
+        json_path = cls._json_path(base_dir)
+
+        json_path.parent.mkdir(parents=True, exist_ok=True)  # XXX
+
+        with open(json_path, "w") as json_file:
+            json.dump(objects_to_dump, json_file)
+
+    @classmethod
+    def load_from_json(cls, base_dir: Path = None):
+        if base_dir is None:
+            base_dir = Path(".")
+
+        json_path = cls._json_path(base_dir)
+
+        with open(json_path) as json_file:
+            json_objects = json.load(json_file)  # list of objects
+
+        for json_object in json_objects:
+            # Implicitly create object in cache from info.
+            cls(info=json_object)
+
+    @classmethod
+    def use_json(cls, base_dir: Path = None):
+        if base_dir is None:
+            base_dir = Path(".")
+
+        cls.load_from_json(base_dir)
+
+        atexit.register(cls.dump_to_json)
 
     def __eq__(self, other):
         return hash(self) == hash(other)
@@ -78,12 +114,3 @@ class SpotifyObjectBase:
 
     def __str__(self):
         return self.name
-
-
-@atexit.register
-def shelve_spotify_objects():
-    with shelve.open(_SHELVE_NAME) as shelf:
-        for (cls, id), spotify_object in SpotifyObjectBase.__new__.dict.items():
-            key = f"{cls.__name__}-{id}"
-            if key not in shelf:
-                shelf[key] = spotify_object.info

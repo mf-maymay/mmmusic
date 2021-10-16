@@ -57,8 +57,7 @@ def get_tracks_from_albums(albums):
 
 
 if __name__ == "__main__":
-    # AudioFeatures.fetch_from_shelve()
-    # Track.fetch_from_shelve()
+    AudioFeatures.use_json()
 
     track_ids = [
         "0vFabeTqtOtj918sjc5vYo",

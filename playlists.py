@@ -175,9 +175,9 @@ if __name__ == "__main__":
     from user import User
     from track import AudioFeatures
 
-    Artist.fetch_from_shelve()
-    Album.fetch_from_shelve()
-    AudioFeatures.fetch_from_shelve()
+    Album.use_json()
+    Artist.use_json()
+    AudioFeatures.use_json()
 
     user = User(input("username: "))
     print()
