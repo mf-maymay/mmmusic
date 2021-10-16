@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+from album import get_tracks_from_albums
 from cache import Cache
 from genres import artists_of_genres_matching
 from shuffling import smart_shuffle
-from track import Track, get_tracks_from_albums
+from track import Track
 from utils import no_timeout, take_x_at_a_time
 
 
