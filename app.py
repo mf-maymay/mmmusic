@@ -10,7 +10,7 @@ from artist_finder import grow_and_plot
 from playlist_utils import shuffle_playlist
 from user import User
 
-Artist.use_json()
+Artist.use_json(BASE_DIR)
 
 matplotlib.use("Agg")
 
