@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from itertools import combinations
-import os
+from pathlib import Path
+
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
+
 from artist import Artist, RelatedArtists, search_for_artist
 
 
@@ -256,13 +258,14 @@ def plot(
     fig.tight_layout()
 
     if save:
-        filename = (
-            save
-            if not isinstance(save, bool)
-            else "output/" + "-".join(sorted(a.id for a in seeds)) + ".png"
-        )
-        os.makedirs("output", exist_ok=True)  # XXX
-        fig.savefig(filename, facecolor=fig_color)
+        if isinstance(save, bool):
+            file_path = Path("output") / "{}.png".format(
+                "-".join(sorted(a.id for a in seeds))
+            )
+        else:
+            file_path = Path(save)
+        file_path.parent.mkdir(parents=True, exist_ok=True)  # XXX
+        fig.savefig(file_path, facecolor=fig_color)
 
     return fig, ax
 
