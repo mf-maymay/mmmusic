@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from spotipy.exceptions import SpotifyException
+
 from base_class import SpotifyObjectBase
 from utils import no_timeout
 
@@ -49,6 +51,16 @@ class Artist(SpotifyObjectBase):
                 Artist(artist_id) for artist_id in RelatedArtists(self.id).artist_ids
             )
         return self._related_artists
+
+
+def search_for_artist(search_text):
+    try:
+        return Artist(search_text)
+    except SpotifyException:
+        search_result = no_timeout(Artist._sp.search)(
+            search_text, limit=1, type="artist"
+        )
+        return Artist(info=search_result["artists"]["items"][0])
 
 
 if __name__ == "__main__":

@@ -3,14 +3,12 @@ from pathlib import Path
 
 from flask import Flask, redirect, render_template, request, send_file
 import matplotlib
-from spotipy.exceptions import SpotifyException
 
 from app_config import BASE_DIR
-from artist import Artist
+from artist import Artist, search_for_artist
 from artist_finder import grow_and_plot
 from playlist_utils import shuffle_playlist
 from user import User
-from utils import no_timeout
 
 Artist.use_json()
 
@@ -19,21 +17,12 @@ matplotlib.use("Agg")
 app = Flask(__name__)
 
 
-def _artist_id_from_input(_input):
-    try:
-        artist = Artist(_input)
-    except SpotifyException:
-        search_result = no_timeout(Artist._sp.search)(_input, limit=1, type="artist")
-        artist = Artist(info=search_result["artists"]["items"][0])
-    return artist.id
-
-
 @app.route("/connect-artists", methods=("GET", "POST"))
 def finder():
     if request.method == "POST":
         inputs = request.form["artist_1"], request.form["artist_2"]
 
-        seeds = sorted(_artist_id_from_input(_input) for _input in inputs)
+        seeds = sorted(search_for_artist(_input).id for _input in inputs)
 
         return redirect("/connect-artists/" + "/".join(seeds))
 
