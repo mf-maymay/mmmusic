@@ -21,7 +21,7 @@ class User(object):
 
         auth_manager = SpotifyOAuth(username=self._username, scope=scope)
 
-        self.sp = spotipy.Spotify(auth_manager=auth_manager)
+        self.sp = spotipy.Spotify(auth_manager=auth_manager, retries=None)
 
     @no_timeout
     def albums(self):  # XXX: subsequent calls do not update list
@@ -46,9 +46,9 @@ class User(object):
         if self._artists is not None:
             return self._artists
 
-        artist_ids = {artist_id
-                      for album in self.albums()
-                      for artist_id in album.artist_ids}
+        artist_ids = {
+            artist_id for album in self.albums() for artist_id in album.artist_ids
+        }
 
         saved = {Artist(artist_id) for artist_id in artist_ids}
 

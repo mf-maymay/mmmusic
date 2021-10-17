@@ -20,14 +20,15 @@ def _cache_key(cls, id=None, *, info=None):
 class SpotifyObjectBase:
     FIELDS: tuple
 
-    _sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())  # XXX
+    _sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
 
     use_name_for_repr = False  # Use to replace default repr with name.
 
     def __init__(self, id=None, *, info=None):
-        # Skip already-initialized objects
+        # Skip already-initialized objects.
         if hasattr(self, "id"):
             return
+
         self.info = info if info else self.full_response(id)
         self.id = self.info["id"]
         self.name = self.info["name"]
@@ -36,6 +37,7 @@ class SpotifyObjectBase:
     def __new__(cls, id=None, *, info=None):  # TODO: kwargs
         if id is None and info is None:
             raise ValueError("Must supply either id or info")
+
         return super().__new__(cls)
 
     @classmethod
@@ -105,10 +107,7 @@ class SpotifyObjectBase:
             if self.use_name_for_repr
             else "{}({})".format(
                 type(self).__name__,
-                ", ".join(
-                    "{}={}".format(field, repr(getattr(self, field)))
-                    for field in self.FIELDS
-                ),
+                ", ".join(f"{field}={getattr(self, field)!r}" for field in self.FIELDS),
             )
         )
 
