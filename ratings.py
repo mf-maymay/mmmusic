@@ -4,7 +4,6 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from artist import Artist
-from cache import Cache
 from user import User
 from utils import no_timeout
 
@@ -14,7 +13,6 @@ valid_vote = re.compile("([0-9]|,)+ Votes")
 search_str = "http://www.sputnikmusic.com/search_results.php?search_text="
 
 
-@Cache
 @no_timeout
 def sputnik_rating(artist, album):
     search = search_str + artist
@@ -52,13 +50,19 @@ def sputnik_rating(artist, album):
         return None, None
 
 
+def _artist_album_pair(album):
+    return Artist(album.artist_ids[0]).name, album.name
+
+
 def get_user_album_ratings(user):
-    for album in user.albums():  # TODO: make name URL friendly
-        _ = sputnik_rating(Artist(album.artist_ids[0]).name, album.name)
+    ratings_dict = {
+        _artist_album_pair(album): sputnik_rating(*_artist_album_pair(album))
+        for album in user.albums()
+    }
 
     ratings = [
         (artist, album, rating, votes)
-        for (artist, album), (rating, votes) in sputnik_rating.dict.items()
+        for (artist, album), (rating, votes) in ratings_dict.items()
         if rating is not None
     ]
 
