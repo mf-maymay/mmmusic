@@ -6,19 +6,11 @@ from pathlib import Path
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
-from cache import Cache
-
-
-def _cache_key(cls, id=None, *, info=None):
-    if isinstance(id, cls):
-        return cls, id
-    if info is None:
-        return cls, id
-    return cls, info["id"]
-
 
 class SpotifyObjectBase:
     FIELDS: tuple
+
+    __all_objects = {}  # XXX
 
     _sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
 
@@ -33,16 +25,26 @@ class SpotifyObjectBase:
         self.id = self.info["id"]
         self.name = self.info["name"]
 
-    @Cache.with_key_func(_cache_key)
     def __new__(cls, id=None, *, info=None):  # TODO: kwargs
         if id is None and info is None:
             raise ValueError("Must supply either id or info")
 
-        return super().__new__(cls)
+        key = id if id is not None else info["id"]
+
+        if key not in cls._objects():
+            cls._objects()[key] = super().__new__(cls)
+
+        return cls._objects()[key]
 
     @classmethod
     def full_response(cls, id):
         raise NotImplementedError
+
+    @classmethod
+    def _objects(cls):
+        if cls not in SpotifyObjectBase.__all_objects:
+            SpotifyObjectBase.__all_objects[cls] = {}
+        return SpotifyObjectBase.__all_objects[cls]  # XXX
 
     @classmethod
     def _json_path(cls, base_dir: Path):
@@ -53,11 +55,7 @@ class SpotifyObjectBase:
         if base_dir is None:
             base_dir = Path(".")
 
-        objects_to_dump = [
-            _object.info
-            for (_cls, _id), _object in cls.__new__.dict.items()
-            if _cls is cls
-        ]
+        objects_to_dump = [_object.info for _object in cls._objects().values()]
 
         json_path = cls._json_path(base_dir)
 
