@@ -25,35 +25,29 @@ class User(object):
         self.sp = spotipy.Spotify(auth_manager=auth_manager, retries=None)
 
     @no_timeout
-    def albums(self):  # XXX: subsequent calls do not update list
+    def albums(self):
+        if self._albums is None:
+            albums = []
 
-        if self._albums is not None:
-            return self._albums
+            albums_on_page = self.sp.current_user_saved_albums(limit=50, offset=0)
 
-        saved = []
+            while albums_on_page:
+                albums.extend(
+                    Album(info=item["album"]) for item in albums_on_page["items"]
+                )
+                albums_on_page = self.sp.next(albums_on_page)
 
-        albums = self.sp.current_user_saved_albums(limit=50, offset=0)
-
-        while albums:
-            saved.extend(Album(info=item["album"]) for item in albums["items"])
-
-            albums = self.sp.next(albums)
-
-        self._albums = tuple(sorted(saved))
+            self._albums = tuple(sorted(albums))
 
         return self._albums
 
     def artists(self):
-        if self._artists is not None:
-            return self._artists
+        if self._artists is None:
+            artists = set()
+            for album in self.albums():
+                artists.update(Artist(artist_id) for artist_id in album.artist_ids)
 
-        artist_ids = {
-            artist_id for album in self.albums() for artist_id in album.artist_ids
-        }
-
-        saved = {Artist(artist_id) for artist_id in artist_ids}
-
-        self._artists = tuple(sorted(saved))
+            self._artists = tuple(sorted(artists))
 
         return self._artists
 
@@ -74,7 +68,3 @@ if __name__ == "__main__":
 
     for artist in user.artists():
         print(artist)
-
-    # albums = sorted(", ".join(str(Artist(artist))
-    #                           for artist in album.artist_ids) +
-    #                 " -- " + str(album) for album in user.albums())
