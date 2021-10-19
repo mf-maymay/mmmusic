@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-from album import Album
+from album import Album, get_tracks_from_albums
 from artist import Artist
 from utils import no_timeout
 
@@ -12,6 +12,7 @@ class User(object):
 
         self._albums = None
         self._artists = None
+        self._tracks = None
 
         self.sp = None
 
@@ -42,7 +43,7 @@ class User(object):
 
         return self._albums
 
-    def artists(self):  # XXX: subsequent calls do not update list
+    def artists(self):
         if self._artists is not None:
             return self._artists
 
@@ -55,6 +56,11 @@ class User(object):
         self._artists = tuple(sorted(saved))
 
         return self._artists
+
+    def all_tracks(self):
+        if self._tracks is None:
+            self._tracks = get_tracks_from_albums(self.albums())
+        return self._tracks
 
     def __hash__(self):
         return hash(self._username)

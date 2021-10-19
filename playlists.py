@@ -5,7 +5,6 @@ from functools import partial
 
 from playlist import Playlist
 from playlist_utils import (
-    all_user_tracks,
     tracks_by_album_attribute,
     tracks_by_artist_attribute,
     tracks_by_genre_pattern,
@@ -13,6 +12,7 @@ from playlist_utils import (
     tracks_by_track_attribute,
 )
 from shuffling import smart_shuffle
+from user import User
 
 
 _playlists = [
@@ -20,40 +20,40 @@ _playlists = [
     Playlist("1980s", get_tracks_func=tracks_by_release_year(1980, 1989)),
     Playlist("1990s", get_tracks_func=tracks_by_release_year(1990, 1999)),
     Playlist("2000s", get_tracks_func=tracks_by_release_year(2000, 2009)),
-    Playlist("ALL", get_tracks_func=all_user_tracks),
+    Playlist("ALL", get_tracks_func=User.all_tracks),
     Playlist(
         "ALL, without smoothing",
-        get_tracks_func=all_user_tracks,
+        get_tracks_func=User.all_tracks,
         order_tracks_func=partial(smart_shuffle, smooth=False),
     ),
     Playlist(
         "ALL - genre mode",
-        get_tracks_func=all_user_tracks,
+        get_tracks_func=User.all_tracks,
         order_tracks_func=partial(smart_shuffle, mode="genre"),
     ),
     Playlist(
         "ALL - radio mode",
-        get_tracks_func=all_user_tracks,
+        get_tracks_func=User.all_tracks,
         order_tracks_func=partial(smart_shuffle, mode="radio"),
     ),
     Playlist(
         "ALL - radio mode, without smoothing",
-        get_tracks_func=all_user_tracks,
+        get_tracks_func=User.all_tracks,
         order_tracks_func=partial(smart_shuffle, mode="radio", smooth=False),
     ),
     Playlist(
         "ALL - smart-story mode",
-        get_tracks_func=all_user_tracks,
+        get_tracks_func=User.all_tracks,
         order_tracks_func=partial(smart_shuffle, mode="smart-story"),
     ),
     Playlist(
         "ALL - smart-story mode, without smoothing",
-        get_tracks_func=all_user_tracks,
+        get_tracks_func=User.all_tracks,
         order_tracks_func=partial(smart_shuffle, mode="smart-story", smooth=False),
     ),
     Playlist(
         "ALL - test mode",
-        get_tracks_func=all_user_tracks,
+        get_tracks_func=User.all_tracks,
         order_tracks_func=partial(smart_shuffle, mode="test"),
     ),
     Playlist(
@@ -172,7 +172,6 @@ playlists = {playlist.name: playlist for playlist in _playlists}
 if __name__ == "__main__":
     from album import Album
     from artist import Artist
-    from user import User
     from track import AudioFeatures
 
     Album.use_json()

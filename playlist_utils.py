@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from album import get_tracks_from_albums
-from cache import Cache
 from genres import artists_of_genres_matching
 from shuffling import smart_shuffle
 from track import Track
@@ -10,11 +9,6 @@ from utils import no_timeout, take_x_at_a_time
 def albums_from_artists(user, artists):
     artists = set(artists)
     return sorted({album for album in user.albums() if set(album.artist_ids) & artists})
-
-
-@Cache
-def all_user_tracks(user):
-    return get_tracks_from_albums(user.albums())
 
 
 def tracks_by_album_attribute(album_filter_func):
@@ -36,7 +30,7 @@ def tracks_by_artist_attribute(artist_filter_func):
 def tracks_by_track_attribute(track_filter_func, base=None):  # XXX
     def get_tracks(user):
         if base is None:
-            all_tracks = all_user_tracks(user)
+            all_tracks = user.all_tracks()
         else:
             all_tracks = base(user)
         return [track for track in all_tracks if track_filter_func(track)]
