@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import multiprocessing
 from pathlib import Path
 
 from flask import Flask, redirect, render_template, request, send_file
@@ -38,8 +39,11 @@ def finder_output(varargs=None):
     try:
         return send_file(file)
     except Exception:
-        graph, (fig, ax) = grow_and_plot(*seeds, save=file)  # XXX
-        return send_file(file)
+        process = multiprocessing.Process(
+            target=grow_and_plot, args=seeds, kwargs={"save": file}
+        )
+        process.start()
+        return '<meta http-equiv="refresh" content="300">'
 
 
 @app.route("/shuffle", methods=("GET", "POST"))
