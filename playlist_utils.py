@@ -6,7 +6,7 @@ from track import Track
 from utils import no_timeout, take_x_at_a_time
 
 
-def albums_from_artists(user, artists):
+def _albums_from_artists(user, artists):
     artists = set(artists)
     return sorted({album for album in user.albums() if set(album.artist_ids) & artists})
 
@@ -22,20 +22,16 @@ def tracks_by_album_attribute(album_filter_func):
 def tracks_by_artist_attribute(artist_filter_func):
     def get_tracks(user):
         artists = [artist for artist in user.artists() if artist_filter_func(artist)]
-        return get_tracks_from_albums(albums_from_artists(user, artists))
+        return get_tracks_from_albums(_albums_from_artists(user, artists))
 
     return get_tracks
 
 
-def tracks_by_track_attribute(track_filter_func, base=None):  # XXX
-    def get_tracks(user):
-        if base is None:
-            all_tracks = user.all_tracks()
-        else:
-            all_tracks = base(user)
-        return [track for track in all_tracks if track_filter_func(track)]
+def tracks_by_track_attribute(track_filter_func):
+    def filter_tracks(tracks):
+        return [track for track in tracks if track_filter_func(track)]
 
-    return get_tracks
+    return filter_tracks
 
 
 def tracks_by_genre_pattern(pattern, artists_to_exclude=()):
@@ -43,7 +39,7 @@ def tracks_by_genre_pattern(pattern, artists_to_exclude=()):
         artists = artists_of_genres_matching(pattern, user.artists()) - set(
             artists_to_exclude
         )
-        albums = albums_from_artists(user, artists)
+        albums = _albums_from_artists(user, artists)
         return get_tracks_from_albums(albums)
 
     return get_tracks

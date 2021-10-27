@@ -20,46 +20,34 @@ _playlists = [
     Playlist("1980s", get_tracks_func=tracks_by_release_year(1980, 1989)),
     Playlist("1990s", get_tracks_func=tracks_by_release_year(1990, 1999)),
     Playlist("2000s", get_tracks_func=tracks_by_release_year(2000, 2009)),
-    Playlist("ALL", get_tracks_func=User.all_tracks),
+    Playlist("ALL"),
     Playlist(
         "ALL, without smoothing",
-        get_tracks_func=User.all_tracks,
         order_tracks_func=partial(smart_shuffle, smooth=False),
     ),
     Playlist(
-        "ALL - genre mode",
-        get_tracks_func=User.all_tracks,
-        order_tracks_func=partial(smart_shuffle, mode="genre"),
+        "ALL - genre mode", order_tracks_func=partial(smart_shuffle, mode="genre"),
     ),
     Playlist(
-        "ALL - radio mode",
-        get_tracks_func=User.all_tracks,
-        order_tracks_func=partial(smart_shuffle, mode="radio"),
+        "ALL - radio mode", order_tracks_func=partial(smart_shuffle, mode="radio"),
     ),
     Playlist(
         "ALL - radio mode, without smoothing",
-        get_tracks_func=User.all_tracks,
         order_tracks_func=partial(smart_shuffle, mode="radio", smooth=False),
     ),
     Playlist(
         "ALL - smart-story mode",
-        get_tracks_func=User.all_tracks,
         order_tracks_func=partial(smart_shuffle, mode="smart-story"),
     ),
     Playlist(
         "ALL - smart-story mode, without smoothing",
-        get_tracks_func=User.all_tracks,
         order_tracks_func=partial(smart_shuffle, mode="smart-story", smooth=False),
     ),
-    Playlist(
-        "ALL - test mode",
-        get_tracks_func=User.all_tracks,
-        order_tracks_func=partial(smart_shuffle, mode="test"),
-    ),
+    Playlist("ALL - test mode", order_tracks_func=partial(smart_shuffle, mode="test"),),
     Playlist(
         "bad vibes",
         description="high energy, low valence",
-        get_tracks_func=tracks_by_track_attribute(
+        filter_tracks_func=tracks_by_track_attribute(
             lambda x: x["valence"] <= 0.10 and x["energy"] > 0.6
         ),
     ),
@@ -91,7 +79,7 @@ _playlists = [
     Playlist(
         "good vibes",
         description="high danceability, high valence",
-        get_tracks_func=tracks_by_track_attribute(
+        filter_tracks_func=tracks_by_track_attribute(
             lambda x: x["danceability"] >= 0.5 and x["valence"] >= 0.9
         ),
     ),
@@ -137,7 +125,7 @@ _playlists = [
     Playlist(
         "studying",
         description="instrumental, low energy, tempo <= 120 bpm",
-        get_tracks_func=tracks_by_track_attribute(
+        filter_tracks_func=tracks_by_track_attribute(
             lambda x: x["instrumentalness"] >= 0.8
             and x["energy"] <= 0.5
             and x["tempo"] <= 120
@@ -174,9 +162,9 @@ if __name__ == "__main__":
     from artist import Artist
     from track import AudioFeatures
 
-    Album.use_json()
-    Artist.use_json()
-    AudioFeatures.use_json()
+    Album.use_json(ok_if_missing=True)
+    Artist.use_json(ok_if_missing=True)
+    AudioFeatures.use_json(ok_if_missing=True)
 
     user = User(input("username: "))
     print()

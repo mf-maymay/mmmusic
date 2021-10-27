@@ -1,22 +1,33 @@
 # -*- coding: utf-8 -*-
 from shuffling import smart_shuffle
+from user import User
 from utils import no_timeout, take_x_at_a_time
 
 
 class Playlist(object):
     def __init__(
-        self, name, *, description="", get_tracks_func, order_tracks_func=smart_shuffle
+        self,
+        name,
+        *,
+        description="",
+        get_tracks_func=User.all_tracks,
+        filter_tracks_func=None,
+        order_tracks_func=smart_shuffle,
     ):
         self.name = name
         self.description = description
 
         self._get_tracks_func = get_tracks_func
+        self._filter_tracks_func = filter_tracks_func
         self._order_tracks_func = order_tracks_func
 
         self.tracks = []
 
     def get_tracks(self, user):
         self.tracks = self._get_tracks_func(user)
+
+        if self._filter_tracks_func is not None:
+            self.tracks = self._filter_tracks_func(self.tracks)
 
     def order_tracks(self):
         if not self.tracks:
