@@ -166,7 +166,7 @@ def plot(
     font_color="#b9cdfb",
     fig_color="#2e4272",
     save=False,
-    **plot_kwargs  # passed to nx.draw
+    **plot_kwargs,  # passed to nx.draw
 ) -> (plt.Figure, plt.Axes):
     """
     Plots the graph.
@@ -250,7 +250,7 @@ def plot(
         edge_color=edge_color,
         font_color=font_color,
         labels=node_labels,
-        **plot_kwargs
+        **plot_kwargs,
     )
 
     fig.set_facecolor(fig_color)
@@ -303,6 +303,11 @@ if __name__ == "__main__":
     Artist.use_json()
     RelatedArtists.use_json()
 
-    seeds = search_for_artist("alice coltrane"), search_for_artist("stan getz")
+    seeds = (
+        search_for_artist("5JjsLpZlE0oSu9opRGQYWm"),
+        search_for_artist("cocteau twins"),
+    )
+
+    print("Connecting {} ...".format(" and ".join(f"'{seed}'" for seed in seeds)))
 
     graph, (fig, ax) = grow_and_plot(*seeds)
