@@ -6,12 +6,13 @@ from flask import Flask, redirect, render_template, request, send_file
 import matplotlib
 
 from app_config import BASE_DIR
-from artist import Artist, search_for_artist
+from artist import Artist, RelatedArtists, search_for_artist
 from artist_finder import grow_and_plot
 from playlist_utils import shuffle_playlist
 from user import User
 
-Artist.use_json(BASE_DIR)
+Artist.load_from_json(BASE_DIR)
+RelatedArtists.load_from_json(BASE_DIR)
 
 matplotlib.use("Agg")
 
