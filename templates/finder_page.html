@@ -1,20 +1,26 @@
 <!doctype html>
-<title>Connect Artists</title>
-<form method="post">
-    <p>
-        <img src="{{ url_for('static', filename='plause.jpg') }}" alt="this is my mascot, Plause">
-    </p>
-    <p>Connect artists through their related artists.</p>
-    <p>
-        <label for="artist_1">Seed Artist #1:</label>
-        <input name="artist_1" id="artist_1" required>
-    </p>
-    <p>
-        <label for="artist_2">Seed Artist #2:</label>
-        <input name="artist_2" id="artist_2" required>
-    </p>
-    <p>
-        <input type="submit" value="Connect artists">
-    </p>
-    <p>(Connecting the artists may take a while.)</p>
-</form>
+<head>
+    <title>Connect Artists</title>
+    <style>
+        img {float: left; padding: 80px;}
+        div {padding: 120px;}
+    </style>
+</head>
+<body>
+    <p><img src="{{ url_for('static', filename='plause.jpg') }}" alt="this is my mascot, Plause" height="500" width="400"></p>
+    <div>
+        <p>Connect artists through their related artists.</p>
+        <form method="post">
+            <p>
+                <label for="artist_1">Seed Artist #1:</label>
+                <input name="artist_1" id="artist_1" required>
+            </p>
+            <p>
+                <label for="artist_2">Seed Artist #2:</label>
+                <input name="artist_2" id="artist_2" required>
+            </p>
+            <p><input type="submit" value="Connect artists"></p>
+            <p>(Connecting the artists may take a while.)</p>
+        </form>
+    </div>
+</body>

@@ -34,16 +34,34 @@ def finder():
 def finder_output(varargs=None):
     if varargs is None:
         return ""
+
     seeds = sorted(varargs.split("/"))
+
     file = BASE_DIR / Path("output") / ("-".join(seeds) + ".png")
+
     try:
         return send_file(file)
+
     except Exception:
         process = multiprocessing.Process(
             target=grow_and_plot, args=seeds, kwargs={"save": file}
         )
         process.start()
-        return '<meta http-equiv="refresh" content="300">'
+
+        artists = [Artist(seed) for seed in seeds]
+
+        images = [
+            None if not artist.info["images"] else artist.info["images"][0]["url"]
+            for artist in artists
+        ]
+
+        return render_template(
+            "loading_page.html",
+            artist_1=artists[0],
+            artist_2=artists[1],
+            image_1=images[0],
+            image_2=images[1],
+        )
 
 
 @app.route("/shuffle", methods=("GET", "POST"))
