@@ -23,9 +23,10 @@ def finder():
     if request.method == "POST":
         inputs = request.form["artist_1"], request.form["artist_2"]
 
-        seeds = sorted(search_for_artist(_input).id for _input in inputs)
-
-        return redirect("/connect-artists/" + "/".join(seeds))
+        return redirect(
+            "/connect-artists/"
+            + "/".join(search_for_artist(_input).id for _input in inputs)
+        )
 
     return render_template("finder_page.html")
 
@@ -35,9 +36,9 @@ def finder_output(varargs=None):
     if varargs is None:
         return ""
 
-    seeds = sorted(varargs.split("/"))
+    seeds = varargs.split("/")
 
-    file = BASE_DIR / Path("output") / ("-".join(seeds) + ".png")
+    file = BASE_DIR / Path("output") / ("-".join(sorted(seeds)) + ".png")
 
     try:
         return send_file(file)
