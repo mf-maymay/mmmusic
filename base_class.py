@@ -88,7 +88,7 @@ class SpotifyObjectBase:
 
         cls.load_from_json(base_dir, ok_if_missing=ok_if_missing)
 
-        atexit.register(cls.dump_to_json)
+        atexit.register(cls.dump_to_json, base_dir)
 
     def __eq__(self, other):
         return hash(self) == hash(other)
