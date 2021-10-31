@@ -41,29 +41,34 @@ def finder_output(varargs=None):
 
     file = BASE_DIR / Path("output") / ("-".join(sorted(seeds)) + ".png")
 
-    try:
-        return send_file(file)
+    if file.is_file():
+        if file.stat().st_size > 0:
+            # Send file if it is ready.
+            return send_file(file)
+    else:
+        # Create file if it does not exist.
+        file.touch()  # Mark that file is being created.
 
-    except Exception:
         process = multiprocessing.Process(
             target=grow_and_plot, args=seeds, kwargs={"save": file}
         )
         process.start()
 
-        artists = [Artist(seed) for seed in seeds]
+    # Send loading page if file is not ready.
+    artists = [Artist(seed) for seed in seeds]
 
-        images = [
-            None if not artist.info["images"] else artist.info["images"][0]["url"]
-            for artist in artists
-        ]
+    images = [
+        None if not artist.info["images"] else artist.info["images"][0]["url"]
+        for artist in artists
+    ]
 
-        return render_template(
-            "loading_page.html",
-            artist_1=artists[0],
-            artist_2=artists[1],
-            image_1=images[0],
-            image_2=images[1],
-        )
+    return render_template(
+        "loading_page.html",
+        artist_1=artists[0],
+        artist_2=artists[1],
+        image_1=images[0],
+        image_2=images[1],
+    )
 
 
 @app.route("/shuffle", methods=("GET", "POST"))
