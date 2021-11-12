@@ -2,12 +2,12 @@
 __pycache__/
 *.py[cod]
 
+# spyder
+.spyproject/*
+
 # credentials
 credentials.py
 .cache*
-
-# jupyter
-.ipynb_checkpoints/
 
 # object folder (json files)
 objects/
