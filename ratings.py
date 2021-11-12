@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import re
+
+from bs4 import BeautifulSoup
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
-from artist import Artist
-from user import User
-from utils import no_timeout
+
+from music_tools.artist import Artist
+from music_tools.user import User
+from music_tools.utils import no_timeout
 
 valid_rating = re.compile("[0-5]\\.[0-9]")
 valid_vote = re.compile("([0-9]|,)+ Votes")

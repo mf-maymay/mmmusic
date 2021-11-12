@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from base_class import SpotifyObjectBase
-from utils import no_timeout
+from music_tools.base_class import SpotifyObjectBase
+from music_tools.utils import no_timeout
 
 
 class AudioFeatures(SpotifyObjectBase):

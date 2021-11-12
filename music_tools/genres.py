@@ -2,7 +2,8 @@
 from collections import defaultdict
 from itertools import permutations
 import re
-from artist import Artist
+
+from music_tools.artist import Artist
 
 
 def genres_and_members(artists):

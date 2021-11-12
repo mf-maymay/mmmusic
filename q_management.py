@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from math import ceil
 import re
+
 import pandas as pd
-from album import Album
-from artist import Artist
-from playlist_utils import shuffle_playlist, tracks_from_playlist
-from user import User
+
+from music_tools.album import Album
+from music_tools.artist import Artist
+from music_tools.playlist_utils import shuffle_playlist, tracks_from_playlist
+from music_tools.user import User
 
 DUMP_ID = "5AZxg3qZIC7cGnxWa7EuSd"
 

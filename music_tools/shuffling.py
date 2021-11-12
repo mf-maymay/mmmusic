@@ -6,8 +6,8 @@ import numpy as np
 from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
 
-from album import Album
-from artist import Artist
+from music_tools.album import Album
+from music_tools.artist import Artist
 
 MAX_SMOOTH_CYCLES = 30
 

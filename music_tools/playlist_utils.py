@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from album import get_tracks_from_albums
-from genres import artists_of_genres_matching
-from shuffling import smart_shuffle
-from track import Track
-from utils import no_timeout, take_x_at_a_time
+from music_tools.album import get_tracks_from_albums
+from music_tools.genres import artists_of_genres_matching
+from music_tools.shuffling import smart_shuffle
+from music_tools.track import Track
+from music_tools.utils import no_timeout, take_x_at_a_time
 
 
 def _albums_from_artists(user, artists):

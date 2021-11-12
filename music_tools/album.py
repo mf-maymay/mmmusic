@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from base_class import SpotifyObjectBase
-from track import Track
-from utils import no_timeout
+from music_tools.base_class import SpotifyObjectBase
+from music_tools.track import Track
+from music_tools.utils import no_timeout
 
 
 class Album(SpotifyObjectBase):

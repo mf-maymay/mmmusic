@@ -3,16 +3,16 @@ from calendar import month_name
 from datetime import datetime as dt
 from functools import partial
 
-from playlist import Playlist
-from playlist_utils import (
+from music_tools.playlist import Playlist
+from music_tools.playlist_utils import (
     tracks_by_album_attribute,
     tracks_by_artist_attribute,
     tracks_by_genre_pattern,
     tracks_by_release_year,
     tracks_by_track_attribute,
 )
-from shuffling import smart_shuffle
-from user import User
+from music_tools.shuffling import smart_shuffle
+from music_tools.user import User
 
 
 _playlists = [
@@ -158,9 +158,9 @@ playlists = {playlist.name: playlist for playlist in _playlists}
 
 
 if __name__ == "__main__":
-    from album import Album
-    from artist import Artist
-    from track import AudioFeatures
+    from music_tools.album import Album
+    from music_tools.artist import Artist
+    from music_tools.track import AudioFeatures
 
     Album.use_json(ok_if_missing=True)
     Artist.use_json(ok_if_missing=True)

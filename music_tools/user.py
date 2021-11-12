@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-from album import Album, get_tracks_from_albums
-from artist import Artist
-from utils import no_timeout
+
+from music_tools.album import Album, get_tracks_from_albums
+from music_tools.artist import Artist
+from music_tools.utils import no_timeout
 
 
 class User(object):

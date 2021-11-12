@@ -8,7 +8,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from artist import Artist, RelatedArtists
+from music_tools.artist import Artist, RelatedArtists
 
 
 def expand(artists, graph=None) -> nx.Graph:
