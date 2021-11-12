@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
+import argparse
 from itertools import combinations
 from pathlib import Path
 
+import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from artist import Artist, RelatedArtists, search_for_artist
+from artist import Artist, RelatedArtists
 
 
 def expand(artists, graph=None) -> nx.Graph:
@@ -300,14 +302,30 @@ def grow_and_plot(*seeds, graph=None, **plot_kw) -> (nx.Graph, (plt.Figure, plt.
 
 
 if __name__ == "__main__":
+    # example usage:
+    # artist_finder.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX -f test.png
+
+    matplotlib.use("Agg")
+
     Artist.use_json()
     RelatedArtists.use_json()
 
-    seeds = (
-        search_for_artist("5JjsLpZlE0oSu9opRGQYWm"),
-        search_for_artist("cocteau twins"),
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "seeds", nargs="+", help=("IDs of artists, separated by spaces")
     )
+    parser.add_argument(
+        "-f", "--file", type=str, help=("where to save the output file")
+    )
+    args = parser.parse_args()
+
+    if args.file is not None:
+        save = Path(args.file)
+    else:
+        save = True
+
+    seeds = [Artist(seed) for seed in args.seeds]
 
     print("Connecting {} ...".format(" and ".join(f"'{seed}'" for seed in seeds)))
 
-    graph, (fig, ax) = grow_and_plot(*seeds)
+    graph, (fig, ax) = grow_and_plot(*seeds, save=save)
