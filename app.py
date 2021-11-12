@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-import multiprocessing
 from pathlib import Path
+import subprocess
+import sys
 
 from flask import Flask, redirect, render_template, request, send_file
 import matplotlib
 
 from app_config import BASE_DIR
 from artist import Artist, RelatedArtists, search_for_artist
-from artist_finder import grow_and_plot
 from playlist_utils import shuffle_playlist
 from user import User
 
@@ -49,10 +49,7 @@ def finder_output(varargs=None):
         # Create file if it does not exist.
         file.touch()  # Mark that file is being created.
 
-        process = multiprocessing.Process(
-            target=grow_and_plot, args=seeds, kwargs={"save": file}
-        )
-        process.start()
+        subprocess.Popen([sys.executable, "artist_finder.py", *seeds, "-f", str(file)])
 
     # Send loading page if file is not ready.
     artists = [Artist(seed) for seed in seeds]
