@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import matplotlib.pyplot as plt
 import networkx as nx
 
 from music_tools.genres import genre_overlaps, genres_and_members
@@ -20,14 +21,21 @@ def genre_map(artists, *, size_min=1, draw=False):
     size_list = [20 + 40 * sizes[g] for g in node_list]  # XXX
 
     if draw:
+        fig, ax = plt.subplots(figsize=(16, 9))
+
         nx.draw_kamada_kawai(
             graph,
             with_labels=True,
+            ax=ax,
             nodelist=node_list,
             node_size=size_list,
-            edge_color="gray",
+            node_color="#0e1b3a",
+            edge_color="#6177aa",
+            font_color="#b9cdfb",
             style="dotted",
         )
+
+        fig.set_facecolor("#2e4272")
 
     return graph
 
