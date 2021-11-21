@@ -49,7 +49,9 @@ def finder_output(varargs=None):
         # Create file if it does not exist.
         file.touch()  # Mark that file is being created.
 
-        subprocess.Popen([sys.executable, "artist_finder.py", *seeds, "-f", str(file)])
+        subprocess.Popen(
+            [sys.executable, BASE_DIR / "artist_finder.py", *seeds, "-f", str(file)]
+        )
 
     # Send loading page if file is not ready.
     artists = [Artist(seed) for seed in seeds]
