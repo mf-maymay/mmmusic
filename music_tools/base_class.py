@@ -6,6 +6,8 @@ from pathlib import Path
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
+OBJECTS_DIR = Path(__file__).parent / "objects"
+
 
 class SpotifyObjectBase:
     FIELDS: tuple
@@ -47,29 +49,17 @@ class SpotifyObjectBase:
         return SpotifyObjectBase.__all_objects[cls]  # XXX
 
     @classmethod
-    def _json_path(cls, base_dir: Path):
-        return (base_dir / "objects" / f"{cls.__name__}.json").absolute()
-
-    @classmethod
-    def dump_to_json(cls, base_dir: Path = None):
-        if base_dir is None:
-            base_dir = Path(".")
-
+    def dump_to_json(cls):
         objects_to_dump = [_object.info for _object in cls._objects().values()]
 
-        json_path = cls._json_path(base_dir)
+        OBJECTS_DIR.mkdir(parents=True, exist_ok=True)  # XXX
 
-        json_path.parent.mkdir(parents=True, exist_ok=True)  # XXX
-
-        with open(json_path, "w") as json_file:
+        with open(OBJECTS_DIR / f"{cls.__name__}.json", "w") as json_file:
             json.dump(objects_to_dump, json_file)
 
     @classmethod
-    def load_from_json(cls, base_dir: Path = None, *, ok_if_missing=False):
-        if base_dir is None:
-            base_dir = Path(".")
-
-        json_path = cls._json_path(base_dir)
+    def load_from_json(cls, *, ok_if_missing=False):
+        json_path = OBJECTS_DIR / f"{cls.__name__}.json"
 
         if ok_if_missing and not json_path.is_file():
             json_objects = ()
@@ -82,13 +72,10 @@ class SpotifyObjectBase:
             cls(info=json_object)
 
     @classmethod
-    def use_json(cls, base_dir: Path = None, *, ok_if_missing=False):
-        if base_dir is None:
-            base_dir = Path(".")
+    def use_json(cls, *, ok_if_missing=False):
+        cls.load_from_json(ok_if_missing=ok_if_missing)
 
-        cls.load_from_json(base_dir, ok_if_missing=ok_if_missing)
-
-        atexit.register(cls.dump_to_json, base_dir)
+        atexit.register(cls.dump_to_json)
 
     def __eq__(self, other):
         return hash(self) == hash(other)
