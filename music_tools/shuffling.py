@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from collections import Counter
-import json
 
 import numpy as np
 from scipy.spatial.distance import cosine
@@ -8,6 +7,7 @@ from scipy.stats import percentileofscore
 
 from music_tools.album import Album
 from music_tools.artist import Artist
+from music_tools.genre_positions import averages_genre_positions, genre_positions
 
 MAX_SMOOTH_CYCLES = 30
 
@@ -24,12 +24,6 @@ METRICS = (
 )
 
 _shuffle = np.random.default_rng().shuffle
-
-with open("genre_positions.json") as f:
-    _GENRE_POSITIONS = json.load(f)
-
-_DEFAULT_TOP = np.mean([pos["top"] for pos in _GENRE_POSITIONS.values()])
-_DEFAULT_LEFT = np.mean([pos["left"] for pos in _GENRE_POSITIONS.values()])
 
 
 def quick_pick(
@@ -123,13 +117,13 @@ def _scores(tracks, metrics_func):
 def _genre_position(track):
     genres = set()
     for artist in track.artist_ids:
-        genres |= Artist(artist).genres & _GENRE_POSITIONS.keys()
+        genres |= Artist(artist).genres & genre_positions.keys()
 
     if not genres:
-        return _DEFAULT_TOP, _DEFAULT_LEFT
+        return averages_genre_positions["top"], averages_genre_positions["left"]
 
-    top = np.mean([_GENRE_POSITIONS[genre]["top"] for genre in genres])
-    left = np.mean([_GENRE_POSITIONS[genre]["left"] for genre in genres])
+    top = np.mean([genre_positions[genre]["top"] for genre in genres])
+    left = np.mean([genre_positions[genre]["left"] for genre in genres])
     return top, left
 
 
@@ -397,7 +391,7 @@ def smart_shuffle(tracks, mode="smart", smooth=True):
 
 
 if __name__ == "__main__":
-    from track import Track
+    from music_tools.track import Track
 
     tracks = [
         Track(x)
