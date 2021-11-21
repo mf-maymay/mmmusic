@@ -7,12 +7,11 @@ from flask import Flask, redirect, render_template, request, send_file
 import matplotlib
 
 from app_config import BASE_DIR
-from music_tools.artist import Artist, RelatedArtists, search_for_artist
+from music_tools.artist import Artist, search_for_artist
 from music_tools.playlist_utils import shuffle_playlist
 from music_tools.user import User
 
 Artist.load_from_json()
-RelatedArtists.load_from_json()
 
 matplotlib.use("Agg")
 

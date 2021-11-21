@@ -162,9 +162,9 @@ if __name__ == "__main__":
     from music_tools.artist import Artist
     from music_tools.track import AudioFeatures
 
-    Album.use_json(ok_if_missing=True)
-    Artist.use_json(ok_if_missing=True)
-    AudioFeatures.use_json(ok_if_missing=True)
+    Album.use_json()
+    Artist.use_json()
+    AudioFeatures.use_json()
 
     user = User(input("username: "))
     print()

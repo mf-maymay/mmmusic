@@ -58,22 +58,28 @@ class SpotifyObjectBase:
             json.dump(objects_to_dump, json_file)
 
     @classmethod
-    def load_from_json(cls, *, ok_if_missing=False):
+    def load_from_json(cls, *, ignore_errors=True):
         json_path = OBJECTS_DIR / f"{cls.__name__}.json"
 
-        if ok_if_missing and not json_path.is_file():
-            json_objects = ()
-        else:
+        try:
             with open(json_path) as json_file:
                 json_objects = json.load(json_file)  # list of objects
+
+        except (FileNotFoundError, json.JSONDecodeError):
+            print(f"Could not read '{json_path}'")
+
+            if not ignore_errors:
+                raise
+            else:
+                return
 
         for json_object in json_objects:
             # Implicitly create object in cache from info.
             cls(info=json_object)
 
     @classmethod
-    def use_json(cls, *, ok_if_missing=False):
-        cls.load_from_json(ok_if_missing=ok_if_missing)
+    def use_json(cls, *, ignore_errors=True):
+        cls.load_from_json(ignore_errors=ignore_errors)
 
         atexit.register(cls.dump_to_json)
 
