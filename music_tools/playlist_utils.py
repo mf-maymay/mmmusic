@@ -73,6 +73,18 @@ def tracks_from_playlist(playlist_id):
     return get_tracks
 
 
+def clear_playlist(user, playlist_id):
+    user.setup_sp(scope="playlist-modify-private")
+    # get tracks
+    tracks = tracks_from_playlist(playlist_id)(user)
+    # clear playlist
+    for subset in take_x_at_a_time(tracks, 100):
+        to_remove = [track.id for track in subset]
+        no_timeout(user.sp.user_playlist_remove_all_occurrences_of_tracks)(
+            user._username, playlist_id, to_remove
+        )
+
+
 def shuffle_playlist(user, playlist_id):
     user.setup_sp(scope="playlist-modify-private")
     # get tracks
