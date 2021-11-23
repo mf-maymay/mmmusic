@@ -72,6 +72,6 @@ def get_user_album_ratings(user):
 
 
 if __name__ == "__main__":
-    user = User(input("username: "))
+    user = User()
 
     ratings = get_user_album_ratings(user)

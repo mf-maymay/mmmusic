@@ -26,8 +26,7 @@ Q_PATTERNS = [
     ("q - rock", ".*rock.*"),
 ]
 
-user = User(input("username: "))
-user.setup_sp(scope="playlist-modify-private")
+user = User(scope="playlist-modify-private")
 
 
 # Identify playlists for tracks

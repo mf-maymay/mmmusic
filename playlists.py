@@ -166,8 +166,7 @@ if __name__ == "__main__":
     Artist.use_json()
     AudioFeatures.use_json()
 
-    user = User(input("username: "))
-    print()
+    user = User()
 
     to_create = sorted(playlists)
 

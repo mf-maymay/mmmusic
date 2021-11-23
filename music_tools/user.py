@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
@@ -8,8 +10,14 @@ from music_tools.utils import no_timeout
 
 
 class User(object):
-    def __init__(self, username, scope="user-library-read"):
-        self._username = username
+    def __init__(self, username=None, scope="user-library-read"):
+        if username is None:
+            if "SPOTIFY_USERNAME" in os.environ:
+                self._username = os.environ["SPOTIFY_USERNAME"]
+            else:
+                self._username = input("username: ")
+        else:
+            self._username = username
 
         self._albums = None
         self._artists = None
@@ -62,7 +70,7 @@ class User(object):
 
 
 if __name__ == "__main__":
-    user = User(input("username: "))
+    user = User()
 
     for album in user.albums():
         print(album)
