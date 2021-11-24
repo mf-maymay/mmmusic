@@ -34,36 +34,38 @@ Q_PATTERNS = [
     ("q - rock", ".*rock.*"),
 ]
 
+
 user = User()
 
-user_tracks = set(user.all_tracks())
 
-user.setup_sp(scope="playlist-modify-private")
+def refresh_review_playlist():
+    print("Picking random albums for 'review' playlist")
+    random_albums = random.choices(user.albums(), k=12)
+    review_tracks = get_tracks_from_albums(random_albums)
 
-# Reset "review" playlist
-print("Picking random albums")
-random_albums = random.choices(user.albums(), k=12)
-review_tracks = get_tracks_from_albums(random_albums)
+    print("Clearing 'review' playlist")
+    clear_playlist(user, REVIEW_ID)
 
-print("Clearing 'review'")
-clear_playlist(user, REVIEW_ID)
+    print("Shuffling 'review' tracks")
+    shuffled = smart_shuffle(review_tracks)
 
-print("Shuffling 'review' tracks")
-shuffled = smart_shuffle(review_tracks)
-
-print("Adding tracks to 'review'")
-for subset in take_x_at_a_time(shuffled, 100):
-    to_add = [track.id for track in subset]
-    user.sp.user_playlist_add_tracks(user._username, REVIEW_ID, to_add)
+    print("Adding shuffled tracks to 'review'")
+    for subset in take_x_at_a_time(shuffled, 100):
+        to_add = [track.id for track in subset]
+        user.sp.user_playlist_add_tracks(user._username, REVIEW_ID, to_add)
 
 
 # Identify playlists for tracks
-dump_tracks = tracks_from_playlist(DUMP_ID)(user)
+def separate_dump_tracks_to_q_playlists():
+    print("Identifying 'dump' tracks")
+    dump_tracks = tracks_from_playlist(DUMP_ID)(user)  # XXX
 
-print(f"Found {len(dump_tracks)} tracks in 'dump'")
+    print(f"Found {len(dump_tracks)} tracks in 'dump' playlist")
 
-if dump_tracks:
-    print("Identifying playlists for tracks")
+    if not dump_tracks:
+        return
+
+    print("Mapping tracks to 'q' playlists")
 
     dump_frame = pd.DataFrame()
     dump_frame["track"] = dump_tracks
@@ -84,6 +86,7 @@ if dump_tracks:
     dump_frame["playlist"] = None
 
     for q, pattern in Q_PATTERNS:
+        print(f"Identifying '{q}' tracks")
         compiled = re.compile(pattern)
         dump_frame["playlist"] = [
             playlist
@@ -93,10 +96,9 @@ if dump_tracks:
             else None
             for playlist, genres in zip(dump_frame["playlist"], dump_frame["genres"])
         ]
-        print(f"Identified '{q}' tracks")
 
+    print("Identifying 'q - misc' tracks")
     dump_frame.loc[dump_frame["playlist"].isna(), "playlist"] = "q - misc"
-    print("Identified 'q - misc' tracks")
 
     # Add tracks to playlists
     for q, q_id in Q_IDS.items():
@@ -111,26 +113,34 @@ if dump_tracks:
     clear_playlist(user, DUMP_ID)
     print("Cleared dump")
 
-# Remove already-saved tracks from playlists
-print("Identifying saved tracks")
-user.setup_sp(scope="user-library-read")
 
-q_tracks = {q: set(tracks_from_playlist(q_id)(user)) for q, q_id in Q_IDS.items()}
+def prepare_q_playlists():
+    user_tracks = set(user.all_tracks())
 
-user.setup_sp(scope="playlist-modify-private")
+    user.setup_sp(scope="playlist-modify-private")  # XXX
 
-for q, q_id in Q_IDS.items():
-    tracks = [track.id for track in q_tracks[q] & user_tracks]
-    print(f"Removing {len(tracks)} saved tracks from '{q}'")
-    for to_remove in take_x_at_a_time(tracks, 100):
-        user.sp.user_playlist_remove_all_occurrences_of_tracks(
-            user._username, q_id, to_remove
-        )
-    print(f"Cleaned '{q}'")
+    for q, q_id in Q_IDS.items():
+        tracks = [
+            track.id for track in set(tracks_from_playlist(q_id)(user)) & user_tracks
+        ]
+
+        print(f"Removing {len(tracks)} saved tracks from '{q}'")
+        for to_remove in take_x_at_a_time(tracks, 100):
+            user.sp.user_playlist_remove_all_occurrences_of_tracks(
+                user._username, q_id, to_remove
+            )
+
+        print(f"Cleaned '{q}'")
+
+        print(f"Shuffling '{q}'")
+        shuffle_playlist(user, q_id)
+
+        print(f"Shuffled '{q}'")
 
 
-# Shuffle playlists
-for q, q_id in Q_IDS.items():
-    print(f"Shuffling '{q}'")
-    shuffle_playlist(user, q_id)
-    print(f"Shuffled '{q}'")
+if __name__ == "__main__":
+    refresh_review_playlist()
+
+    separate_dump_tracks_to_q_playlists()
+
+    prepare_q_playlists()
