@@ -81,7 +81,7 @@ def clear_playlist(user, playlist_id):
     for subset in take_x_at_a_time(tracks, 100):
         to_remove = [track.id for track in subset]
         no_timeout(user.sp.user_playlist_remove_all_occurrences_of_tracks)(
-            user._username, playlist_id, to_remove
+            user.username, playlist_id, to_remove
         )
 
 
@@ -93,13 +93,11 @@ def shuffle_playlist(user, playlist_id):
     for subset in take_x_at_a_time(tracks, 100):
         to_remove = [track.id for track in subset]
         no_timeout(user.sp.user_playlist_remove_all_occurrences_of_tracks)(
-            user._username, playlist_id, to_remove
+            user.username, playlist_id, to_remove
         )
     # shuffle tracks
     shuffled = smart_shuffle(tracks)
     # write back to playlist
     for subset in take_x_at_a_time(shuffled, 100):
         to_add = [track.id for track in subset]
-        no_timeout(user.sp.user_playlist_add_tracks)(
-            user._username, playlist_id, to_add
-        )
+        no_timeout(user.sp.user_playlist_add_tracks)(user.username, playlist_id, to_add)

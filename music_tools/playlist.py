@@ -47,8 +47,8 @@ class Playlist(object):
             user.setup_sp(scope="playlist-modify-private")
 
             playlist = user.sp.user_playlist_create(
-                user._username, self.name, public=False, description=self.description
+                user.username, self.name, public=False, description=self.description
             )
 
             for to_add in take_x_at_a_time([track.id for track in self.tracks], 100):
-                user.sp.user_playlist_add_tracks(user._username, playlist["id"], to_add)
+                user.sp.user_playlist_add_tracks(user.username, playlist["id"], to_add)

@@ -49,7 +49,7 @@ def refresh_review_playlist(user):
     print("Adding shuffled tracks to 'review'")
     for subset in take_x_at_a_time(shuffled, 100):
         to_add = [track.id for track in subset]
-        user.sp.user_playlist_add_tracks(user._username, REVIEW_ID, to_add)
+        user.sp.user_playlist_add_tracks(user.username, REVIEW_ID, to_add)
 
 
 # Identify playlists for tracks
@@ -102,13 +102,11 @@ def separate_dump_tracks_to_q_playlists(user):
         tracks = list(dump_frame.loc[dump_frame["playlist"] == q, "id"].values)
         print(f"Adding {len(tracks)} tracks to '{q}'")
         for to_add in take_x_at_a_time(tracks, 100):
-            user.sp.user_playlist_add_tracks(user._username, q_id, to_add)
-        print(f"Added tracks to '{q}'")
+            user.sp.user_playlist_add_tracks(user.username, q_id, to_add)
 
     # Clear dump
     print("Clearing dump")
     clear_playlist(user, DUMP_ID)
-    print("Cleared dump")
 
 
 def prepare_q_playlists(user):
@@ -122,15 +120,11 @@ def prepare_q_playlists(user):
         print(f"Removing {len(tracks)} saved tracks from '{q}'")
         for to_remove in take_x_at_a_time(tracks, 100):
             user.sp.user_playlist_remove_all_occurrences_of_tracks(
-                user._username, q_id, to_remove
+                user.username, q_id, to_remove
             )
-
-        print(f"Cleaned '{q}'")
 
         print(f"Shuffling '{q}'")
         shuffle_playlist(user, q_id)
-
-        print(f"Shuffled '{q}'")
 
 
 if __name__ == "__main__":

@@ -13,11 +13,11 @@ class User(object):
     def __init__(self, username=None, scope="user-library-read"):
         if username is None:
             if "SPOTIFY_USERNAME" in os.environ:
-                self._username = os.environ["SPOTIFY_USERNAME"]
+                self.username = os.environ["SPOTIFY_USERNAME"]
             else:
-                self._username = input("username: ")
+                self.username = input("username: ")
         else:
-            self._username = username
+            self.username = username
 
         self._albums = None
         self._artists = None
@@ -29,7 +29,7 @@ class User(object):
 
     def setup_sp(self, scope="user-library-read"):
 
-        auth_manager = SpotifyOAuth(username=self._username, scope=scope)
+        auth_manager = SpotifyOAuth(username=self.username, scope=scope)
 
         self.sp = spotipy.Spotify(auth_manager=auth_manager, retries=None)
 
@@ -66,7 +66,7 @@ class User(object):
         return self._tracks
 
     def __hash__(self):
-        return hash(self._username)
+        return hash(self.username)
 
 
 if __name__ == "__main__":
