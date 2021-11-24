@@ -35,10 +35,7 @@ Q_PATTERNS = [
 ]
 
 
-user = User()
-
-
-def refresh_review_playlist():
+def refresh_review_playlist(user):
     print("Picking random albums for 'review' playlist")
     random_albums = random.choices(user.albums(), k=12)
     review_tracks = get_tracks_from_albums(random_albums)
@@ -56,7 +53,7 @@ def refresh_review_playlist():
 
 
 # Identify playlists for tracks
-def separate_dump_tracks_to_q_playlists():
+def separate_dump_tracks_to_q_playlists(user):
     print("Identifying 'dump' tracks")
     dump_tracks = tracks_from_playlist(DUMP_ID)(user)  # XXX
 
@@ -114,10 +111,8 @@ def separate_dump_tracks_to_q_playlists():
     print("Cleared dump")
 
 
-def prepare_q_playlists():
+def prepare_q_playlists(user):
     user_tracks = set(user.all_tracks())
-
-    user.setup_sp(scope="playlist-modify-private")  # XXX
 
     for q, q_id in Q_IDS.items():
         tracks = [
@@ -139,8 +134,10 @@ def prepare_q_playlists():
 
 
 if __name__ == "__main__":
-    refresh_review_playlist()
+    user = User()
 
-    separate_dump_tracks_to_q_playlists()
+    refresh_review_playlist(user)
 
-    prepare_q_playlists()
+    separate_dump_tracks_to_q_playlists(user)
+
+    prepare_q_playlists(user)
