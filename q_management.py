@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-from math import ceil
+import random
 import re
 
 import pandas as pd
 
-from music_tools.album import Album
+from music_tools.album import Album, get_tracks_from_albums
 from music_tools.artist import Artist
+from music_tools.shuffling import smart_shuffle
 from music_tools.playlist_utils import (
     clear_playlist,
     shuffle_playlist,
@@ -39,7 +40,21 @@ user_tracks = set(user.all_tracks())
 
 user.setup_sp(scope="playlist-modify-private")
 
-# TODO: Create "review" playlist
+# Reset "review" playlist
+print("Picking random albums")
+random_albums = random.choices(user.albums(), k=12)
+review_tracks = get_tracks_from_albums(random_albums)
+
+print("Clearing 'review'")
+clear_playlist(user, REVIEW_ID)
+
+print("Shuffling 'review' tracks")
+shuffled = smart_shuffle(review_tracks)
+
+print("Adding tracks to 'review'")
+for subset in take_x_at_a_time(shuffled, 100):
+    to_add = [track.id for track in subset]
+    user.sp.user_playlist_add_tracks(user._username, REVIEW_ID, to_add)
 
 
 # Identify playlists for tracks
@@ -48,7 +63,7 @@ dump_tracks = tracks_from_playlist(DUMP_ID)(user)
 print(f"Found {len(dump_tracks)} tracks in 'dump'")
 
 if dump_tracks:
-    print("Identifying playlists for tracks ...")
+    print("Identifying playlists for tracks")
 
     dump_frame = pd.DataFrame()
     dump_frame["track"] = dump_tracks
@@ -86,18 +101,18 @@ if dump_tracks:
     # Add tracks to playlists
     for q, q_id in Q_IDS.items():
         tracks = list(dump_frame.loc[dump_frame["playlist"] == q, "id"].values)
-        print(f"Adding {len(tracks)} tracks to '{q}' ...")
+        print(f"Adding {len(tracks)} tracks to '{q}'")
         for to_add in take_x_at_a_time(tracks, 100):
             user.sp.user_playlist_add_tracks(user._username, q_id, to_add)
-        print(f"Added tracks to '{q}' ...")
+        print(f"Added tracks to '{q}'")
 
     # Clear dump
-    print("Clearing dump ...")
+    print("Clearing dump")
     clear_playlist(user, DUMP_ID)
     print("Cleared dump")
 
 # Remove already-saved tracks from playlists
-print("Identifying saved tracks ...")
+print("Identifying saved tracks")
 user.setup_sp(scope="user-library-read")
 
 q_tracks = {q: set(tracks_from_playlist(q_id)(user)) for q, q_id in Q_IDS.items()}
@@ -106,7 +121,7 @@ user.setup_sp(scope="playlist-modify-private")
 
 for q, q_id in Q_IDS.items():
     tracks = [track.id for track in q_tracks[q] & user_tracks]
-    print(f"Removing {len(tracks)} saved tracks from '{q}' ...")
+    print(f"Removing {len(tracks)} saved tracks from '{q}'")
     for to_remove in take_x_at_a_time(tracks, 100):
         user.sp.user_playlist_remove_all_occurrences_of_tracks(
             user._username, q_id, to_remove
@@ -116,6 +131,6 @@ for q, q_id in Q_IDS.items():
 
 # Shuffle playlists
 for q, q_id in Q_IDS.items():
-    print(f"Shuffling '{q}' ...")
+    print(f"Shuffling '{q}'")
     shuffle_playlist(user, q_id)
     print(f"Shuffled '{q}'")
