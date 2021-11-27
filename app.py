@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
 from pathlib import Path
 import subprocess
 import sys
 
-from flask import Flask, redirect, render_template, request, send_file
+from flask import Flask, redirect, render_template, request, send_file, session, url_for
 import matplotlib
 
 from app_config import BASE_DIR
@@ -16,6 +17,8 @@ Artist.load_from_json()
 matplotlib.use("Agg")
 
 app = Flask(__name__)
+
+app.secret_key = os.environ["SPOTIFY_APP_SECRET_KEY"]
 
 
 @app.route("/connect-artists", methods=("GET", "POST"))
@@ -69,15 +72,51 @@ def finder_output(varargs=None):
     )
 
 
+@app.route("/login", methods=("GET", "POST"))
+def login_page():
+    if request.method == "POST":
+        session["username"] = request.form["username"]
+
+        user = User(session["username"])
+
+        auth_url = user.sp.auth_manager.get_authorize_url()
+
+        print("Authorization URL:", auth_url)
+
+        return redirect(auth_url)
+
+    return render_template("login_page.html")
+
+
+@app.route("/api_callback", methods=("GET", "POST"))
+def api_callback():
+    session["auth_code"] = request.args.get("code")
+
+    return redirect(url_for("shuffle_page"))  # XXX
+
+
 @app.route("/shuffle", methods=("GET", "POST"))
 def shuffle_page():
+    if "username" not in session:
+        return redirect(url_for("login_page"))  # XXX
+
     if request.method == "POST":
-        username = request.form["username"]
         playlist_id = request.form["playlist_id"]
 
-        user = User(username)
+        user = User(session["username"])
+
+        session["token_info"] = user.sp.auth_manager.get_access_token(
+            session["auth_code"]
+        )  # XXX
+
         shuffle_playlist(user, playlist_id)
 
-        return "<p>Done!</p>"
+        return "Done!"
 
     return render_template("shuffle_page.html")
+
+
+@app.route("/logout")
+def logout():
+    session.pop("username", None)
+    return "You are now logged out."
