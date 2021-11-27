@@ -74,7 +74,6 @@ def tracks_from_playlist(playlist_id):
 
 
 def clear_playlist(user, playlist_id):
-    user.setup_sp(scope="playlist-modify-private")
     # get tracks
     tracks = tracks_from_playlist(playlist_id)(user)
     # clear playlist
@@ -86,7 +85,6 @@ def clear_playlist(user, playlist_id):
 
 
 def shuffle_playlist(user, playlist_id):
-    user.setup_sp(scope="playlist-modify-private")
     # get tracks
     tracks = tracks_from_playlist(playlist_id)(user)
     # clear playlist

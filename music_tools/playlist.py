@@ -44,8 +44,6 @@ class Playlist(object):
         if not confirm or input(f"Create playlist '{self.name}'? (y/n): ")[0] in "yY":
             print(f"Creating '{self.name}' ...")
 
-            user.setup_sp(scope="playlist-modify-private")
-
             playlist = user.sp.user_playlist_create(
                 user.username, self.name, public=False, description=self.description
             )

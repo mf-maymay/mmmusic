@@ -10,7 +10,9 @@ from music_tools.utils import no_timeout
 
 
 class User(object):
-    def __init__(self, username=None, scope="user-library-read"):
+    def __init__(
+        self, username=None, scope="playlist-modify-private,user-library-read"
+    ):
         if username is None:
             if "SPOTIFY_USERNAME" in os.environ:
                 self.username = os.environ["SPOTIFY_USERNAME"]
