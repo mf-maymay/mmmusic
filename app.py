@@ -4,7 +4,16 @@ from pathlib import Path
 import subprocess
 import sys
 
-from flask import Flask, redirect, render_template, request, send_file, session, url_for
+from flask import (
+    Flask,
+    Response,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    session,
+    url_for,
+)
 import matplotlib
 
 from app_config import BASE_DIR
@@ -19,6 +28,19 @@ matplotlib.use("Agg")
 app = Flask(__name__)
 
 app.secret_key = os.environ["SPOTIFY_APP_SECRET_KEY"]
+
+
+@app.route("/radio")
+def radio():
+    def generate():  # XXX
+        for mp3 in (BASE_DIR / "radio_songs").glob("*.mp3"):
+            with open(mp3, "rb") as f:
+                data = f.read(1024)
+                while data:
+                    yield data
+                    data = f.read(1024)
+
+    return Response(generate(), mimetype="audio/mpeg")
 
 
 @app.route("/connect-artists", methods=("GET", "POST"))
