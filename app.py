@@ -22,7 +22,7 @@ app.secret_key = os.environ["SPOTIFY_APP_SECRET_KEY"]
 
 
 @app.route("/connect-artists", methods=("GET", "POST"))
-def finder():
+def finder_home():
     if request.method == "POST":
         inputs = request.form["artist_1"], request.form["artist_2"]
 
@@ -72,8 +72,29 @@ def finder_output(varargs=None):
     )
 
 
+@app.route("/shuffle", methods=("GET", "POST"))
+def shuffle_home():
+    if "username" not in session:
+        return redirect(url_for("login"))  # XXX
+
+    if request.method == "POST":
+        playlist_id = request.form["playlist_id"]
+
+        user = User(session["username"])
+
+        session["token_info"] = user.sp.auth_manager.get_access_token(
+            session["auth_code"]
+        )  # XXX
+
+        shuffle_playlist(user, playlist_id)
+
+        return "Done!"
+
+    return render_template("shuffle_page.html")
+
+
 @app.route("/login", methods=("GET", "POST"))
-def login_page():
+def login():
     if request.method == "POST":
         session["username"] = request.form["username"]
 
@@ -92,28 +113,7 @@ def login_page():
 def api_callback():
     session["auth_code"] = request.args.get("code")
 
-    return redirect(url_for("shuffle_page"))  # XXX
-
-
-@app.route("/shuffle", methods=("GET", "POST"))
-def shuffle_page():
-    if "username" not in session:
-        return redirect(url_for("login_page"))  # XXX
-
-    if request.method == "POST":
-        playlist_id = request.form["playlist_id"]
-
-        user = User(session["username"])
-
-        session["token_info"] = user.sp.auth_manager.get_access_token(
-            session["auth_code"]
-        )  # XXX
-
-        shuffle_playlist(user, playlist_id)
-
-        return "Done!"
-
-    return render_template("shuffle_page.html")
+    return redirect(url_for("shuffle_home"))  # XXX
 
 
 @app.route("/logout")
