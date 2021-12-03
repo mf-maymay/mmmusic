@@ -33,7 +33,7 @@ app.secret_key = os.environ["SPOTIFY_APP_SECRET_KEY"]
 @app.route("/radio")
 def radio():
     def generate():  # XXX
-        for mp3 in (BASE_DIR / "radio_songs").glob("*.mp3"):
+        for mp3 in sorted((BASE_DIR / "radio_songs").glob("*.mp3")):
             with open(mp3, "rb") as f:
                 data = f.read(1024)
                 while data:
