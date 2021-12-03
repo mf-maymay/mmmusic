@@ -8,12 +8,9 @@ __pycache__/
 # spyder
 .spyproject/*
 
-# credentials
-credentials.py
+# project-specific
+*.mp3
 .cache*
-
-# object folder (json files)
+credentials.py
 objects/
-
-# output folder (images)
 output/
