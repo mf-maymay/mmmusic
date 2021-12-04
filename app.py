@@ -16,7 +16,7 @@ from flask import (
 )
 import matplotlib
 
-from app_config import BASE_DIR
+from app_config import BASE_DIR, REDIRECT_URI
 from music_tools.artist import Artist, search_for_artist
 from music_tools.playlist_utils import shuffle_playlist
 from music_tools.user import User
@@ -102,7 +102,7 @@ def shuffle_home():
     if request.method == "POST":
         playlist_id = request.form["playlist_id"]
 
-        user = User(session["username"])
+        user = User(session["username"], redirect_uri=REDIRECT_URI)
 
         session["token_info"] = user.sp.auth_manager.get_access_token(
             session["auth_code"]
@@ -120,7 +120,7 @@ def login():
     if request.method == "POST":
         session["username"] = request.form["username"]
 
-        user = User(session["username"])
+        user = User(session["username"], redirect_uri=REDIRECT_URI)
 
         auth_url = user.sp.auth_manager.get_authorize_url()
 
