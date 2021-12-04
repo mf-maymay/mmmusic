@@ -8,30 +8,26 @@ from music_tools.album import Album, get_tracks_from_albums
 from music_tools.artist import Artist
 from music_tools.utils import no_timeout
 
+DEFAULT_SCOPE = "playlist-modify-private,user-library-read"
+
 
 class User(object):
-    def __init__(
-        self, username=None, scope="playlist-modify-private,user-library-read"
-    ):
-        if username is None:
-            if "SPOTIFY_USERNAME" in os.environ:
-                self.username = os.environ["SPOTIFY_USERNAME"]
-            else:
-                self.username = input("username: ")
-        else:
-            self.username = username
+    def __init__(self, username=None):
+        username_from_environ = os.environ.get("SPOTIFY_USERNAME")
+
+        self.username = (
+            username
+            if username is not None
+            else username_from_environ
+            if username_from_environ is not None
+            else input("username: ")
+        )
 
         self._albums = None
         self._artists = None
         self._tracks = None
 
-        self.sp = None
-
-        self.setup_sp(scope=scope)
-
-    def setup_sp(self, scope="user-library-read"):
-
-        auth_manager = SpotifyOAuth(username=self.username, scope=scope)
+        auth_manager = SpotifyOAuth(username=self.username, scope=DEFAULT_SCOPE)
 
         self.sp = spotipy.Spotify(auth_manager=auth_manager, retries=None)
 
