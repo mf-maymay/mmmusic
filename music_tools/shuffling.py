@@ -174,21 +174,6 @@ def _story_picker(tracks, values=None):
     return picker
 
 
-def _genre_picker(tracks):
-    genre_picker = _story_picker(tracks, values=_scores(tracks, _genre_position))
-    story_picker = _story_picker(tracks)
-
-    ms_per_3_hours = 3.6e6 * 3
-
-    def picker(left, right, to_add, items) -> bool:
-        total_duration = sum(track["duration_ms"] for track in items)
-        if total_duration > ms_per_3_hours:
-            return genre_picker(left, right, to_add, items)
-        return story_picker(left, right, to_add, items)
-
-    return picker
-
-
 def _smart_picker(tracks, story_picker=None):
     balanced_picker = _balanced_picker(tracks)
 
@@ -207,24 +192,6 @@ def _smart_picker(tracks, story_picker=None):
     return picker
 
 
-def _radio_picker(tracks):
-    genre_picker = _genre_picker(tracks)
-
-    return _smart_picker(tracks, story_picker=genre_picker)
-
-
-def _test_picker(tracks):
-    story_picker = _story_picker(tracks)
-    smart_picker = _smart_picker(tracks)
-
-    def picker(left, right, to_add, items) -> bool:
-        if len(items) > 100:
-            return story_picker(left, right, to_add, items)
-        return smart_picker(left, right, to_add, items)
-
-    return picker
-
-
 def _artists_of_tracks(tracks):
     artists = Counter()
     for track in tracks:
@@ -232,7 +199,7 @@ def _artists_of_tracks(tracks):
     return artists
 
 
-def _smart_story_picker(tracks):
+def _radio_picker(tracks):
     story_picker = _story_picker(tracks)
 
     def picker(left, right, to_add, items) -> bool:
@@ -366,19 +333,13 @@ def smart_shuffle(tracks, mode="smart", smooth=True):
 
     if mode == "balanced":
         picker = _balanced_picker(tracks)
-    elif mode == "genre":
-        picker = _genre_picker(tracks)
     elif mode == "radio":
-        picker = _radio_picker(tracks)
+        picker = _radio_picker(tracks)  # XXX
+        seed_picker = _smart_seed_picker(tracks)
     elif mode == "smart":
         picker = _smart_picker(tracks)
-    elif mode == "smart-story":
-        picker = _smart_story_picker(tracks)
-        seed_picker = _smart_seed_picker(tracks)
     elif mode == "story":
         picker = _story_picker(tracks)
-    elif mode == "test":
-        picker = _test_picker(tracks)
     else:
         raise ValueError("Invalid mode")
 
