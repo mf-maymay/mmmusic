@@ -326,7 +326,9 @@ def smooth_playlist(tracks):
     return tracks
 
 
-def smart_shuffle(tracks, mode="smart", smooth=True):
+def smart_shuffle(tracks, mode="smart", smooth=None):
+    # smooth defaults to True except for radio mode
+
     tracks = list(tracks)
 
     seed_picker = None
@@ -334,14 +336,19 @@ def smart_shuffle(tracks, mode="smart", smooth=True):
     if mode == "balanced":
         picker = _balanced_picker(tracks)
     elif mode == "radio":
-        picker = _radio_picker(tracks)  # XXX
+        picker = _radio_picker(tracks)
         seed_picker = _smart_seed_picker(tracks)
+        if smooth is None:
+            smooth = False  # Don't smooth by default for radio mode
     elif mode == "smart":
         picker = _smart_picker(tracks)
     elif mode == "story":
         picker = _story_picker(tracks)
     else:
         raise ValueError("Invalid mode")
+
+    if smooth is None:
+        smooth = True
 
     ordered = quick_pick(tracks, picker, seed_picker=seed_picker)
 

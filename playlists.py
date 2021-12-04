@@ -25,10 +25,6 @@ _playlists = [
         "ALL - radio mode", order_tracks_func=partial(smart_shuffle, mode="radio"),
     ),
     Playlist(
-        "ALL - radio mode, without smoothing",
-        order_tracks_func=partial(smart_shuffle, mode="radio", smooth=False),
-    ),
-    Playlist(
         "bad vibes",
         description="high energy, low valence",
         filter_tracks_func=tracks_by_track_attribute(
