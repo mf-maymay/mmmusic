@@ -12,7 +12,7 @@ DEFAULT_SCOPE = "playlist-modify-private,user-library-read"
 
 
 class User:
-    def __init__(self, username=None):
+    def __init__(self, username=None, *, redirect_uri=None):
         username_from_environ = os.environ.get("SPOTIFY_USERNAME")
 
         self.username = (
@@ -27,7 +27,9 @@ class User:
         self._artists = None
         self._tracks = None
 
-        auth_manager = SpotifyOAuth(username=self.username, scope=DEFAULT_SCOPE)
+        auth_manager = SpotifyOAuth(
+            username=self.username, redirect_uri=redirect_uri, scope=DEFAULT_SCOPE
+        )
 
         self.sp = spotipy.Spotify(auth_manager=auth_manager, retries=None)
 
