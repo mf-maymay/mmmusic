@@ -11,7 +11,7 @@ from music_tools.utils import no_timeout
 DEFAULT_SCOPE = "playlist-modify-private,user-library-read"
 
 
-class User(object):
+class User:
     def __init__(self, username=None):
         username_from_environ = os.environ.get("SPOTIFY_USERNAME")
 

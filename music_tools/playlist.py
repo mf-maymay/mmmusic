@@ -4,7 +4,7 @@ from music_tools.user import User
 from music_tools.utils import no_timeout, take_x_at_a_time
 
 
-class Playlist(object):
+class Playlist:
     def __init__(
         self,
         name,
