@@ -43,6 +43,7 @@ def radio():
     return Response(generate(), mimetype="audio/mpeg")
 
 
+@app.route("/connect", redirect_to="/connect-artists")
 @app.route("/connect-artists", methods=("GET", "POST"))
 def finder_home():
     if request.method == "POST":
@@ -94,7 +95,8 @@ def finder_output(varargs=None):
     )
 
 
-@app.route("/shuffle", methods=("GET", "POST"))
+@app.route("/shuffle", redirect_to="/shuffle-playlist")
+@app.route("/shuffle-playlist", methods=("GET", "POST"))
 def shuffle_home():
     if "username" not in session:
         return redirect(url_for("login"))  # XXX
