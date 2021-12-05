@@ -69,11 +69,26 @@ _playlists = [
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
+        "hip hop - radio mode",
+        get_tracks_func=tracks_by_genre_pattern(pattern := ".*hip hop.*"),
+        order_tracks_func=partial(smart_shuffle, mode="radio"),
+        description=f"genre matches '{pattern}'",
+    ),
+    Playlist(
         "japan",
         get_tracks_func=tracks_by_genre_pattern(
             pattern := ".*(japan|j-).*",
             artists_to_exclude=["3BG0nwVh3Gc7cuT4XdsLtt"],  # joe henderson
         ),
+        description=f"genre matches '{pattern}'",
+    ),
+    Playlist(
+        "japan - radio mode",
+        get_tracks_func=tracks_by_genre_pattern(
+            pattern := ".*(japan|j-).*",
+            artists_to_exclude=["3BG0nwVh3Gc7cuT4XdsLtt"],  # joe henderson
+        ),
+        order_tracks_func=partial(smart_shuffle, mode="radio"),
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
@@ -93,6 +108,12 @@ _playlists = [
     Playlist(
         "post-rock",
         get_tracks_func=tracks_by_genre_pattern(pattern := ".*post-rock.*"),
+        description=f"genre matches '{pattern}'",
+    ),
+    Playlist(
+        "post-rock - radio mode",
+        get_tracks_func=tracks_by_genre_pattern(pattern := ".*post-rock.*"),
+        order_tracks_func=partial(smart_shuffle, mode="radio"),
         description=f"genre matches '{pattern}'",
     ),
     Playlist("pre-1970", get_tracks_func=tracks_by_release_year(None, 1969)),
