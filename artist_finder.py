@@ -98,12 +98,11 @@ def trim(graph, keepers=()) -> nx.Graph:
     graph = graph.copy()
 
     # Remove leaves until none left.
-    while True:
+    to_remove = [x for x in graph.nodes if graph.degree(x) < 2 and x not in keepers]
+
+    while to_remove:
+        graph.remove_nodes_from(to_remove)
         to_remove = [x for x in graph.nodes if graph.degree(x) < 2 and x not in keepers]
-        if to_remove:
-            graph.remove_nodes_from(to_remove)
-        else:
-            break
 
     return graph
 
