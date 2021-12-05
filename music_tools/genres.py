@@ -20,14 +20,10 @@ def genres_and_members(artists):
 def genres_matching(keyword, artists):
     """Returns the genres containing `keyword` in their names."""
     pattern = re.compile(keyword)
-    return {genre for genre in genres_and_members(artists)
-            if pattern.fullmatch(genre)}
+    return {genre for genre in genres_and_members(artists) if pattern.fullmatch(genre)}
 
 
-def artists_of_genres_matching(keyword,
-                               artists,
-                               regex=True,
-                               match_individual=True):
+def artists_of_genres_matching(keyword, artists, regex=True, match_individual=True):
     """
     Returns the artists of genres containing `keyword` in their names.
 
@@ -39,8 +35,9 @@ def artists_of_genres_matching(keyword,
     """
     if not match_individual:
         pattern = re.compile(keyword)
-        return {artist for artist in artists
-                if pattern.fullmatch(",".join(artist.genres))}
+        return {
+            artist for artist in artists if pattern.fullmatch(",".join(artist.genres))
+        }
 
     members = set()
 
