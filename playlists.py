@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from calendar import month_name
+from copy import copy
 from datetime import datetime as dt
 from functools import partial
 
@@ -15,15 +16,14 @@ from music_tools.shuffling import smart_shuffle
 from music_tools.user import User
 
 
+radio_shuffle = partial(smart_shuffle, mode="radio")
+
 _playlists = [
     Playlist("1970s", get_tracks_func=tracks_by_release_year(1970, 1979)),
     Playlist("1980s", get_tracks_func=tracks_by_release_year(1980, 1989)),
     Playlist("1990s", get_tracks_func=tracks_by_release_year(1990, 1999)),
     Playlist("2000s", get_tracks_func=tracks_by_release_year(2000, 2009)),
     Playlist("ALL"),
-    Playlist(
-        "ALL - radio mode", order_tracks_func=partial(smart_shuffle, mode="radio"),
-    ),
     Playlist(
         "bad vibes",
         description="high energy, low valence",
@@ -69,26 +69,11 @@ _playlists = [
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
-        "hip hop - radio mode",
-        get_tracks_func=tracks_by_genre_pattern(pattern := ".*hip hop.*"),
-        order_tracks_func=partial(smart_shuffle, mode="radio"),
-        description=f"genre matches '{pattern}'",
-    ),
-    Playlist(
         "japan",
         get_tracks_func=tracks_by_genre_pattern(
             pattern := ".*(japan|j-).*",
             artists_to_exclude=["3BG0nwVh3Gc7cuT4XdsLtt"],  # joe henderson
         ),
-        description=f"genre matches '{pattern}'",
-    ),
-    Playlist(
-        "japan - radio mode",
-        get_tracks_func=tracks_by_genre_pattern(
-            pattern := ".*(japan|j-).*",
-            artists_to_exclude=["3BG0nwVh3Gc7cuT4XdsLtt"],  # joe henderson
-        ),
-        order_tracks_func=partial(smart_shuffle, mode="radio"),
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
@@ -108,12 +93,6 @@ _playlists = [
     Playlist(
         "post-rock",
         get_tracks_func=tracks_by_genre_pattern(pattern := ".*post-rock.*"),
-        description=f"genre matches '{pattern}'",
-    ),
-    Playlist(
-        "post-rock - radio mode",
-        get_tracks_func=tracks_by_genre_pattern(pattern := ".*post-rock.*"),
-        order_tracks_func=partial(smart_shuffle, mode="radio"),
         description=f"genre matches '{pattern}'",
     ),
     Playlist("pre-1970", get_tracks_func=tracks_by_release_year(None, 1969)),
@@ -154,6 +133,14 @@ _playlists = [
         ),
     ),
 ]
+
+_radio_playlists = []
+for playlist in _playlists:
+    radio_playlist = copy(playlist)
+    radio_playlist.name += " - radio mode"
+    radio_playlist._order_tracks_func = radio_shuffle
+    _radio_playlists.append(radio_playlist)
+_playlists.extend(_radio_playlists)
 
 playlists = {playlist.name: playlist for playlist in _playlists}
 
