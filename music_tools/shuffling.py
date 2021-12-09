@@ -178,24 +178,6 @@ def _story_picker(tracks, values=None):
     return picker
 
 
-def _smart_picker(tracks, story_picker=None):
-    balanced_picker = _balanced_picker(tracks)
-
-    if story_picker is None:
-        story_picker = _story_picker(tracks)
-
-    def picker(left, right, to_add, items) -> bool:
-        artists_seen = set()
-        for track in items:
-            artists = set(track.artist_ids)
-            if artists & artists_seen:
-                return balanced_picker(left, right, to_add, items)
-            artists_seen.update(artists)
-        return story_picker(left, right, to_add, items)
-
-    return picker
-
-
 def _artists_of_tracks(tracks):
     artists = Counter()
     for track in tracks:
@@ -344,8 +326,6 @@ def smart_shuffle(tracks, mode="smart", smooth=None):
         seed_picker = _smart_seed_picker(tracks)
         if smooth is None:
             smooth = False  # Don't smooth by default for radio mode
-    elif mode == "smart":
-        picker = _smart_picker(tracks)
     elif mode == "story":
         picker = _story_picker(tracks)
     else:
