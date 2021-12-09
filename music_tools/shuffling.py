@@ -2,7 +2,6 @@
 from collections import Counter
 
 import numpy as np
-from scipy.spatial.distance import cosine
 from scipy.stats import percentileofscore
 
 from music_tools.album import Album
@@ -24,6 +23,11 @@ METRICS = (
 )
 
 _shuffle = np.random.default_rng().shuffle
+
+
+def similarity(u, v):
+    """Calculates the cosine similarity of two vectors."""
+    return np.dot(u, v) / np.sqrt(np.dot(u, u) * np.dot(v, v))
 
 
 def quick_pick(
@@ -142,10 +146,10 @@ def _balanced_picker(tracks):
         # add item to left if diff less with item in left than in right
         averages = _get_average_values(left, right, to_add, values)
         scores = _get_categorical_scores(left, right, to_add)
-        return cosine(
+        return similarity(
             np.append(averages["left with new"], scores["left with new"]),
             np.append(averages["right"], scores["right"]),
-        ) < cosine(
+        ) > similarity(
             np.append(averages["left"], scores["left"]),
             np.append(averages["right with new"], scores["right with new"]),
         )
@@ -167,7 +171,7 @@ def _story_picker(tracks, values=None):
     def picker(left, right, to_add, items) -> bool:
         # maximize polarity
         averages = _get_average_values(left, right, to_add, values)
-        return cosine(averages["left with new"], averages["right"]) > cosine(
+        return similarity(averages["left with new"], averages["right"]) < similarity(
             averages["left"], averages["right with new"]
         )
 
@@ -228,13 +232,13 @@ def _smart_seed_picker(tracks):
         else:
             # Pick item most similar to left neighbor
             neighbor_value = values[left_neighbor]
-            left_seed = min(
-                items, key=lambda item: cosine(neighbor_value, values[item])
+            left_seed = max(
+                items, key=lambda item: similarity(neighbor_value, values[item])
             )
 
         # Pick item least similar to left seed
         left_value = values[left_seed]
-        right_seed = max(items, key=lambda item: cosine(left_value, values[item]))
+        right_seed = min(items, key=lambda item: similarity(left_value, values[item]))
 
         return left_seed, right_seed
 
@@ -284,8 +288,8 @@ def _swap_to_smooth(track_0, track_1, track_2, *, values):
         return False
 
     # if 0 and 2 are more similar than 0 and 1
-    cos_0_1 = cosine(values[track_0], values[track_1])
-    cos_0_2 = cosine(values[track_0], values[track_2])
+    cos_0_1 = similarity(values[track_0], values[track_1])
+    cos_0_2 = similarity(values[track_0], values[track_2])
 
     swap_for_cosine = cos_0_2 > cos_0_1
 
@@ -373,4 +377,4 @@ if __name__ == "__main__":
         ]
     ]
 
-    ordered = smart_shuffle(tracks, mode="smart-story")
+    ordered = smart_shuffle(tracks, mode="radio")
