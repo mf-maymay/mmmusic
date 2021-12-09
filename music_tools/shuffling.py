@@ -179,6 +179,7 @@ def _story_picker(tracks, values=None):
 
 
 def _artists_of_tracks(tracks):
+    """Identifies artists of tracks and counts each artist's apprearances."""
     artists = Counter()
     for track in tracks:
         artists.update(track.artist_ids)
@@ -206,16 +207,22 @@ def _radio_picker(tracks):
     story_picker = _story_picker(tracks)
 
     def picker(left, right, to_add, items) -> bool:
-        left_artists = _artists_of_tracks(left)
-        right_artists = _artists_of_tracks(right)
+        num_mutual_artists_in_left = sum(
+            counts
+            for artist, counts in _artists_of_tracks(left).items()
+            if artist in to_add.artist_ids
+        )
+        num_mutual_artists_in_right = sum(
+            counts
+            for artist, counts in _artists_of_tracks(right).items()
+            if artist in to_add.artist_ids
+        )
 
-        primary_artist = to_add.artist_ids[0]  # XXX: assumes first is primary
-        primary_in_left = left_artists.get(primary_artist, 0)
-        primary_in_right = right_artists.get(primary_artist, 0)
+        # If one side has fewer of to_add's artists, add to that side.
+        if num_mutual_artists_in_left != num_mutual_artists_in_right:
+            return num_mutual_artists_in_left < num_mutual_artists_in_right
 
-        if primary_in_left != primary_in_right:
-            return primary_in_left < primary_in_right
-
+        # Otherwise, use story mode.
         return story_picker(left, right, to_add, items)
 
     return picker
