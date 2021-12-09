@@ -178,29 +178,28 @@ def _story_picker(tracks, values=None):
     return picker
 
 
-def _smart_picker(tracks, story_picker=None):
-    balanced_picker = _balanced_picker(tracks)
-
-    if story_picker is None:
-        story_picker = _story_picker(tracks)
-
-    def picker(left, right, to_add, items) -> bool:
-        artists_seen = set()
-        for track in items:
-            artists = set(track.artist_ids)
-            if artists & artists_seen:
-                return balanced_picker(left, right, to_add, items)
-            artists_seen.update(artists)
-        return story_picker(left, right, to_add, items)
-
-    return picker
-
-
 def _artists_of_tracks(tracks):
     artists = Counter()
     for track in tracks:
         artists.update(track.artist_ids)
     return artists
+
+
+def _smart_picker(tracks):
+    balanced_picker = _balanced_picker(tracks)
+    story_picker = _story_picker(tracks)
+
+    def picker(left, right, to_add, items) -> bool:
+        artist_counts = _artists_of_tracks(items)
+
+        # If any tracks share artists, use balanced picker.
+        if any(count > 1 for count in artist_counts.values()):
+            return balanced_picker(left, right, to_add, items)
+
+        # If all tracks have unique artists, use story picker.
+        return story_picker(left, right, to_add, items)
+
+    return picker
 
 
 def _radio_picker(tracks):
