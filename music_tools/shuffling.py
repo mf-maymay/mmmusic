@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import Counter
+from typing import Any, Callable, Optional, Sequence, Tuple
 
 import numpy as np
 from scipy.stats import percentileofscore
@@ -7,6 +8,14 @@ from scipy.stats import percentileofscore
 from music_tools.album import Album
 from music_tools.artist import Artist
 from music_tools.genre_positions import averages_genre_positions, genre_positions
+from music_tools.track import Track
+
+Item = Any
+Items = Sequence[Item]
+ItemPicker = Callable[[Item, Item, Item, Items], bool]
+SeedPicker = Callable[[Items, Optional[Item]], Tuple[Item, Item]]
+Tracks = Sequence[Track]
+
 
 MAX_SMOOTH_CYCLES = 30
 
@@ -25,14 +34,17 @@ METRICS = (
 _shuffle = np.random.default_rng().shuffle
 
 
-def similarity(u, v):
+def similarity(u: Sequence[float], v: Sequence[float]) -> float:
     """Calculates the cosine similarity of two vectors."""
     return np.dot(u, v) / np.sqrt(np.dot(u, u) * np.dot(v, v))
 
 
 def quick_pick(
-    items: list, add_to_left: callable, seed_picker: callable = None, left_neighbor=None
-) -> list:
+    items: Items,
+    add_to_left: ItemPicker,
+    seed_picker: Optional[SeedPicker] = None,
+    left_neighbor: Optional[Item] = None,
+) -> Items:
     items = list(items)
 
     if len(items) < 2:
@@ -69,7 +81,7 @@ def quick_pick(
     return new_left + new_right
 
 
-def _get_average_values(left, right, to_add, values) -> dict:
+def _get_average_values(left: Item, right: Item, to_add: Item, values) -> dict:
     averages = {}
 
     left_values = [values[x] for x in left]
@@ -87,7 +99,7 @@ def _get_average_values(left, right, to_add, values) -> dict:
     return averages
 
 
-def _get_categorical_scores(left, right, to_add) -> dict:
+def _get_categorical_scores(left: Item, right: Item, to_add: Item) -> dict:
     scores = {}
 
     # key, mode, artist
@@ -110,28 +122,33 @@ def _get_categorical_scores(left, right, to_add) -> dict:
     return scores
 
 
-def _scores(tracks, metrics_func):
-    metrics = np.array([metrics_func(track) for track in tracks])
+def _scores(items: Items, metrics_func: Callable[[Item], Sequence[float]]) -> dict:
+    metrics = np.array([metrics_func(item) for item in items])
+
     scores = metrics.copy()
     for j, col in enumerate(metrics.T):
         scores[:, j] = [percentileofscore(col, x, kind="mean") for x in col]
-    return dict(zip(tracks, scores))
+
+    return dict(zip(items, scores))
 
 
-def _genre_position(track):
+def _genre_position(track: Track) -> Tuple[float, float]:
+    # TODO: move to genre_positions.py
     genres = set()
     for artist in track.artist_ids:
         genres |= Artist(artist).genres & genre_positions.keys()
+        # XXX: genres missing from genre_positions are ignored
 
     if not genres:
         return averages_genre_positions["top"], averages_genre_positions["left"]
 
     top = np.mean([genre_positions[genre]["top"] for genre in genres])
     left = np.mean([genre_positions[genre]["left"] for genre in genres])
+
     return top, left
 
 
-def _balanced_metrics(track):
+def _balanced_metrics(track: Track) -> Sequence[float]:
     return [track[metric] for metric in METRICS] + [
         track["duration_ms"],
         int(Album(track.album_id)["release_date"].split("-")[0]),
@@ -139,10 +156,10 @@ def _balanced_metrics(track):
     ]
 
 
-def _balanced_picker(tracks):
+def _balanced_picker(tracks: Tracks) -> ItemPicker:
     values = _scores(tracks, _balanced_metrics)
 
-    def picker(left, right, to_add, items) -> bool:
+    def picker(left: Track, right: Track, to_add: Track, items: Tracks) -> bool:
         # add item to left if diff less with item in left than in right
         averages = _get_average_values(left, right, to_add, values)
         scores = _get_categorical_scores(left, right, to_add)
@@ -157,18 +174,18 @@ def _balanced_picker(tracks):
     return picker
 
 
-def _story_metrics(track):
+def _story_metrics(track: Track) -> Sequence[float]:
     return [track[metric] for metric in METRICS] + [
         int(Album(track.album_id)["release_date"].split("-")[0]),
         *_genre_position(track),
     ]
 
 
-def _story_picker(tracks, values=None):
+def _story_picker(tracks: Tracks, values=None) -> ItemPicker:
     if values is None:
         values = _scores(tracks, _story_metrics)
 
-    def picker(left, right, to_add, items) -> bool:
+    def picker(left: Track, right: Track, to_add: Track, items: Tracks) -> bool:
         # maximize polarity
         averages = _get_average_values(left, right, to_add, values)
         return similarity(averages["left with new"], averages["right"]) < similarity(
@@ -178,19 +195,19 @@ def _story_picker(tracks, values=None):
     return picker
 
 
-def _artists_of_tracks(tracks):
-    """Identifies artists of tracks and counts each artist's apprearances."""
+def _artists_of_tracks(tracks: Tracks) -> Counter:
+    """Identifies artists of tracks and counts each artist's appearances."""
     artists = Counter()
     for track in tracks:
         artists.update(track.artist_ids)
     return artists
 
 
-def _smart_picker(tracks):
+def _smart_picker(tracks: Tracks) -> ItemPicker:
     balanced_picker = _balanced_picker(tracks)
     story_picker = _story_picker(tracks)
 
-    def picker(left, right, to_add, items) -> bool:
+    def picker(left: Track, right: Track, to_add: Track, items: Tracks) -> bool:
         artist_counts = _artists_of_tracks(items)
 
         # If any tracks share artists, use balanced picker.
@@ -203,10 +220,10 @@ def _smart_picker(tracks):
     return picker
 
 
-def _radio_picker(tracks):
+def _radio_picker(tracks: Tracks) -> ItemPicker:
     story_picker = _story_picker(tracks)
 
-    def picker(left, right, to_add, items) -> bool:
+    def picker(left: Track, right: Track, to_add: Track, items: Tracks) -> bool:
         num_mutual_artists_in_left = sum(
             counts
             for artist, counts in _artists_of_tracks(left).items()
@@ -228,10 +245,10 @@ def _radio_picker(tracks):
     return picker
 
 
-def _smart_seed_picker(tracks):
+def _smart_seed_picker(tracks: Tracks) -> SeedPicker:
     values = _scores(tracks, _story_metrics)
 
-    def picker(items, left_neighbor):
+    def picker(items: Tracks, left_neighbor: Optional[Track]) -> Tuple[Track, Track]:
 
         if left_neighbor is None:
             left_seed = items[0]
@@ -251,7 +268,7 @@ def _smart_seed_picker(tracks):
     return picker
 
 
-def _swap_to_smooth(track_0, track_1, track_2, *, values):
+def _swap_to_smooth(track_0: Track, track_1: Track, track_2: Track, *, values) -> bool:
     # if 0 and 1 share artists and 0 and 2 do not, swap
     # if vice versa, keep
     artists_0 = set(track_0.artist_ids)
@@ -302,7 +319,7 @@ def _swap_to_smooth(track_0, track_1, track_2, *, values):
     return swap_for_cosine
 
 
-def smooth_playlist(tracks):
+def smooth_playlist(tracks: Tracks) -> Tracks:
     tracks = list(tracks)
 
     if len(tracks) <= 2:
@@ -336,7 +353,7 @@ def smooth_playlist(tracks):
     return tracks
 
 
-def smart_shuffle(tracks, mode="smart", smooth=None):
+def smart_shuffle(tracks: Tracks, mode: str = "smart", smooth: Optional[bool] = None):
     # smooth defaults to True except for radio mode
 
     tracks = list(tracks)
@@ -369,8 +386,6 @@ def smart_shuffle(tracks, mode="smart", smooth=None):
 
 
 if __name__ == "__main__":
-    from music_tools.track import Track
-
     tracks = [
         Track(x)
         for x in [
