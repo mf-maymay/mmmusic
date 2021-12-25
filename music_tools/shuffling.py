@@ -188,9 +188,8 @@ def _story_metrics(track: Track) -> Metrics:
     ]
 
 
-def _story_picker(tracks: Tracks, values: Dict[Item, Metrics] = None) -> ItemPicker:
-    if values is None:
-        values = _scores(tracks, _story_metrics)
+def _story_picker(tracks: Tracks) -> ItemPicker:
+    values = _scores(tracks, _story_metrics)
 
     def picker(left: Track, right: Track, to_add: Track, items: Tracks) -> bool:
         # maximize polarity
