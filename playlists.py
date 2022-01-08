@@ -138,7 +138,7 @@ _radio_playlists = []
 for playlist in _playlists:
     radio_playlist = copy(playlist)
     radio_playlist.name += " - radio mode"
-    radio_playlist._order_tracks_func = radio_shuffle
+    radio_playlist.order_tracks_func = radio_shuffle
     _radio_playlists.append(radio_playlist)
 _playlists.extend(_radio_playlists)
 

@@ -17,23 +17,23 @@ class Playlist:
         self.name = name
         self.description = description
 
-        self._get_tracks_func = get_tracks_func
-        self._filter_tracks_func = filter_tracks_func
-        self._order_tracks_func = order_tracks_func
+        self.get_tracks_func = get_tracks_func
+        self.filter_tracks_func = filter_tracks_func
+        self.order_tracks_func = order_tracks_func
 
         self.tracks = []
 
     def get_tracks(self, user):
-        self.tracks = self._get_tracks_func(user)
+        self.tracks = self.get_tracks_func(user)
 
-        if self._filter_tracks_func is not None:
-            self.tracks = self._filter_tracks_func(self.tracks)
+        if self.filter_tracks_func is not None:
+            self.tracks = self.filter_tracks_func(self.tracks)
 
     def order_tracks(self):
         if not self.tracks:
             raise ValueError("No tracks to order")
 
-        self.tracks = self._order_tracks_func(self.tracks)
+        self.tracks = self.order_tracks_func(self.tracks)
 
     @no_timeout
     def create(self, user, confirm=True):
