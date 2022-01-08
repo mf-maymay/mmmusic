@@ -3,6 +3,8 @@ from music_tools.shuffling import smart_shuffle
 from music_tools.user import User
 from music_tools.utils import no_timeout, take_x_at_a_time
 
+MAX_TRACKS = 11_000
+
 
 class Playlist:
     def __init__(
@@ -48,5 +50,14 @@ class Playlist:
                 user.username, self.name, public=False, description=self.description
             )
 
-            for to_add in take_x_at_a_time([track.id for track in self.tracks], 100):
+            if len(self.tracks) > MAX_TRACKS:
+                print(
+                    "Playlist has {:,} tracks. Only adding first {:,} ...".format(
+                        len(self.tracks), MAX_TRACKS
+                    )
+                )
+
+            tracks = self.tracks[:MAX_TRACKS]
+
+            for to_add in take_x_at_a_time([track.id for track in tracks], 100):
                 user.sp.user_playlist_add_tracks(user.username, playlist["id"], to_add)
