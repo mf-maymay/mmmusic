@@ -64,6 +64,11 @@ _playlists = [
         ),
     ),
     Playlist(
+        "goth",
+        get_tracks_func=tracks_by_genre_pattern(pattern := ".*(goth|lilith).*"),
+        description=f"genre matches '{pattern}'",
+    ),
+    Playlist(
         "hip hop",
         get_tracks_func=tracks_by_genre_pattern(pattern := ".*hip hop.*"),
         description=f"genre matches '{pattern}'",
@@ -96,6 +101,11 @@ _playlists = [
         description=f"genre matches '{pattern}'",
     ),
     Playlist("pre-1970", get_tracks_func=tracks_by_release_year(None, 1969)),
+    Playlist(
+        "psych",
+        get_tracks_func=tracks_by_genre_pattern(pattern := ".*psych.*"),
+        description=f"genre matches '{pattern}'",
+    ),
     Playlist(
         "punkish",
         get_tracks_func=tracks_by_genre_pattern(pattern := ".*punk.*"),
