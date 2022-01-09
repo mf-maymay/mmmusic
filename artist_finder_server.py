@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from multiprocessing.connection import Listener
+from pathlib import Path
 import traceback
 
 import matplotlib
@@ -8,21 +9,37 @@ from artist_finder import grow_and_plot
 from music_tools.artist import Artist
 
 
+IMAGES_DIR = Path("output")
+
+workload = set()
+
+
 def return_artists(conn):
     try:
         while True:
             artist_ids = conn.recv()
-            print("received: {}".format(", ".join(artist_ids)))
 
-            artists = [Artist(artist_id) for artist_id in artist_ids]
+            print("received: ", ", ".join(artist_ids))
 
-            # TODO: check if output already exists
+            artists = tuple(sorted(artist_ids))
 
-            grow_and_plot(*artists)  # TODO: specify save location
+            file_path = (IMAGES_DIR / "-".join(artists)).with_suffix(".png")
 
-            print("connected: {}".format(", ".join(artist_ids)))
+            if file_path.is_file():
+                print("network exists already: ", ", ".join(artist_ids))
+                conn.send(file_path)  # XXX
+                continue
 
-            # conn.send()  # XXX: send response?
+            conn.send(None)  # XXX
+
+            if artists not in workload:
+                workload.add(artists)
+
+                grow_and_plot(*artists, save=file_path)
+
+                workload.remove(artists)
+
+                print("connected: ", ", ".join(artist_ids))
 
     except EOFError:
         print("Connection closed")
