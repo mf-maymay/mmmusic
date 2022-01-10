@@ -27,7 +27,7 @@ def handle_connection(conn, *, executor, in_progress: dict):
 
             artists = tuple(sorted(artist_ids))
 
-            file_path = (IMAGES_DIR / "-".join(artists)).with_suffix(".png")
+            file_path = (IMAGES_DIR / "-".join(artists)).with_suffix(".png").absolute()
 
             if file_path.is_file():
                 print("network exists already: ", ", ".join(artists))
@@ -70,6 +70,6 @@ def server(address):
 if __name__ == "__main__":
     matplotlib.use("Agg")
 
-    Artist.load_from_json()
+    Artist.use_json()
 
     server(("localhost", 25000))
