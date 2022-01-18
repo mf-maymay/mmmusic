@@ -6,8 +6,7 @@ import numpy as np
 from scipy.stats import percentileofscore
 
 from music_tools.album import Album
-from music_tools.artist import Artist
-from music_tools.genre_positions import averages_genre_positions, genre_positions
+from music_tools.genre_positions import genre_position
 from music_tools.track import Track
 
 Item = Any
@@ -139,27 +138,11 @@ def _scores(
     return dict(zip(items, scores))
 
 
-def _genre_position(track: Track) -> Tuple[float, float]:
-    # TODO: move to genre_positions.py
-    genres = set()
-    for artist in track.artist_ids:
-        genres |= Artist(artist).genres & genre_positions.keys()
-        # XXX: genres missing from genre_positions are ignored
-
-    if not genres:
-        return averages_genre_positions["top"], averages_genre_positions["left"]
-
-    top = np.mean([genre_positions[genre]["top"] for genre in genres])
-    left = np.mean([genre_positions[genre]["left"] for genre in genres])
-
-    return top, left
-
-
 def _balanced_metrics(track: Track) -> Metrics:
     return [track[metric] for metric in METRICS] + [
         track["duration_ms"],
         int(Album(track.album_id)["release_date"].split("-")[0]),
-        *_genre_position(track),
+        *genre_position(track),
     ]
 
 
@@ -184,7 +167,7 @@ def _balanced_picker(tracks: Tracks) -> ItemPicker:
 def _story_metrics(track: Track) -> Metrics:
     return [track[metric] for metric in METRICS] + [
         int(Album(track.album_id)["release_date"].split("-")[0]),
-        *_genre_position(track),
+        *genre_position(track),
     ]
 
 
