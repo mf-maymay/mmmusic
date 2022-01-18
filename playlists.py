@@ -57,6 +57,11 @@ _playlists = [
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
+        "folk",
+        get_tracks_func=tracks_by_genre_pattern(pattern := "^(?!.*?(freak)).*folk.*",),
+        description=f"genre matches '{pattern}'",
+    ),
+    Playlist(
         "good vibes",
         description="high danceability, high valence",
         filter_tracks_func=tracks_by_track_attribute(
