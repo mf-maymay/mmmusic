@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collections import namedtuple
 import json
 from pathlib import Path
 
@@ -7,17 +8,17 @@ import numpy as np
 from music_tools.artist import Artist
 from music_tools.track import Track
 
-_positions_file_path = Path(__file__).parent / "genre_positions.json"
+GenreCoordinates = namedtuple("GenreCoordinates", ["top", "left"])
 
-with open(_positions_file_path) as f:
-    genre_positions = json.load(f)
+with open(Path(__file__).parent / "genre_positions.json") as f:
+    _genre_positions_raw = json.load(f)
 
-averages_genre_positions = {}
-averages_genre_positions["top"] = np.mean(
-    [pos["top"] for pos in genre_positions.values()]
-)
-averages_genre_positions["left"] = np.mean(
-    [pos["left"] for pos in genre_positions.values()]
+genre_positions = {
+    genre: GenreCoordinates(**coords) for genre, coords in _genre_positions_raw.items()
+}
+
+average_genre_position = GenreCoordinates(
+    *np.mean(list(genre_positions.values()), axis=0)
 )
 
 
@@ -28,9 +29,8 @@ def genre_position(track: Track) -> tuple:
         # XXX: genres missing from genre_positions are ignored
 
     if not genres:
-        return averages_genre_positions["top"], averages_genre_positions["left"]
+        return average_genre_position
 
-    top = np.mean([genre_positions[genre]["top"] for genre in genres])
-    left = np.mean([genre_positions[genre]["left"] for genre in genres])
-
-    return top, left
+    return GenreCoordinates(
+        *np.mean([genre_positions[genre] for genre in genres], axis=0)
+    )
