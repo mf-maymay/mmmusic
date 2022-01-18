@@ -11,6 +11,7 @@ from music_tools.playlist_utils import (
     tracks_by_genre_pattern,
     tracks_by_release_year,
     tracks_by_track_attribute,
+    tracks_near_genre_coordinates,
 )
 from music_tools.shuffling import smart_shuffle
 from music_tools.user import User
@@ -147,6 +148,12 @@ _playlists = [
             and dt.strptime(x["release_date"], "%Y-%m").month == month
         ),
     ),
+    Playlist(
+        "Near Klezmer",
+        get_tracks_func=tracks_near_genre_coordinates(
+            17042, 938, max_distance=1000,
+        ),
+    )
 ]
 
 _radio_playlists = []
