@@ -99,9 +99,14 @@ def separate_dump_tracks_to_q_playlists(user):
 
     # Add tracks to playlists
     for q, q_id in Q_IDS.items():
-        tracks = list(dump_frame.loc[dump_frame["playlist"] == q, "id"].values)
-        print(f"Adding {len(tracks)} tracks to '{q}'")
-        for to_add in take_x_at_a_time(tracks, 100):
+        playlist_tracks = set(tracks_from_playlist(q_id)(user))
+
+        tracks_to_add = set(
+            dump_frame.loc[dump_frame["playlist"] == q, "id"].values
+        ) - playlist_tracks
+
+        print(f"Adding {len(tracks_to_add)} tracks to '{q}'")
+        for to_add in take_x_at_a_time(tracks_to_add, 100):
             user.sp.user_playlist_add_tracks(user.username, q_id, to_add)
 
     # Clear dump
@@ -113,12 +118,14 @@ def prepare_q_playlists(user):
     user_tracks = set(user.all_tracks())
 
     for q, q_id in Q_IDS.items():
-        tracks = [
-            track.id for track in set(tracks_from_playlist(q_id)(user)) & user_tracks
-        ]
+        playlist_tracks = set(tracks_from_playlist(q_id)(user))
 
-        print(f"Removing {len(tracks)} saved tracks from '{q}'")
-        for to_remove in take_x_at_a_time(tracks, 100):
+        already_saved = {
+            track.id for track in playlist_tracks & user_tracks
+        }
+
+        print(f"Removing {len(already_saved)} saved tracks from '{q}'")
+        for to_remove in take_x_at_a_time(already_saved, 100):
             user.sp.user_playlist_remove_all_occurrences_of_tracks(
                 user.username, q_id, to_remove
             )
