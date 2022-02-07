@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from scipy.spatial.distance import euclidean as distance
 
-from music_tools.album import get_tracks_from_albums
+from music_tools.album import Album, get_tracks_from_albums
 from music_tools.genre_positions import genre_position
 from music_tools.genres import artists_of_genres_matching
 from music_tools.shuffling import smart_shuffle
@@ -15,11 +15,10 @@ def _albums_from_artists(user, artists):
 
 
 def tracks_by_album_attribute(album_filter_func):
-    def get_tracks(user):
-        albums = [album for album in user.albums() if album_filter_func(album)]
-        return get_tracks_from_albums(albums)
+    def filter_tracks(tracks):
+        return [track for track in tracks if album_filter_func(Album(track.album_id))]
 
-    return get_tracks
+    return filter_tracks
 
 
 def tracks_by_artist_attribute(artist_filter_func):
@@ -70,7 +69,6 @@ def tracks_from_playlist(playlist_id):
         while items:
             tracks.extend(Track(info=item["track"]) for item in items["items"])
             items = no_timeout(user.sp.next)(items)
-
         return tracks
 
     return get_tracks

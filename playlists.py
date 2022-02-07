@@ -20,10 +20,10 @@ from music_tools.user import User
 radio_shuffle = partial(smart_shuffle, mode="radio")
 
 _playlists = [
-    Playlist("1970s", get_tracks_func=tracks_by_release_year(1970, 1979)),
-    Playlist("1980s", get_tracks_func=tracks_by_release_year(1980, 1989)),
-    Playlist("1990s", get_tracks_func=tracks_by_release_year(1990, 1999)),
-    Playlist("2000s", get_tracks_func=tracks_by_release_year(2000, 2009)),
+    Playlist("1970s", filter_tracks_funcs=[tracks_by_release_year(1970, 1979)]),
+    Playlist("1980s", filter_tracks_funcs=[tracks_by_release_year(1980, 1989)]),
+    Playlist("1990s", filter_tracks_funcs=[tracks_by_release_year(1990, 1999)]),
+    Playlist("2000s", filter_tracks_funcs=[tracks_by_release_year(2000, 2009)]),
     Playlist("ALL"),
     Playlist(
         "bad vibes",
@@ -110,7 +110,7 @@ _playlists = [
         get_tracks_func=tracks_by_genre_pattern(pattern := ".*post-rock.*"),
         description=f"genre matches '{pattern}'",
     ),
-    Playlist("pre-1970", get_tracks_func=tracks_by_release_year(None, 1969)),
+    Playlist("pre-1970", filter_tracks_funcs=[tracks_by_release_year(None, 1969)]),
     Playlist(
         "psych",
         get_tracks_func=tracks_by_genre_pattern(pattern := ".*psych.*"),
@@ -121,7 +121,7 @@ _playlists = [
         get_tracks_func=tracks_by_genre_pattern(pattern := ".*punk.*"),
         description=f"genre matches '{pattern}'",
     ),
-    Playlist("since 2010", get_tracks_func=tracks_by_release_year(2010, None)),
+    Playlist("since 2010", filter_tracks_funcs=[tracks_by_release_year(2010, None)]),
     Playlist(
         "studying",
         description="instrumental, low energy, tempo <= 120 bpm",
@@ -147,12 +147,14 @@ _playlists = [
     Playlist(
         month_name[(month := dt.today().month)],  # current month
         description=f"albums released in {month_name[month]}",
-        get_tracks_func=tracks_by_album_attribute(
-            lambda x: x["release_date_precision"] == "day"
-            and dt.strptime(x["release_date"], "%Y-%m-%d").month == month
-            or x["release_date_precision"] == "month"
-            and dt.strptime(x["release_date"], "%Y-%m").month == month
-        ),
+        filter_tracks_funcs=[
+            tracks_by_album_attribute(
+                lambda x: x["release_date_precision"] == "day"
+                and dt.strptime(x["release_date"], "%Y-%m-%d").month == month
+                or x["release_date_precision"] == "month"
+                and dt.strptime(x["release_date"], "%Y-%m").month == month
+            )
+        ],
     ),
     Playlist(
         "Near Klezmer",
