@@ -14,7 +14,7 @@ def _albums_from_artists(user, artists):
     return sorted({album for album in user.albums() if set(album.artist_ids) & artists})
 
 
-def tracks_by_album_attribute(album_filter_func):
+def filter_by_album_attribute(album_filter_func):
     def filter_tracks(tracks):
         return [track for track in tracks if album_filter_func(Album(track.album_id))]
 
@@ -29,7 +29,7 @@ def tracks_by_artist_attribute(artist_filter_func):
     return get_tracks
 
 
-def tracks_by_track_attribute(track_filter_func):
+def filter_by_track_attribute(track_filter_func):
     def filter_tracks(tracks):
         return [track for track in tracks if track_filter_func(track)]
 
@@ -47,7 +47,7 @@ def tracks_by_genre_pattern(pattern, artists_to_exclude=()):
     return get_tracks
 
 
-def tracks_by_release_year(start_year, end_year):
+def filter_by_release_year(start_year, end_year):
     if start_year is None:
         start_year = float("-inf")
     if end_year is None:
@@ -58,7 +58,7 @@ def tracks_by_release_year(start_year, end_year):
             start_year <= int(album["release_date"].split("-")[0]) <= end_year
         )
 
-    return tracks_by_album_attribute(release_date_filter)
+    return filter_by_album_attribute(release_date_filter)
 
 
 def tracks_from_playlist(playlist_id):

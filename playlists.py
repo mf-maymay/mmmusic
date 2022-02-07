@@ -6,11 +6,11 @@ from functools import partial
 
 from music_tools.playlist import Playlist
 from music_tools.playlist_utils import (
-    tracks_by_album_attribute,
+    filter_by_album_attribute,
+    filter_by_release_year,
+    filter_by_track_attribute,
     tracks_by_artist_attribute,
     tracks_by_genre_pattern,
-    tracks_by_release_year,
-    tracks_by_track_attribute,
     tracks_near_genre_coordinates,
 )
 from music_tools.shuffling import smart_shuffle
@@ -20,16 +20,16 @@ from music_tools.user import User
 radio_shuffle = partial(smart_shuffle, mode="radio")
 
 _playlists = [
-    Playlist("1970s", track_filters=[tracks_by_release_year(1970, 1979)]),
-    Playlist("1980s", track_filters=[tracks_by_release_year(1980, 1989)]),
-    Playlist("1990s", track_filters=[tracks_by_release_year(1990, 1999)]),
-    Playlist("2000s", track_filters=[tracks_by_release_year(2000, 2009)]),
+    Playlist("1970s", track_filters=[filter_by_release_year(1970, 1979)]),
+    Playlist("1980s", track_filters=[filter_by_release_year(1980, 1989)]),
+    Playlist("1990s", track_filters=[filter_by_release_year(1990, 1999)]),
+    Playlist("2000s", track_filters=[filter_by_release_year(2000, 2009)]),
     Playlist("ALL"),
     Playlist(
         "bad vibes",
         description="high energy, low valence",
         track_filters=[
-            tracks_by_track_attribute(
+            filter_by_track_attribute(
                 lambda x: x["valence"] <= 0.10 and x["energy"] > 0.6
             )
         ],
@@ -66,7 +66,7 @@ _playlists = [
         "good vibes",
         description="high danceability, high valence",
         track_filters=[
-            tracks_by_track_attribute(
+            filter_by_track_attribute(
                 lambda x: x["danceability"] >= 0.5 and x["valence"] >= 0.9
             )
         ],
@@ -108,7 +108,7 @@ _playlists = [
         track_source=tracks_by_genre_pattern(pattern := ".*post-rock.*"),
         description=f"genre matches '{pattern}'",
     ),
-    Playlist("pre-1970", track_filters=[tracks_by_release_year(None, 1969)]),
+    Playlist("pre-1970", track_filters=[filter_by_release_year(None, 1969)]),
     Playlist(
         "psych",
         track_source=tracks_by_genre_pattern(pattern := ".*psych.*"),
@@ -119,12 +119,12 @@ _playlists = [
         track_source=tracks_by_genre_pattern(pattern := ".*punk.*"),
         description=f"genre matches '{pattern}'",
     ),
-    Playlist("since 2010", track_filters=[tracks_by_release_year(2010, None)]),
+    Playlist("since 2010", track_filters=[filter_by_release_year(2010, None)]),
     Playlist(
         "studying",
         description="instrumental, low energy, tempo <= 120 bpm",
         track_filters=[
-            tracks_by_track_attribute(
+            filter_by_track_attribute(
                 lambda x: x["instrumentalness"] >= 0.8
                 and x["energy"] <= 0.5
                 and x["tempo"] <= 120
@@ -146,7 +146,7 @@ _playlists = [
         month_name[(month := dt.today().month)],  # current month
         description=f"albums released in {month_name[month]}",
         track_filters=[
-            tracks_by_album_attribute(
+            filter_by_album_attribute(
                 lambda x: x["release_date_precision"] == "day"
                 and dt.strptime(x["release_date"], "%Y-%m-%d").month == month
                 or x["release_date_precision"] == "month"
@@ -161,9 +161,9 @@ _playlists = [
     Playlist(
         "happy minor",
         track_filters=[
-            tracks_by_track_attribute(lambda x: x["mode"] == 0),
-            tracks_by_track_attribute(lambda x: x["valence"] >= 0.6),
-        ],
+            filter_by_track_attribute(lambda x: x["mode"] == 0),
+            filter_by_track_attribute(lambda x: x["valence"] >= 0.6),
+        ],  # test filter stacking
     ),
 ]
 
