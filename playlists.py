@@ -28,9 +28,11 @@ _playlists = [
     Playlist(
         "bad vibes",
         description="high energy, low valence",
-        filter_tracks_func=tracks_by_track_attribute(
-            lambda x: x["valence"] <= 0.10 and x["energy"] > 0.6
-        ),
+        filter_tracks_funcs=[
+            tracks_by_track_attribute(
+                lambda x: x["valence"] <= 0.10 and x["energy"] > 0.6
+            )
+        ],
     ),
     Playlist(
         "classical",
@@ -65,9 +67,11 @@ _playlists = [
     Playlist(
         "good vibes",
         description="high danceability, high valence",
-        filter_tracks_func=tracks_by_track_attribute(
-            lambda x: x["danceability"] >= 0.5 and x["valence"] >= 0.9
-        ),
+        filter_tracks_funcs=[
+            tracks_by_track_attribute(
+                lambda x: x["danceability"] >= 0.5 and x["valence"] >= 0.9
+            )
+        ],
     ),
     Playlist(
         "goth",
@@ -121,11 +125,13 @@ _playlists = [
     Playlist(
         "studying",
         description="instrumental, low energy, tempo <= 120 bpm",
-        filter_tracks_func=tracks_by_track_attribute(
-            lambda x: x["instrumentalness"] >= 0.8
-            and x["energy"] <= 0.5
-            and x["tempo"] <= 120
-        ),
+        filter_tracks_funcs=[
+            tracks_by_track_attribute(
+                lambda x: x["instrumentalness"] >= 0.8
+                and x["energy"] <= 0.5
+                and x["tempo"] <= 120
+            )
+        ],
     ),
     Playlist(
         "tropical",
@@ -139,7 +145,7 @@ _playlists = [
         get_tracks_func=tracks_by_artist_attribute(lambda x: x.popularity <= 25),
     ),
     Playlist(
-        month_name[(month := dt.today().month)],
+        month_name[(month := dt.today().month)],  # current month
         description=f"albums released in {month_name[month]}",
         get_tracks_func=tracks_by_album_attribute(
             lambda x: x["release_date_precision"] == "day"
@@ -150,10 +156,15 @@ _playlists = [
     ),
     Playlist(
         "Near Klezmer",
-        get_tracks_func=tracks_near_genre_coordinates(
-            17042, 938, max_distance=1000,
-        ),
-    )
+        get_tracks_func=tracks_near_genre_coordinates(17042, 938, max_distance=400),
+    ),
+    Playlist(
+        "happy minor",
+        filter_tracks_funcs=[
+            tracks_by_track_attribute(lambda x: x["mode"] == 0),
+            tracks_by_track_attribute(lambda x: x["valence"] >= 0.6),
+        ],
+    ),
 ]
 
 _radio_playlists = []
@@ -187,7 +198,6 @@ if __name__ == "__main__":
         print(f"Ordering '{playlist.name}' tracks ...")
         playlist.order_tracks()
         print()
-
     for key in to_create:
         playlist = playlists[key]
         playlist.create(user, confirm=True)

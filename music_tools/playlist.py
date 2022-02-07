@@ -13,14 +13,14 @@ class Playlist:
         *,
         description="",
         get_tracks_func=User.all_tracks,
-        filter_tracks_func=None,
+        filter_tracks_funcs=(),
         order_tracks_func=smart_shuffle,
     ):
         self.name = name
         self.description = description
 
         self.get_tracks_func = get_tracks_func
-        self.filter_tracks_func = filter_tracks_func
+        self.filter_tracks_funcs = tuple(filter_tracks_funcs)
         self.order_tracks_func = order_tracks_func
 
         self.tracks = []
@@ -28,8 +28,8 @@ class Playlist:
     def get_tracks(self, user):
         self.tracks = self.get_tracks_func(user)
 
-        if self.filter_tracks_func is not None:
-            self.tracks = self.filter_tracks_func(self.tracks)
+        for filter_tracks_func in self.filter_tracks_funcs:
+            self.tracks = filter_tracks_func(self.tracks)
 
     def order_tracks(self):
         if not self.tracks:
