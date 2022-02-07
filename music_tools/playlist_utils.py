@@ -35,6 +35,19 @@ def filter_by_artist_attribute(artist_filter_func):
     return filter_tracks
 
 
+def filter_by_genre_coordinates(top, left, *, max_distance):
+    def filter_tracks(tracks):
+        tracks = [
+            track
+            for track in tracks
+            if distance((top, left), genre_position(track)) < max_distance
+        ]
+
+        return tracks
+
+    return filter_tracks
+
+
 def filter_by_genre_pattern(pattern):
     def filter_tracks(tracks):
         return [
@@ -77,19 +90,6 @@ def tracks_from_playlist(playlist_id):
         while items:
             tracks.extend(Track(info=item["track"]) for item in items["items"])
             items = no_timeout(user.sp.next)(items)
-        return tracks
-
-    return get_tracks
-
-
-def tracks_near_genre_coordinates(top, left, *, max_distance):
-    def get_tracks(user):
-        tracks = [
-            track
-            for track in user.all_tracks()
-            if distance((top, left), genre_position(track)) < max_distance
-        ]
-
         return tracks
 
     return get_tracks

@@ -8,10 +8,10 @@ from music_tools.playlist import Playlist
 from music_tools.playlist_utils import (
     filter_by_album_attribute,
     filter_by_artist_attribute,
+    filter_by_genre_coordinates,
     filter_by_genre_pattern,
     filter_by_release_year,
     filter_by_track_attribute,
-    tracks_near_genre_coordinates,
 )
 from music_tools.shuffling import smart_shuffle
 from music_tools.user import User
@@ -166,7 +166,7 @@ _playlists = [
     ),
     Playlist(
         "Near Klezmer",
-        track_source=tracks_near_genre_coordinates(17042, 938, max_distance=400),
+        track_filters=[filter_by_genre_coordinates(17042, 938, max_distance=400)],
     ),
     Playlist(
         "happy minor",
