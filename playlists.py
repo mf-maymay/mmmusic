@@ -8,9 +8,9 @@ from music_tools.playlist import Playlist
 from music_tools.playlist_utils import (
     filter_by_album_attribute,
     filter_by_artist_attribute,
+    filter_by_genre_pattern,
     filter_by_release_year,
     filter_by_track_attribute,
-    tracks_by_genre_pattern,
     tracks_near_genre_coordinates,
 )
 from music_tools.shuffling import smart_shuffle
@@ -36,30 +36,34 @@ _playlists = [
     ),
     Playlist(
         "classical",
-        track_source=tracks_by_genre_pattern(
-            pattern := ".*(classical|compositional).*",
-            artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"],  # adrian younge
-        ),
+        track_filters=[
+            filter_by_genre_pattern(pattern := ".*(classical|compositional).*"),
+            filter_by_artist_attribute(
+                lambda x: x.id != "4aMeIY7MkJoZg7O91cmDDd"  # adrian younge
+            ),
+        ],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "countryish",
-        track_source=tracks_by_genre_pattern(pattern := ".*(americana|country|cow).*"),
+        track_filters=[
+            filter_by_genre_pattern(pattern := ".*(americana|country|cow).*")
+        ],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "emo/math",
-        track_source=tracks_by_genre_pattern(pattern := ".*(emo|math).*"),
+        track_filters=[filter_by_genre_pattern(pattern := ".*(emo|math).*")],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "escape room",
-        track_source=tracks_by_genre_pattern(pattern := ".*escape room.*"),
+        track_filters=[filter_by_genre_pattern(pattern := ".*escape room.*")],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "folk",
-        track_source=tracks_by_genre_pattern(pattern := "^(?!.*?(freak)).*folk.*",),
+        track_filters=[filter_by_genre_pattern(pattern := "^(?!.*?(freak)).*folk.*")],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
@@ -73,50 +77,56 @@ _playlists = [
     ),
     Playlist(
         "goth",
-        track_source=tracks_by_genre_pattern(pattern := ".*(goth|lilith).*"),
+        track_filters=[filter_by_genre_pattern(pattern := ".*(goth|lilith).*")],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "hip hop",
-        track_source=tracks_by_genre_pattern(pattern := ".*hip hop.*"),
+        track_filters=[filter_by_genre_pattern(pattern := ".*hip hop.*")],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "japan",
-        track_source=tracks_by_genre_pattern(
-            pattern := ".*(japan|j-).*",
-            artists_to_exclude=["3BG0nwVh3Gc7cuT4XdsLtt"],  # joe henderson
-        ),
+        track_filters=[
+            filter_by_genre_pattern(pattern := ".*(japan|j-).*"),
+            filter_by_artist_attribute(
+                lambda x: x.id != "3BG0nwVh3Gc7cuT4XdsLtt"  # joe henderson
+            ),
+        ],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "jazz",
-        track_source=tracks_by_genre_pattern(
-            pattern := "^(?!.*?(core|dark|fusion|nu|jazz metal|jazz rap|jazztronica))"
-            ".*jazz.*",
-            artists_to_exclude=["4aMeIY7MkJoZg7O91cmDDd"],  # adrian younge
-        ),
+        track_filters=[
+            filter_by_genre_pattern(
+                pattern := "^(?!.*?(core|dark|fusion|nu|jazz metal|jazz rap|jazztronica"
+                ")).*jazz.*"
+            ),
+            filter_by_artist_attribute(
+                lambda x: x.id != "4aMeIY7MkJoZg7O91cmDDd"  # adrian younge
+            ),
+        ],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "metal",
-        track_source=tracks_by_genre_pattern(pattern := ".*(doom|metal|zeuhl).*"),
+        track_filters=[filter_by_genre_pattern(pattern := ".*(doom|metal|zeuhl).*")],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "post-rock",
-        track_source=tracks_by_genre_pattern(pattern := ".*post-rock.*"),
+        track_filters=[filter_by_genre_pattern(pattern := ".*post-rock.*")],
         description=f"genre matches '{pattern}'",
     ),
     Playlist("pre-1970", track_filters=[filter_by_release_year(None, 1969)]),
     Playlist(
         "psych",
-        track_source=tracks_by_genre_pattern(pattern := ".*psych.*"),
+        track_filters=[filter_by_genre_pattern(pattern := ".*psych.*")],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
         "punkish",
-        track_source=tracks_by_genre_pattern(pattern := ".*punk.*"),
+        track_filters=[filter_by_genre_pattern(pattern := ".*punk.*")],
         description=f"genre matches '{pattern}'",
     ),
     Playlist("since 2010", track_filters=[filter_by_release_year(2010, None)]),
@@ -133,9 +143,9 @@ _playlists = [
     ),
     Playlist(
         "tropical",
-        track_source=tracks_by_genre_pattern(
-            pattern := ".*(brazil|latin|mpb|reggae).*"
-        ),
+        track_filters=[
+            filter_by_genre_pattern(pattern := ".*(brazil|latin|mpb|reggae).*")
+        ],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(

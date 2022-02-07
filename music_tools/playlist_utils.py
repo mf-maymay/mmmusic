@@ -30,6 +30,19 @@ def filter_by_artist_attribute(artist_filter_func):
             if any(
                 artist_filter_func(Artist(artist_id)) for artist_id in track.artist_ids
             )
+        ]  # XXX: any or all?
+
+    return filter_tracks
+
+
+def filter_by_genre_pattern(pattern):
+    def filter_tracks(tracks):
+        return [
+            track
+            for track in tracks
+            if artists_of_genres_matching(
+                pattern, [Artist(artist_id) for artist_id in track.artist_ids]
+            )  # TODO: switch to actual regex evaluation
         ]
 
     return filter_tracks
@@ -40,17 +53,6 @@ def filter_by_track_attribute(track_filter_func):
         return [track for track in tracks if track_filter_func(track)]
 
     return filter_tracks
-
-
-def tracks_by_genre_pattern(pattern, artists_to_exclude=()):
-    def get_tracks(user):
-        artists = artists_of_genres_matching(pattern, user.artists()) - set(
-            artists_to_exclude
-        )
-        albums = _albums_from_artists(user, artists)
-        return get_tracks_from_albums(albums)
-
-    return get_tracks
 
 
 def filter_by_release_year(start_year, end_year):
