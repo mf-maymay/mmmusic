@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from scipy.spatial.distance import euclidean as distance
 
-from music_tools.album import Album, get_tracks_from_albums
+from music_tools.album import Album
 from music_tools.artist import Artist
 from music_tools.genre_positions import genre_position
 from music_tools.genres import artists_of_genres_matching
@@ -27,7 +27,7 @@ def filter_by_artist_attribute(artist_filter_func):
         return [
             track
             for track in tracks
-            if any(
+            if all(
                 artist_filter_func(Artist(artist_id)) for artist_id in track.artist_ids
             )
         ]  # XXX: any or all?
