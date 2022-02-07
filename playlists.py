@@ -7,9 +7,9 @@ from functools import partial
 from music_tools.playlist import Playlist
 from music_tools.playlist_utils import (
     filter_by_album_attribute,
+    filter_by_artist_attribute,
     filter_by_release_year,
     filter_by_track_attribute,
-    tracks_by_artist_attribute,
     tracks_by_genre_pattern,
     tracks_near_genre_coordinates,
 )
@@ -140,7 +140,7 @@ _playlists = [
     ),
     Playlist(
         "unpopular artists",
-        track_source=tracks_by_artist_attribute(lambda x: x.popularity <= 25),
+        track_filters=[filter_by_artist_attribute(lambda x: x.popularity <= 25)],
     ),
     Playlist(
         month_name[(month := dt.today().month)],  # current month
