@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+from calendar import month_name
 from copy import copy
+from datetime import datetime
 from functools import partial
 
 from music_tools.playlist import Playlist
 from music_tools.playlist_utils import (
+    filter_by_album_attribute,
     filter_by_artist_attribute,
     filter_by_genre_coordinates,
     filter_by_genre_pattern,
@@ -149,18 +152,13 @@ _playlists = [
         "unpopular artists",
         track_filters=[filter_by_artist_attribute(lambda x: x.popularity <= 25)],
     ),
-    # Playlist(
-    #     month_name[(month := dt.today().month)],  # current month
-    #     description=f"albums released in {month_name[month]}",
-    #     track_filters=[
-    #         filter_by_album_attribute(
-    #             lambda x: x["release_date_precision"] == "day"
-    #             and dt.strptime(x["release_date"], "%Y-%m-%d").month == month
-    #             or x["release_date_precision"] == "month"
-    #             and dt.strptime(x["release_date"], "%Y-%m").month == month
-    #         )
-    #     ],
-    # ),
+    Playlist(
+        month_name[(month := datetime.today().month)],  # current month
+        description=f"albums released in {month_name[month]}",
+        track_filters=[
+            filter_by_album_attribute(lambda x: x.release_date.month == month)
+        ],
+    ),
     Playlist(
         "Near Klezmer",
         track_filters=[filter_by_genre_coordinates(17042, 938, max_distance=400)],
@@ -186,10 +184,6 @@ playlists = {playlist.name: playlist for playlist in _playlists}
 
 
 if __name__ == "__main__":
-    from music_tools.track import AudioFeatures
-
-    AudioFeatures.use_json()
-
     user = User()
 
     to_create = sorted(playlists)

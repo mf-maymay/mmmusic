@@ -1,26 +1,66 @@
 # -*- coding: utf-8 -*-
+from dataclasses import dataclass
+from functools import lru_cache
+
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+
 from music_tools.base_class import SpotifyObjectBase
 from music_tools.utils import no_timeout
 
+AUDIO_FEATURE_FIELDS = (
+    "acousticness",
+    "danceability",
+    "duration_ms",
+    "energy",
+    "instrumentalness",
+    "key",
+    "liveness",
+    "loudness",
+    "mode",
+    "speechiness",
+    "tempo",
+    "time_signature",
+    "valence",
+)
 
-class AudioFeatures(SpotifyObjectBase):
-    FIELDS = ("id",)
-    __slots__ = (*FIELDS, "info")  # XXX
+sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
 
-    def __init__(self, track_id=None, *, info=None):
-        if info is not None and "name" not in info:
-            info = {"name": info["id"], **info}  # add name
 
-        super().__init__(id=track_id, info=info)
+@dataclass(init=False, frozen=True)  # TODO: add slots=True
+class AudioFeatures:
+    __slots__ = ("id", *AUDIO_FEATURE_FIELDS)
 
-    @classmethod
-    @no_timeout
-    def full_response(cls, track_id):
-        features = cls._sp.audio_features(
-            track_id if not isinstance(track_id, SpotifyObjectBase) else track_id.id
-        )[0]
-        features["name"] = features["id"]
-        return features
+    id: str
+    acousticness: float
+    danceability: float
+    duration_ms: int
+    energy: float
+    instrumentalness: float
+    key: int
+    liveness: float
+    loudness: float
+    mode: int
+    speechiness: float
+    tempo: float
+    time_signature: int
+    valence: float
+
+    get_json = lru_cache(maxsize=None)(no_timeout(sp.audio_features))
+
+    def __init__(self, track_id):
+        if hasattr(track_id, "id"):
+            # AudioFeatures(Track(track_id)) == AudioFeatures(track_id)
+            track_id = track_id.id
+        super().__setattr__("id", track_id)
+
+        info = type(self).get_json(track_id)[0]
+
+        for field in AUDIO_FEATURE_FIELDS:
+            super().__setattr__(field, info[field])
+
+    def __getitem__(self, key):
+        return getattr(self, key)
 
 
 class Track(SpotifyObjectBase):
@@ -54,9 +94,6 @@ class Track(SpotifyObjectBase):
 
 
 if __name__ == "__main__":
-    AudioFeatures.use_json()
-    Track.use_json()
-
     track_ids = [
         "0vFabeTqtOtj918sjc5vYo",
         "3HWxpLKnTlz6jE3Vi5dTF2",
