@@ -1,69 +1,80 @@
 # -*- coding: utf-8 -*-
-from spotipy.exceptions import SpotifyException
+from dataclasses import dataclass
+from functools import lru_cache
 
-from music_tools.base_class import SpotifyObjectBase
+import spotipy
+from spotipy.exceptions import SpotifyException
+from spotipy.oauth2 import SpotifyClientCredentials
+
 from music_tools.utils import no_timeout
 
-
-class RelatedArtists(SpotifyObjectBase):
-    FIELDS = ("id", "artist_ids")
-    __slots__ = (*FIELDS, "info")  # XXX
-
-    def __init__(self, artist_id=None, *, info=None):
-        if info is not None and "id" not in info:
-            raise ValueError("info is missing required 'id' key")
-
-        super().__init__(id=artist_id, info=info)
-
-        self.artist_ids = tuple(artist["id"] for artist in self.info["artists"])
-
-    @classmethod
-    @no_timeout
-    def full_response(cls, artist_id):
-        response = cls._sp.artist_related_artists(artist_id)
-        response["name"] = response["id"] = artist_id
-        return response
+sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
 
 
-class Artist(SpotifyObjectBase):
-    FIELDS = ("id", "name", "genres", "popularity")
-    __slots__ = (*FIELDS, "info")
+@dataclass(init=False, frozen=True)  # TODO: add slots=True
+class Artist:
+    __slots__ = ("id", "name", "genres", "popularity")
 
-    def __init__(self, artist_id=None, *, info=None):
-        super().__init__(id=artist_id, info=info)
+    id: str
+    name: str
+    genres: tuple
+    popularity: int
 
-        self.genres = tuple(sorted(self.info["genres"]))
+    get_json = lru_cache(maxsize=None)(no_timeout(sp.artist))
 
-        self.popularity = self.info["popularity"]
+    def __init__(self, artist_id):
+        if hasattr(artist_id, "id"):
+            # Artist(Artist(artist_id)) == Artist(artist_id)
+            artist_id = artist_id.id
+        super().__setattr__("id", artist_id)
 
-        self._related_artists = None
+        info = type(self).get_json(artist_id)
 
-    @classmethod
-    @no_timeout
-    def full_response(cls, artist_id):
-        return cls._sp.artist(
-            artist_id if not isinstance(artist_id, cls) else artist_id.id
-        )
+        super().__setattr__("name", info["name"])
+        super().__setattr__("genres", tuple(sorted(info["genres"])))
+        super().__setattr__("popularity", info["popularity"])
+
+    def __str__(self):
+        return self.name
 
     def related(self):
-        if self._related_artists is None:
-            self._related_artists = tuple(
-                Artist(artist_id) for artist_id in RelatedArtists(self.id).artist_ids
-            )
-        return self._related_artists
+        return RelatedArtists(self)
+
+
+@dataclass(init=False, frozen=True)  # TODO: add slots=True
+class RelatedArtists:
+    __slots__ = ("id", "artists")
+
+    id: str
+    artists: tuple
+
+    get_json = lru_cache(maxsize=None)(no_timeout(sp.artist_related_artists))
+
+    def __init__(self, artist_id):
+        if hasattr(artist_id, "id"):
+            # RelatedArtists(Artist(artist_id)) == RelatedArtists(artist_id)
+            artist_id = artist_id.id
+        super().__setattr__("id", artist_id)
+
+        info = type(self).get_json(artist_id)
+
+        super().__setattr__(
+            "artists", tuple(Artist(artist["id"]) for artist in info["artists"])
+        )
+
+    def __iter__(self):
+        return iter(self.artists)
 
 
 def search_for_artist(search_text):
     try:
         return Artist(search_text)
     except SpotifyException:
-        search_result = no_timeout(Artist._sp.search)(
-            search_text, limit=1, type="artist"
-        )
-        return Artist(info=search_result["artists"]["items"][0])
+        search = no_timeout(sp.search)  # TODO: declare globally
+        search_result = search(search_text, limit=1, type="artist")
+        return Artist(search_result["artists"]["items"][0]["id"])
 
 
 if __name__ == "__main__":
-    Artist.use_json()
-
     artist = Artist("0oSGxfWSnnOXhD2fKuz2Gy")
+    related = artist.related()

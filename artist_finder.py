@@ -8,7 +8,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from music_tools.artist import Artist, RelatedArtists
+from music_tools.artist import Artist
 
 
 def expand(artists, graph=None) -> nx.Graph:
@@ -305,9 +305,6 @@ if __name__ == "__main__":
     # artist_finder.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX -f test.png
 
     matplotlib.use("Agg")
-
-    Artist.use_json()
-    RelatedArtists.use_json()
 
     parser = argparse.ArgumentParser()
     parser.add_argument(

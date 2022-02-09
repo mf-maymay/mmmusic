@@ -190,11 +190,9 @@ playlists = {playlist.name: playlist for playlist in _playlists}
 
 if __name__ == "__main__":
     from music_tools.album import Album
-    from music_tools.artist import Artist
     from music_tools.track import AudioFeatures
 
     Album.use_json()
-    Artist.use_json()
     AudioFeatures.use_json()
 
     user = User()

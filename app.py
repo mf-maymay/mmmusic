@@ -21,8 +21,6 @@ from music_tools.artist import Artist, search_for_artist
 from music_tools.playlist_utils import shuffle_playlist
 from music_tools.user import User
 
-Artist.load_from_json()
-
 matplotlib.use("Agg")
 
 app = Flask(__name__)

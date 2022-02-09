@@ -7,7 +7,6 @@ import traceback
 import matplotlib
 
 from artist_finder import grow_and_plot
-from music_tools.artist import Artist
 
 
 IMAGES_DIR = Path("output")
@@ -69,7 +68,5 @@ def server(address):
 
 if __name__ == "__main__":
     matplotlib.use("Agg")
-
-    Artist.use_json()
 
     server(("localhost", 25000))
