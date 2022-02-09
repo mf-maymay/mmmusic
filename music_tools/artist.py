@@ -11,12 +11,12 @@ from music_tools.utils import no_timeout
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
 
 
-@dataclass(init=False, frozen=True)  # TODO: add slots=True
+@dataclass(init=False, order=True, frozen=True)  # TODO: add slots=True
 class Artist:
-    __slots__ = ("id", "name", "genres", "popularity")
+    __slots__ = ("name", "id", "genres", "popularity")
 
-    id: str
     name: str
+    id: str
     genres: tuple
     popularity: int
 
