@@ -1,28 +1,50 @@
 # -*- coding: utf-8 -*-
-from music_tools.base_class import SpotifyObjectBase
+from dataclasses import dataclass
+from functools import lru_cache
+
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+
 from music_tools.track import Track
 from music_tools.utils import no_timeout
 
 
-class Album(SpotifyObjectBase):
-    FIELDS = ("id", "name", "artist_ids")
-    __slots__ = (*FIELDS, "info")  # XXX
+sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
 
-    def __init__(self, album_id=None, *, info=None):
-        super().__init__(id=album_id, info=info)
 
-        self.artist_ids = tuple(artist["id"] for artist in self.info["artists"])
+@dataclass(init=False, order=True, frozen=True)  # TODO: add slots=True
+class Album:
+    __slots__ = ("name", "id", "album_type", "release_date", "artist_ids")
 
-    @classmethod
-    @no_timeout
-    def full_response(cls, album_id):
-        return cls._sp.album(album_id if not isinstance(album_id, cls) else album_id.id)
+    name: str
+    id: str
+    album_type: str
+    release_date: str  # TODO: convert to datetime
+    artist_ids: tuple  # TODO: switch to "artists", put first in order
+
+    get_json = lru_cache(maxsize=None)(no_timeout(sp.album))
+
+    def __init__(self, album_id):
+        if hasattr(album_id, "id"):
+            # Album(Album(album_id)) == Album(album_id)
+            album_id = album_id.id
+        super().__setattr__("id", album_id)
+
+        info = type(self).get_json(album_id)
+
+        super().__setattr__("name", info["name"])
+        super().__setattr__("album_type", info["album_type"])
+        super().__setattr__("release_date", info["release_date"])
+        super().__setattr__(
+            "artist_ids", tuple(artist["id"] for artist in info["artists"])
+        )
+
+    def __str__(self):
+        return self.name
 
     def tracks(self):
-        return [
-            Track(info={**item, "album": self.info})
-            for item in self.info["tracks"]["items"]
-        ]
+        info = type(self).get_json(self.id)
+        return [Track(info={**item, "album": info}) for item in info["tracks"]["items"]]
 
 
 def get_tracks_from_albums(albums):
@@ -30,8 +52,6 @@ def get_tracks_from_albums(albums):
 
 
 if __name__ == "__main__":
-    Album.use_json()
-
     album = Album("2w1YJXWMIco6EBf0CovvVN")
 
     tracks = album.tracks()

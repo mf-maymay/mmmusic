@@ -141,7 +141,7 @@ def _scores(
 def _balanced_metrics(track: Track) -> Metrics:
     return [track[metric] for metric in METRICS] + [
         track["duration_ms"],
-        int(Album(track.album_id)["release_date"].split("-")[0]),
+        int(Album(track.album_id).release_date.split("-")[0]),
         *genre_position(track),
     ]
 
@@ -166,7 +166,7 @@ def _balanced_picker(tracks: Tracks) -> ItemPicker:
 
 def _story_metrics(track: Track) -> Metrics:
     return [track[metric] for metric in METRICS] + [
-        int(Album(track.album_id)["release_date"].split("-")[0]),
+        int(Album(track.album_id).release_date.split("-")[0]),
         *genre_position(track),
     ]
 

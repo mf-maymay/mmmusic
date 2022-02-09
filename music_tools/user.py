@@ -42,12 +42,10 @@ class User:
 
             while albums_on_page:
                 albums.extend(
-                    Album(info=item["album"]) for item in albums_on_page["items"]
+                    Album(item["album"]["id"]) for item in albums_on_page["items"]
                 )
                 albums_on_page = self.sp.next(albums_on_page)
-
             self._albums = tuple(sorted(albums))
-
         return self._albums
 
     def artists(self):
@@ -55,9 +53,7 @@ class User:
             artists = set()
             for album in self.albums():
                 artists.update(Artist(artist_id) for artist_id in album.artist_ids)
-
             self._artists = tuple(sorted(artists))
-
         return self._artists
 
     def all_tracks(self):
@@ -74,6 +70,5 @@ if __name__ == "__main__":
 
     for album in user.albums():
         print(album)
-
     for artist in user.artists():
         print(artist)
