@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from dataclasses import dataclass
+from datetime import datetime
 from functools import lru_cache
 
 import spotipy
@@ -19,7 +20,7 @@ class Album:
     name: str
     id: str
     album_type: str
-    release_date: str  # TODO: convert to datetime
+    release_date: datetime
     artist_ids: tuple  # TODO: switch to "artists", put first in order
 
     get_json = lru_cache(maxsize=None)(no_timeout(sp.album))
@@ -34,10 +35,26 @@ class Album:
 
         super().__setattr__("name", info["name"])
         super().__setattr__("album_type", info["album_type"])
-        super().__setattr__("release_date", info["release_date"])
         super().__setattr__(
             "artist_ids", tuple(artist["id"] for artist in info["artists"])
         )
+
+        if info["release_date_precision"] == "day":
+            super().__setattr__(
+                "release_date", datetime.strptime(info["release_date"], "%Y-%m-%d")
+            )
+        elif info["release_date_precision"] == "month":
+            super().__setattr__(
+                "release_date", datetime.strptime(info["release_date"], "%Y-%m")
+            )
+        elif info["release_date_precision"] == "year":
+            super().__setattr__(
+                "release_date", datetime.strptime(info["release_date"], "%Y")
+            )
+        else:
+            raise RuntimeError(
+                f"Unexpected release_date_precision: {info['release_date_precision']}"
+            )
 
     def __str__(self):
         return self.name

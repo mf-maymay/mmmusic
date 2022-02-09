@@ -49,14 +49,12 @@ def quick_pick(
 
     if len(items) < 2:
         return items
-
     _shuffle(items)
 
     if seed_picker is None:
         left_seed, right_seed = items[:2]
     else:
         left_seed, right_seed = seed_picker(items, left_neighbor=left_neighbor)
-
     left = [left_seed]
     right = [right_seed]
 
@@ -68,11 +66,9 @@ def quick_pick(
             left.append(item)
         else:
             right.append(item)
-
     # If left_neighbor would not belong to left, then swap left and right.
     if left_neighbor is not None and not add_to_left(left, right, left_neighbor, items):
         left, right = right, left
-
     new_left = quick_pick(left, add_to_left, seed_picker=seed_picker)
     new_right = quick_pick(
         right, add_to_left, seed_picker=seed_picker, left_neighbor=new_left[-1]
@@ -134,14 +130,13 @@ def _scores(
     scores = metrics.copy()
     for j, col in enumerate(metrics.T):
         scores[:, j] = [percentileofscore(col, x, kind="mean") for x in col]
-
     return dict(zip(items, scores))
 
 
 def _balanced_metrics(track: Track) -> Metrics:
     return [track[metric] for metric in METRICS] + [
         track["duration_ms"],
-        int(Album(track.album_id).release_date.split("-")[0]),
+        int(Album(track.album_id).release_date.year),
         *genre_position(track),
     ]
 
@@ -166,7 +161,7 @@ def _balanced_picker(tracks: Tracks) -> ItemPicker:
 
 def _story_metrics(track: Track) -> Metrics:
     return [track[metric] for metric in METRICS] + [
-        int(Album(track.album_id).release_date.split("-")[0]),
+        int(Album(track.album_id).release_date.year),
         *genre_position(track),
     ]
 
@@ -202,7 +197,6 @@ def _smart_picker(tracks: Tracks) -> ItemPicker:
         # If any tracks share artists, use balanced picker.
         if any(count > 1 for count in artist_counts.values()):
             return balanced_picker(left, right, to_add, items)
-
         # If all tracks have unique artists, use story picker.
         return story_picker(left, right, to_add, items)
 
@@ -227,7 +221,6 @@ def _radio_picker(tracks: Tracks) -> ItemPicker:
         # If one side has fewer of to_add's artists, add to that side.
         if num_mutual_artists_in_left != num_mutual_artists_in_right:
             return num_mutual_artists_in_left < num_mutual_artists_in_right
-
         # Otherwise, use story mode.
         return story_picker(left, right, to_add, items)
 
@@ -247,7 +240,6 @@ def _smart_seed_picker(tracks: Tracks) -> SeedPicker:
             left_seed = max(
                 items, key=lambda item: similarity(neighbor_value, values[item])
             )
-
         # Pick item least similar to left seed
         left_value = values[left_seed]
         right_seed = min(items, key=lambda item: similarity(left_value, values[item]))
@@ -274,7 +266,6 @@ def _swap_to_smooth(
         return True
     if keep_for_artists:
         return False
-
     # if key of 1 is inappropriate for 0 and the key of 2 is appropriate, swap
     # if vice versa, keep
     good_keys = (
@@ -300,7 +291,6 @@ def _swap_to_smooth(
         return True
     if keep_for_key:
         return False
-
     # if 0 and 2 are more similar than 0 and 1
     cos_0_1 = similarity(values[track_0], values[track_1])
     cos_0_2 = similarity(values[track_0], values[track_2])
@@ -315,7 +305,6 @@ def smooth_playlist(tracks: Tracks) -> Tracks:
 
     if len(tracks) <= 2:
         return tracks
-
     cycle_len = len(tracks)
     swap_count = 0
     last_swap = 0
@@ -335,10 +324,8 @@ def smooth_playlist(tracks: Tracks) -> Tracks:
             )
             last_swap = i
             swap_count += 1
-
         elif i - last_swap > cycle_len:
             break
-
     print(f"smoothed after {i // cycle_len} cycles and {swap_count} swaps")
 
     return tracks
@@ -364,15 +351,12 @@ def smart_shuffle(tracks: Tracks, mode: str = "smart", smooth: Optional[bool] = 
         picker = _story_picker(tracks)
     else:
         raise ValueError("Invalid mode")
-
     if smooth is None:
         smooth = True
-
     ordered = quick_pick(tracks, picker, seed_picker=seed_picker)
 
     if smooth:
         return smooth_playlist(ordered)
-
     return ordered
 
 

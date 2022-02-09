@@ -76,7 +76,7 @@ def filter_by_release_year(start_year, end_year):
 
     def release_date_filter(album):
         return album.album_type != "compilation" and (
-            start_year <= int(album.release_date.split("-")[0]) <= end_year
+            start_year <= album.release_date.year <= end_year
         )
 
     return filter_by_album_attribute(release_date_filter)
