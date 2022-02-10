@@ -11,12 +11,11 @@ def return_artists(conn):
             artist_id = conn.recv()
             print("artist_id:", artist_id)
 
-            artist = Artist(artist_id)
+            artist_json = Artist.get_json(artist_id)
 
-            print("artist:", repr(artist))
+            print("artist:", repr(artist_json["name"]))
 
-            conn.send(Artist(artist_id).info)
-
+            conn.send(artist_json)
     except EOFError:
         print("Connection closed")
 
