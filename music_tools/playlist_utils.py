@@ -88,7 +88,7 @@ def tracks_from_playlist(playlist_id):
         items = no_timeout(user.sp.playlist_items)(playlist_id)
 
         while items:
-            tracks.extend(Track(info=item["track"]) for item in items["items"])
+            tracks.extend(Track(item["track"]["id"]) for item in items["items"])
             items = no_timeout(user.sp.next)(items)
         return tracks
 

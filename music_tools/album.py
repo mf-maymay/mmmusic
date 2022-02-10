@@ -61,7 +61,7 @@ class Album:
 
     def tracks(self):
         info = type(self).get_json(self.id)
-        return [Track(info={**item, "album": info}) for item in info["tracks"]["items"]]
+        return [Track(item["id"]) for item in info["tracks"]["items"]]
 
 
 def get_tracks_from_albums(albums):
