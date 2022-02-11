@@ -51,7 +51,6 @@ def finder_home():
             "/connect-artists/"
             + "/".join(search_for_artist(_input).id for _input in inputs)
         )
-
     return render_template("finder_page.html")
 
 
@@ -59,7 +58,6 @@ def finder_home():
 def finder_output(varargs=None):
     if varargs is None:
         return ""
-
     seeds = varargs.split("/")
 
     file = BASE_DIR / Path("output") / ("-".join(sorted(seeds)) + ".png")
@@ -75,12 +73,13 @@ def finder_output(varargs=None):
         subprocess.Popen(
             [sys.executable, BASE_DIR / "artist_finder.py", *seeds, "-f", str(file)]
         )
-
     # Send loading page if file is not ready.
     artists = [Artist(seed) for seed in seeds]
 
     images = [
-        None if not artist.info["images"] else artist.info["images"][0]["url"]
+        None
+        if not Artist.get_json(artist.id)["images"]
+        else Artist.get_json(artist.id)["images"][0]["url"]
         for artist in artists
     ]
 
@@ -98,7 +97,6 @@ def finder_output(varargs=None):
 def shuffle_home():
     if "username" not in session:
         return redirect(url_for("login"))  # XXX
-
     if request.method == "POST":
         playlist_id = request.form["playlist_id"]
 
@@ -111,7 +109,6 @@ def shuffle_home():
         shuffle_playlist(user, playlist_id)
 
         return "Done!"
-
     return render_template("shuffle_page.html")
 
 
@@ -127,7 +124,6 @@ def login():
         print("Authorization URL:", auth_url)
 
         return redirect(auth_url)
-
     return render_template("login_page.html")
 
 
