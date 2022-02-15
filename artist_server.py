@@ -11,11 +11,15 @@ def return_artists(conn):
             artist_id = conn.recv()
             print("artist_id:", artist_id)
 
-            artist_json = Artist.get_json(artist_id)
+            try:
+                artist_json = Artist.get_json(artist_id)
 
-            print("artist:", repr(artist_json["name"]))
+                print("artist:", repr(artist_json["name"]))
 
-            conn.send(artist_json)
+                conn.send(artist_json)
+            except Exception as e:
+                print("artist: not found")
+                conn.send(e)
     except EOFError:
         print("Connection closed")
 
