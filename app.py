@@ -14,14 +14,15 @@ from flask import (
     session,
     url_for,
 )
-import matplotlib
 
 from app_config import BASE_DIR, REDIRECT_URI
+from artist_server_client import get_json_from_server
 from music_tools.artist import Artist, search_for_artist
 from music_tools.playlist_utils import shuffle_playlist
 from music_tools.user import User
 
-matplotlib.use("Agg")
+
+Artist.get_json = get_json_from_server
 
 app = Flask(__name__)
 
