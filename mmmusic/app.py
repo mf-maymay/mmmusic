@@ -72,7 +72,13 @@ def finder_output(varargs=None):
         file.touch()  # Mark that file is being created.
 
         subprocess.Popen(
-            [sys.executable, BASE_DIR / "artist_finder.py", *seeds, "-f", str(file)]
+            [
+                sys.executable,
+                BASE_DIR / "mmmusic/artist_finder.py",
+                *seeds,
+                "-f",
+                str(file),
+            ]
         )
     # Send loading page if file is not ready.
     artists = [Artist(seed) for seed in seeds]

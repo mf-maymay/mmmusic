@@ -303,6 +303,9 @@ def grow_and_plot(*seeds, graph=None, **plot_kw) -> (nx.Graph, (plt.Figure, plt.
 if __name__ == "__main__":
     # example usage:
     # artist_finder.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX -f test.png
+    from artist_server_client import get_json_from_server
+
+    Artist.get_json = get_json_from_server
 
     matplotlib.use("Agg")
 

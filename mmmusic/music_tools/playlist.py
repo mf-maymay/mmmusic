@@ -36,7 +36,7 @@ class Playlist:
             raise ValueError("No tracks to order")
         self.tracks = self.order_tracks_func(self.tracks)
 
-    @no_timeout
+    @no_timeout  # TODO: wrap sp calls, instead
     def create(self, user, confirm=True):
         if not self.tracks:
             self.get_tracks(user)

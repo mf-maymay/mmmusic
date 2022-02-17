@@ -24,7 +24,7 @@ def return_artists(conn):
         print("Connection closed")
 
 
-def echo_server(address):
+def echo_server(address):  # TODO: rename
     serv = Listener(address)
     while True:
         try:
