@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent
 
 REDIRECT_URI = None
