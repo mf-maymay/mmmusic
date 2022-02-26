@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 from functools import lru_cache
 
+from requests.exceptions import HTTPError
 import spotipy
 from spotipy.exceptions import SpotifyException
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -69,7 +70,7 @@ class RelatedArtists:
 def search_for_artist(search_text):
     try:
         return Artist(search_text)
-    except SpotifyException:
+    except (HTTPError, SpotifyException):
         search = no_timeout(sp.search)  # TODO: declare globally
         search_result = search(search_text, limit=1, type="artist")
         return Artist(search_result["artists"]["items"][0]["id"])
@@ -78,3 +79,5 @@ def search_for_artist(search_text):
 if __name__ == "__main__":
     artist = Artist("0oSGxfWSnnOXhD2fKuz2Gy")
     related = artist.related()
+
+    tool = search_for_artist("tool")

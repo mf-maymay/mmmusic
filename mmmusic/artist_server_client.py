@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
-from multiprocessing.connection import Client
-
-from music_tools.artist import Artist
+import requests
 
 
 def get_json_from_server(artist_id):
-    with Client(("localhost", 25000)) as c:
-        c.send(artist_id)
-        response = c.recv()
-
-        if isinstance(response, Exception):
-            raise response
-        return response
+    response = requests.get(f"http://localhost:8000/artist/{artist_id}")
+    response.raise_for_status()
+    return response.json()
 
 
 if __name__ == "__main__":
+    from music_tools.artist import Artist
+
     Artist.get_json = get_json_from_server
 
     artist = Artist("0oSGxfWSnnOXhD2fKuz2Gy")

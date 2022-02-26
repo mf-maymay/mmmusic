@@ -1,38 +1,12 @@
 # -*- coding: utf-8 -*-
-from multiprocessing.connection import Listener
-import traceback
+from fastapi import FastAPI
 
 from music_tools.artist import Artist
 
 
-def return_artists(conn):
-    try:
-        while True:
-            artist_id = conn.recv()
-            print("artist_id:", artist_id)
-
-            try:
-                artist_json = Artist.get_json(artist_id)
-
-                print("artist:", repr(artist_json["name"]))
-
-                conn.send(artist_json)
-            except Exception as e:
-                print("artist: not found")
-                conn.send(e)
-    except EOFError:
-        print("Connection closed")
+app = FastAPI()
 
 
-def echo_server(address):  # TODO: rename
-    serv = Listener(address)
-    while True:
-        try:
-            client = serv.accept()
-            return_artists(client)
-        except Exception:
-            traceback.print_exc()
-
-
-if __name__ == "__main__":
-    echo_server(("", 25000))
+@app.get("/artist/{artist_id}")
+def artist(artist_id):
+    return Artist.get_json(artist_id)
