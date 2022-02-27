@@ -31,12 +31,10 @@ def expand(artists, graph=None) -> nx.Graph:
         graph = nx.Graph()
     else:
         graph = graph.copy()
-
     graph.add_nodes_from(artists)
 
     for artist in artists:
         graph.add_edges_from((artist, related) for related in artist.related())
-
     return graph
 
 
@@ -60,7 +58,6 @@ def grow(seeds, graph=None) -> nx.Graph:
         graph = nx.Graph()
     else:
         graph = graph.copy()
-
     graph.add_nodes_from(seeds)
 
     new_artists = seeds
@@ -73,12 +70,10 @@ def grow(seeds, graph=None) -> nx.Graph:
         graph = new_graph
         if not new_artists:
             raise RuntimeError("No new artists found.")
-
     for artist in new_artists:
         for related in artist.related():
             if related in graph.nodes:
                 graph.add_edge(artist, related)  # new interconnections
-
     return graph
 
 
@@ -103,7 +98,6 @@ def trim(graph, keepers=()) -> nx.Graph:
     while to_remove:
         graph.remove_nodes_from(to_remove)
         to_remove = [x for x in graph.nodes if graph.degree(x) < 2 and x not in keepers]
-
     return graph
 
 
@@ -146,13 +140,11 @@ def paths_subgraph(graph, seeds, max_len=None) -> (nx.Graph, dict):
                 paths[pair].append(path)
             else:  # nx.shortest_simple_paths yields paths of increasing length
                 break
-
     keepers = set()
 
     for pair in paths:
         for path in paths[pair]:
             keepers.update(path)
-
     graph.remove_nodes_from(graph.nodes - keepers)
 
     return graph, paths
@@ -205,7 +197,6 @@ def plot(
 
     if seeds - graph.nodes:
         raise ValueError("Not all seeds are in graph.")
-
     dist = {seed: 0 for seed in seeds}
 
     if seeds and all(
@@ -217,18 +208,14 @@ def plot(
         for i, artist_id in enumerate(seeds):
             pres.append(nx.bfs_predecessors(graph, artist_id))
             dists.append({artist_id: 0})
-
         for i, artist_id in enumerate(seeds):
             for artist, pre in pres[i]:
                 dists[i][artist] = dists[i][pre] + 1
-
         for artist_id in graph.nodes:
             dist[artist_id] = min(map(lambda d: d.get(artist_id, 1), dists))
-
     for artist_id in graph.nodes:
         if artist_id not in dist:
             dist[artist_id] = 1
-
     max_dist = max(max(dist.values()), 1)
 
     color = {k: dist[k] / max_dist for k in graph.nodes}
@@ -267,7 +254,6 @@ def plot(
             file_path = Path(save)
         file_path.parent.mkdir(parents=True, exist_ok=True)  # XXX
         fig.savefig(file_path, facecolor=fig_color)
-
     return fig, ax
 
 
@@ -303,10 +289,10 @@ def grow_and_plot(*seeds, graph=None, **plot_kw) -> (nx.Graph, (plt.Figure, plt.
 if __name__ == "__main__":
     # example usage:
     # artist_finder.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX -f test.png
-    import artist_server_client
+    import from_cache_server
 
-    Artist.get_json = artist_server_client.get_artist_json
-    RelatedArtists.get_json = artist_server_client.get_related_artists_json
+    Artist.get_json = from_cache_server.get_artist_json
+    RelatedArtists.get_json = from_cache_server.get_related_artists_json
 
     matplotlib.use("Agg")
 
@@ -323,7 +309,6 @@ if __name__ == "__main__":
         save = Path(args.file)
     else:
         save = True
-
     seeds = [Artist(seed) for seed in args.seeds]
 
     print("Connecting {} ...".format(" and ".join(f"'{seed}'" for seed in seeds)))
