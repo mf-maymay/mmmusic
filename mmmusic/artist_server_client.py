@@ -3,7 +3,7 @@ import requests
 
 
 def get_json_from_server(artist_id):
-    response = requests.get(f"http://localhost:8000/artist/{artist_id}")
+    response = requests.get(f"http://localhost:8000/artists/{artist_id}")
     response.raise_for_status()
     return response.json()
 
