@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
+from functools import lru_cache
+
 import requests
 
 
+@lru_cache(maxsize=None)
 def get_artist_json(artist_id):
     response = requests.get(f"http://localhost:8000/artists/{artist_id}")
     response.raise_for_status()
     return response.json()
 
 
+@lru_cache(maxsize=None)
 def get_related_artists_json(artist_id):
     response = requests.get(
         f"http://localhost:8000/artists/{artist_id}/related-artists"
