@@ -16,13 +16,13 @@ from flask import (
 )
 
 from app_config import BASE_DIR, REDIRECT_URI
-from artist_server_client import get_json_from_server
+import artist_server_client
 from music_tools.artist import Artist, search_for_artist
 from music_tools.playlist_utils import shuffle_playlist
 from music_tools.user import User
 
 
-Artist.get_json = get_json_from_server
+Artist.get_json = artist_server_client.get_artist_json
 
 app = Flask(__name__)
 

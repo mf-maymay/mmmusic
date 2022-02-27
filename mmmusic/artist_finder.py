@@ -8,7 +8,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from music_tools.artist import Artist
+from music_tools.artist import Artist, RelatedArtists
 
 
 def expand(artists, graph=None) -> nx.Graph:
@@ -303,9 +303,10 @@ def grow_and_plot(*seeds, graph=None, **plot_kw) -> (nx.Graph, (plt.Figure, plt.
 if __name__ == "__main__":
     # example usage:
     # artist_finder.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX -f test.png
-    from artist_server_client import get_json_from_server
+    import artist_server_client
 
-    Artist.get_json = get_json_from_server
+    Artist.get_json = artist_server_client.get_artist_json
+    RelatedArtists.get_json = artist_server_client.get_related_artists_json
 
     matplotlib.use("Agg")
 
