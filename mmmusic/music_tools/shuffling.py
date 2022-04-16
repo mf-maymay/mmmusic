@@ -331,7 +331,7 @@ def smooth_playlist(tracks: Tracks) -> Tracks:
     return tracks
 
 
-def smart_shuffle(tracks: Tracks, mode: str = "smart", smooth: Optional[bool] = None):
+def smart_shuffle(tracks: Tracks, mode: str = "radio", smooth: Optional[bool] = None):
     # smooth defaults to True except for radio mode
 
     tracks = list(tracks)
