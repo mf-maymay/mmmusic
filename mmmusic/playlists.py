@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from calendar import month_name
-from copy import copy
 from datetime import datetime
-from functools import partial
 
 from music_tools.playlist import Playlist
 from music_tools.playlist_utils import (
@@ -13,11 +11,7 @@ from music_tools.playlist_utils import (
     filter_by_release_year,
     filter_by_track_attribute,
 )
-from music_tools.shuffling import smart_shuffle
 from music_tools.user import User
-
-
-radio_shuffle = partial(smart_shuffle, mode="radio")
 
 _playlists = [
     Playlist("1970s", track_filters=[filter_by_release_year(1970, 1979)]),
@@ -171,14 +165,6 @@ _playlists = [
         ],  # test filter stacking
     ),
 ]
-
-_radio_playlists = []
-for playlist in _playlists:
-    radio_playlist = copy(playlist)
-    radio_playlist.name += " - radio mode"
-    radio_playlist.order_tracks_func = radio_shuffle
-    _radio_playlists.append(radio_playlist)
-_playlists.extend(_radio_playlists)
 
 playlists = {playlist.name: playlist for playlist in _playlists}
 
