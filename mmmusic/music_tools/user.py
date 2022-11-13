@@ -66,9 +66,18 @@ class User:
 
 
 if __name__ == "__main__":
+    from collections import defaultdict
+
     user = User()
 
-    for album in user.albums():
-        print(album)
-    for artist in user.artists():
-        print(artist)
+    artist_albums = defaultdict(list)
+    for album in sorted(user.albums(), key=lambda a: a.release_date):
+        for artist_id in album.artist_ids:
+            artist_albums[Artist(artist_id)].append(album)
+
+    for artist, albums in sorted(
+        artist_albums.items(), key=lambda k: (len(k[1]), k[0])
+    ):
+        print(f"{artist} ({len(albums)} albums)")
+        for album in albums:
+            print(f"* {album} [{album.release_date.year}]")
