@@ -12,12 +12,12 @@ from music_tools.utils import no_timeout
 valid_rating = re.compile("[0-5]\\.[0-9]")
 valid_vote = re.compile("([0-9]|,)+ Votes")
 
-search_str = "http://www.sputnikmusic.com/search_results.php?search_text="
+SEARCH_TEMPLATE = "http://www.sputnikmusic.com/search_results.php?search_text={}"
 
 
 @no_timeout
 def sputnik_rating(artist, album):
-    search = search_str + artist
+    search = SEARCH_TEMPLATE.format(artist)
 
     req = requests.get(search)
 
