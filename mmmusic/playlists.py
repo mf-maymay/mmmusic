@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
-from calendar import month_name
-from datetime import datetime
-
 from music_tools.playlist import Playlist
 from music_tools.playlist_utils import (
-    filter_by_album_attribute,
     filter_by_artist_attribute,
     filter_by_genre_coordinates,
     filter_by_genre_pattern,
     filter_by_release_year,
     filter_by_track_attribute,
+    tracks_from_playlist,
 )
 from music_tools.user import User
 
@@ -18,6 +15,8 @@ _playlists = [
     Playlist("1980s", track_filters=[filter_by_release_year(1980, 1989)]),
     Playlist("1990s", track_filters=[filter_by_release_year(1990, 1999)]),
     Playlist("2000s", track_filters=[filter_by_release_year(2000, 2009)]),
+    Playlist("2010s", track_filters=[filter_by_release_year(2010, 2019)]),
+    Playlist("2020s", track_filters=[filter_by_release_year(2020, 2029)]),
     Playlist("ALL"),
     Playlist(
         "bad vibes",
@@ -35,6 +34,13 @@ _playlists = [
             filter_by_artist_attribute(
                 lambda x: x.id != "4aMeIY7MkJoZg7O91cmDDd"  # adrian younge
             ),
+        ],
+        description=f"genre matches '{pattern}'",
+    ),
+    Playlist(
+        "cool",
+        track_filters=[
+            filter_by_genre_pattern(pattern := ".*cool.*")
         ],
         description=f"genre matches '{pattern}'",
     ),
@@ -75,8 +81,20 @@ _playlists = [
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
+        "happy minor",
+        track_filters=[
+            filter_by_track_attribute(lambda x: x["mode"] == 0),
+            filter_by_track_attribute(lambda x: x["valence"] >= 0.6),
+        ],
+    ),
+    Playlist(
         "hip hop",
         track_filters=[filter_by_genre_pattern(pattern := ".*hip hop.*")],
+        description=f"genre matches '{pattern}'",
+    ),
+    Playlist(
+        "indie",
+        track_filters=[filter_by_genre_pattern(pattern := ".*indie.*")],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
@@ -84,7 +102,15 @@ _playlists = [
         track_filters=[
             filter_by_genre_pattern(pattern := ".*(japan|j-).*"),
             filter_by_artist_attribute(
-                lambda x: x.id != "3BG0nwVh3Gc7cuT4XdsLtt"  # joe henderson
+                lambda x: x.id not in {
+                    "7C2DSqaNkh0w77O5Jz1FKh",  # archie shepp
+                    "5jtGuhEEDh07yaFfm8qHg7",  # cecil taylor
+                    "3uPWecBPNXAChysw1uOJwI",  # don cherry
+                    "6rxxu32JCGDpKKMPHxnSJp",  # eric dolphy
+                    "3BG0nwVh3Gc7cuT4XdsLtt",  # joe henderson
+                    "1EpLpC0tbCla8knfhET78p",  # mccoy tyner trio
+                    "47odibUtrN3lnWx0p0pk2P",  # ornette coleman
+                }
             ),
         ],
         description=f"genre matches '{pattern}'",
@@ -104,7 +130,11 @@ _playlists = [
     ),
     Playlist(
         "metal",
-        track_filters=[filter_by_genre_pattern(pattern := ".*(doom|metal|zeuhl).*")],
+        track_filters=[
+            filter_by_genre_pattern(
+                pattern := "^(?!.*?(proto-metal)).*(doom|metal|zeuhl).*"
+            )
+        ],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
@@ -146,23 +176,22 @@ _playlists = [
         "unpopular artists",
         track_filters=[filter_by_artist_attribute(lambda x: x.popularity <= 25)],
     ),
+    # ------- experimental -------
     Playlist(
-        month_name[(month := datetime.today().month)],  # current month
-        description=f"albums released in {month_name[month]}",
-        track_filters=[
-            filter_by_album_attribute(lambda x: x.release_date.month == month)
-        ],
+        "near Hailu Mergia",
+        track_filters=[filter_by_genre_coordinates(11841, 780, max_distance=350)],
     ),
     Playlist(
-        "Near Klezmer",
-        track_filters=[filter_by_genre_coordinates(17042, 938, max_distance=400)],
+        "near Mamaleek",
+        track_filters=[filter_by_genre_coordinates(10067, 146, max_distance=250)],
     ),
     Playlist(
-        "happy minor",
-        track_filters=[
-            filter_by_track_attribute(lambda x: x["mode"] == 0),
-            filter_by_track_attribute(lambda x: x["valence"] >= 0.6),
-        ],  # test filter stacking
+        "near Nick Cave & The Bad Seeds",
+        track_filters=[filter_by_genre_coordinates(8399, 489, max_distance=200)],
+    ),
+    Playlist(
+        "near Pinata",
+        track_filters=[filter_by_genre_coordinates(6833, 1006, max_distance=200)],
     ),
 ]
 
