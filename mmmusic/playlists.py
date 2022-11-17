@@ -6,7 +6,6 @@ from music_tools.playlist_utils import (
     filter_by_genre_pattern,
     filter_by_release_year,
     filter_by_track_attribute,
-    tracks_from_playlist,
 )
 from music_tools.user import User
 
@@ -144,11 +143,6 @@ _playlists = [
     ),
     Playlist("pre-1970", track_filters=[filter_by_release_year(None, 1969)]),
     Playlist(
-        "psych",
-        track_filters=[filter_by_genre_pattern(pattern := ".*psych.*")],
-        description=f"genre matches '{pattern}'",
-    ),
-    Playlist(
         "punkish",
         track_filters=[filter_by_genre_pattern(pattern := ".*punk.*")],
         description=f"genre matches '{pattern}'",
@@ -173,6 +167,13 @@ _playlists = [
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
+        "unhappy major",
+        track_filters=[
+            filter_by_track_attribute(lambda x: x["mode"] == 1),
+            filter_by_track_attribute(lambda x: x["valence"] <= 0.2),
+        ],
+    ),
+    Playlist(
         "unpopular artists",
         track_filters=[filter_by_artist_attribute(lambda x: x.popularity <= 25)],
     ),
@@ -188,10 +189,6 @@ _playlists = [
     Playlist(
         "near Nick Cave & The Bad Seeds",
         track_filters=[filter_by_genre_coordinates(8399, 489, max_distance=200)],
-    ),
-    Playlist(
-        "near Pinata",
-        track_filters=[filter_by_genre_coordinates(6833, 1006, max_distance=200)],
     ),
 ]
 
