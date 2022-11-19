@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-import random
 import re
 
 import pandas as pd
 
-from music_tools.album import Album, get_tracks_from_albums
+from music_tools.album import Album
 from music_tools.artist import Artist
-from music_tools.shuffling import smart_shuffle
 from music_tools.playlist_utils import (
     clear_playlist,
     shuffle_playlist,
@@ -16,8 +14,6 @@ from music_tools.user import User
 from music_tools.utils import take_x_at_a_time
 
 DUMP_ID = "5AZxg3qZIC7cGnxWa7EuSd"
-
-REVIEW_ID = "6P9AB5NtkXBmQxnTqFFoZK"
 
 Q_IDS = {
     "q - harder": "5mRa71QUmE6EWavxTA22g6",
@@ -33,23 +29,6 @@ Q_PATTERNS = [
     ("q - jazz", ".*jazz.*"),
     ("q - rock", ".*rock.*"),
 ]
-
-
-def refresh_review_playlist(user):
-    print("Picking random albums for 'review' playlist")
-    random_albums = random.choices(user.albums(), k=12)
-    review_tracks = get_tracks_from_albums(random_albums)
-
-    print("Clearing 'review' playlist")
-    clear_playlist(user, REVIEW_ID)
-
-    print("Shuffling 'review' tracks")
-    shuffled = smart_shuffle(review_tracks)
-
-    print("Adding shuffled tracks to 'review'")
-    for subset in take_x_at_a_time(shuffled, 100):
-        to_add = [track.id for track in subset]
-        user.sp.user_playlist_add_tracks(user.username, REVIEW_ID, to_add)
 
 
 # Identify playlists for tracks
@@ -136,8 +115,6 @@ def prepare_q_playlists(user):
 
 if __name__ == "__main__":
     user = User()
-
-    refresh_review_playlist(user)
 
     separate_dump_tracks_to_q_playlists(user)
 
