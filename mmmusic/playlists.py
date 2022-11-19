@@ -147,7 +147,6 @@ _playlists = [
         track_filters=[filter_by_genre_pattern(pattern := ".*punk.*")],
         description=f"genre matches '{pattern}'",
     ),
-    Playlist("since 2010", track_filters=[filter_by_release_year(2010, None)]),
     Playlist(
         "studying",
         description="instrumental, low energy, tempo <= 120 bpm",
@@ -176,19 +175,6 @@ _playlists = [
     Playlist(
         "unpopular artists",
         track_filters=[filter_by_artist_attribute(lambda x: x.popularity <= 25)],
-    ),
-    # ------- experimental -------
-    Playlist(
-        "near Hailu Mergia",
-        track_filters=[filter_by_genre_coordinates(11841, 780, max_distance=350)],
-    ),
-    Playlist(
-        "near Mamaleek",
-        track_filters=[filter_by_genre_coordinates(10067, 146, max_distance=250)],
-    ),
-    Playlist(
-        "near Nick Cave & The Bad Seeds",
-        track_filters=[filter_by_genre_coordinates(8399, 489, max_distance=200)],
     ),
 ]
 
