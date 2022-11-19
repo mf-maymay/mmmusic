@@ -2,7 +2,6 @@
 from music_tools.playlist import Playlist
 from music_tools.playlist_utils import (
     filter_by_artist_attribute,
-    filter_by_genre_coordinates,
     filter_by_genre_pattern,
     filter_by_release_year,
     filter_by_track_attribute,
@@ -37,7 +36,7 @@ _playlists = [
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
-        "cool",
+        "cool jazz",
         track_filters=[
             filter_by_genre_pattern(pattern := ".*cool.*")
         ],
@@ -75,7 +74,7 @@ _playlists = [
         ],
     ),
     Playlist(
-        "goth",
+        "goth | girl",
         track_filters=[filter_by_genre_pattern(pattern := ".*(goth|lilith).*")],
         description=f"genre matches '{pattern}'",
     ),
