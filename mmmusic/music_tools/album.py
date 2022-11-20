@@ -61,7 +61,15 @@ class Album:
 
     def tracks(self):
         info = type(self).get_json(self.id)
-        return [Track(item["id"]) for item in info["tracks"]["items"]]
+
+        tracks = []
+        items = info["tracks"]
+
+        while items:
+            tracks.extend(Track(item["id"]) for item in items["items"])
+            items = no_timeout(sp.next)(items)
+
+        return tracks
 
 
 def get_tracks_from_albums(albums):
@@ -69,6 +77,8 @@ def get_tracks_from_albums(albums):
 
 
 if __name__ == "__main__":
-    album = Album("2w1YJXWMIco6EBf0CovvVN")
+    album = Album("5Tw0sanofDSd7h44GySmoa")
 
     tracks = album.tracks()
+
+    assert len(tracks) > 50
