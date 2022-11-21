@@ -5,7 +5,7 @@ from functools import lru_cache
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
-from music_tools.utils import no_timeout
+from lib.utils import no_timeout
 
 AUDIO_FEATURE_FIELDS = (
     "acousticness",

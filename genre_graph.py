@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from music_tools.genres import genre_overlaps, genres_and_members
+from lib.genres import genre_overlaps, genres_and_members
 
 
 def genre_map(artists, *, size_min=1, draw=False):
@@ -41,7 +41,7 @@ def genre_map(artists, *, size_min=1, draw=False):
 
 
 if __name__ == "__main__":
-    from music_tools.user import User
+    from lib.user import User
 
     user = User()
 

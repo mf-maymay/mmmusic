@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from music_tools.playlist import Playlist
-from music_tools.playlist_utils import (
+from lib.playlist import Playlist
+from lib.playlist_utils import (
     filter_by_artist_attribute,
     filter_by_genre_pattern,
     filter_by_release_year,
     filter_by_track_attribute,
 )
-from music_tools.user import User
+from lib.user import User
 
 _playlists = [
     Playlist("1970s", track_filters=[filter_by_release_year(1970, 1979)]),

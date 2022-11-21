@@ -5,8 +5,8 @@ from pathlib import Path
 
 import numpy as np
 
-from music_tools.artist import Artist
-from music_tools.track import Track
+from lib.models.artist import Artist
+from lib.models.track import Track
 
 GenreCoordinates = namedtuple("GenreCoordinates", ["top", "left"])
 

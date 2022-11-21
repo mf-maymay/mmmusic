@@ -7,7 +7,7 @@ import spotipy
 from spotipy.exceptions import SpotifyException
 from spotipy.oauth2 import SpotifyClientCredentials
 
-from music_tools.utils import no_timeout
+from lib.utils import no_timeout
 
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
 

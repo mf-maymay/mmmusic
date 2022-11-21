@@ -3,7 +3,7 @@ from collections import defaultdict
 from itertools import permutations
 import re
 
-from music_tools.artist import Artist
+from lib.models.artist import Artist
 
 
 def genres_and_members(artists):

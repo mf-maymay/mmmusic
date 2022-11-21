@@ -6,8 +6,8 @@ from functools import lru_cache
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
-from music_tools.track import Track
-from music_tools.utils import no_timeout
+from lib.models.track import Track
+from lib.utils import no_timeout
 
 
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)

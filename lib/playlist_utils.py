@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from scipy.spatial.distance import euclidean as distance
 
-from music_tools.album import Album
-from music_tools.artist import Artist
-from music_tools.genre_positions import genre_position
-from music_tools.genres import artists_of_genres_matching
-from music_tools.shuffling import smart_shuffle
-from music_tools.track import Track
-from music_tools.utils import no_timeout, take_x_at_a_time
+from lib.genre_positions import genre_position
+from lib.genres import artists_of_genres_matching
+from lib.models.album import Album
+from lib.models.artist import Artist
+from lib.models.track import Track
+from lib.shuffling import smart_shuffle
+from lib.utils import no_timeout, take_x_at_a_time
 
 
 def _albums_from_artists(user, artists):

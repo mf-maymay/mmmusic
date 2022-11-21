@@ -4,9 +4,9 @@ import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-from music_tools.album import Album, get_tracks_from_albums
-from music_tools.artist import Artist
-from music_tools.utils import no_timeout
+from lib.models.album import Album, get_tracks_from_albums
+from lib.models.artist import Artist
+from lib.utils import no_timeout
 
 DEFAULT_SCOPE = "playlist-modify-private,user-library-read"
 

@@ -5,9 +5,9 @@ from typing import Any, Callable, Dict, Optional, Sequence, Tuple
 import numpy as np
 from scipy.stats import percentileofscore
 
-from music_tools.album import Album
-from music_tools.genre_positions import genre_position
-from music_tools.track import Track
+from lib.genre_positions import genre_position
+from lib.models.album import Album
+from lib.models.track import Track
 
 Item = Any
 Items = Sequence[Item]

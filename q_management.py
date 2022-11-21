@@ -3,15 +3,15 @@ import re
 
 import pandas as pd
 
-from music_tools.album import Album
-from music_tools.artist import Artist
-from music_tools.playlist_utils import (
+from lib.models.album import Album
+from lib.models.artist import Artist
+from lib.playlist_utils import (
     clear_playlist,
     shuffle_playlist,
     tracks_from_playlist,
 )
-from music_tools.user import User
-from music_tools.utils import take_x_at_a_time
+from lib.user import User
+from lib.utils import take_x_at_a_time
 
 DUMP_ID = "5AZxg3qZIC7cGnxWa7EuSd"
 
