@@ -2,6 +2,7 @@
 import argparse
 from itertools import combinations
 from pathlib import Path
+from typing import Any
 
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
@@ -125,7 +126,7 @@ def paths_subgraph(graph, seeds, max_len=None) -> tuple[nx.Graph, dict]:
     """
     graph = graph.copy()
 
-    paths = {}
+    paths: dict[tuple[Any, Any], list] = {}
 
     for pair in combinations(seeds, 2):
         paths[pair] = []
@@ -278,13 +279,13 @@ def grow_and_plot(
         the seeds argument -- and the created plt.Figure (fig) and plt.Axes
         (ax) objects.
     """
-    seeds = {Artist(seed) for seed in seeds}
+    seed_artists = {Artist(seed) for seed in seeds}
 
-    graph = grow(seeds, graph=graph)
-    graph = trim(graph, keepers=seeds)
-    graph, _ = paths_subgraph(graph, seeds)
+    graph = grow(seed_artists, graph=graph)
+    graph = trim(graph, keepers=seed_artists)
+    graph, _ = paths_subgraph(graph, seed_artists)
 
-    return graph, plot(graph, seeds=seeds, **plot_kw)
+    return graph, plot(graph, seeds=seed_artists, **plot_kw)
 
 
 if __name__ == "__main__":
