@@ -2,15 +2,9 @@
 __pycache__/
 *.py[cod]
 
-# pylint
-.pylint*
-
-# spyder
-.spyproject/*
+# virtual env
+.venv/
 
 # project-specific
-*.mp3
 .cache*
-credentials.py
-objects/
 output/
