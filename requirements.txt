@@ -1,4 +1,5 @@
 beautifulsoup4
+cssutils
 matplotlib
 networkx
 numpy
@@ -6,3 +7,4 @@ pandas
 requests
 scipy
 spotipy
+types-requests
