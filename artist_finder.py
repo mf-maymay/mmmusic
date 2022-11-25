@@ -100,7 +100,7 @@ def trim(graph, keepers=()) -> nx.Graph:
     return graph
 
 
-def paths_subgraph(graph, seeds, max_len=None) -> (nx.Graph, dict):
+def paths_subgraph(graph, seeds, max_len=None) -> tuple[nx.Graph, dict]:
     """
     Returns the subgraph of graph containing only the paths between seeds.
 
@@ -159,7 +159,7 @@ def plot(
     fig_color="#2e4272",
     save=False,
     **plot_kwargs,  # passed to nx.draw
-) -> (plt.Figure, plt.Axes):
+) -> tuple[plt.Figure, plt.Axes]:
     """
     Plots the graph.
 
@@ -256,7 +256,9 @@ def plot(
     return fig, ax
 
 
-def grow_and_plot(*seeds, graph=None, **plot_kw) -> (nx.Graph, (plt.Figure, plt.Axes)):
+def grow_and_plot(
+    *seeds, graph=None, **plot_kw
+) -> tuple[nx.Graph, tuple[plt.Figure, plt.Axes]]:
     """
     Grows and plots the graph grown from seeds.
 
