@@ -144,7 +144,7 @@ def _balanced_metrics(track: Track) -> Metrics:
 def _balanced_picker(tracks: Tracks) -> ItemPicker:
     values = _scores(tracks, _balanced_metrics)
 
-    def picker(left: Track, right: Track, to_add: Track, items: Tracks) -> bool:
+    def picker(left: Tracks, right: Tracks, to_add: Track, items: Tracks) -> bool:
         # add item to left if diff less with item in left than in right
         averages = _get_average_values(left, right, to_add, values)
         scores = _get_categorical_scores(left, right, to_add)
@@ -169,7 +169,7 @@ def _story_metrics(track: Track) -> Metrics:
 def _story_picker(tracks: Tracks) -> ItemPicker:
     values = _scores(tracks, _story_metrics)
 
-    def picker(left: Track, right: Track, to_add: Track, items: Tracks) -> bool:
+    def picker(left: Tracks, right: Tracks, to_add: Track, items: Tracks) -> bool:
         # maximize polarity
         averages = _get_average_values(left, right, to_add, values)
         return similarity(averages["left with new"], averages["right"]) < similarity(
@@ -191,7 +191,7 @@ def _smart_picker(tracks: Tracks) -> ItemPicker:
     balanced_picker = _balanced_picker(tracks)
     story_picker = _story_picker(tracks)
 
-    def picker(left: Track, right: Track, to_add: Track, items: Tracks) -> bool:
+    def picker(left: Tracks, right: Tracks, to_add: Track, items: Tracks) -> bool:
         artist_counts = _artists_of_tracks(items)
 
         # If any tracks share artists, use balanced picker.
@@ -206,7 +206,7 @@ def _smart_picker(tracks: Tracks) -> ItemPicker:
 def _radio_picker(tracks: Tracks) -> ItemPicker:
     story_picker = _story_picker(tracks)
 
-    def picker(left: Track, right: Track, to_add: Track, items: Tracks) -> bool:
+    def picker(left: Tracks, right: Tracks, to_add: Track, items: Tracks) -> bool:
         num_mutual_artists_in_left = sum(
             counts
             for artist, counts in _artists_of_tracks(left).items()
