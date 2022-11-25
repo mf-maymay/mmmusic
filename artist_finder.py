@@ -158,7 +158,7 @@ def plot(
     edge_color="#000102",
     font_color="#b9cdfb",
     fig_color="#2e4272",
-    save=False,
+    output_folder: Path | None = None,
     **plot_kwargs,  # passed to nx.draw
 ) -> tuple[plt.Figure, plt.Axes]:
     """
@@ -245,15 +245,13 @@ def plot(
 
     fig.tight_layout()
 
-    if save:
-        if isinstance(save, bool):
-            file_path = Path("output") / "{}.png".format(
-                "-".join(sorted(a.id for a in seeds))
-            )
-        else:
-            file_path = Path(save)
-        file_path.parent.mkdir(parents=True, exist_ok=True)  # XXX
+    if output_folder is not None:
+        file_path = output_folder / "{}.png".format(
+            "-".join(sorted(a.id for a in seeds))
+        )
+
         fig.savefig(file_path, facecolor=fig_color)
+
     return fig, ax
 
 
@@ -290,7 +288,7 @@ def grow_and_plot(
 
 if __name__ == "__main__":
     # example usage:
-    # artist_finder.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX -f test.png
+    # artist_finder.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX
 
     from lib.models.artist import search_for_artist
 
@@ -298,18 +296,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "seeds", nargs="+", help=("IDs of artists, separated by spaces")
     )
-    parser.add_argument(
-        "-f", "--file", type=str, help=("where to save the output file")
-    )
     args = parser.parse_args()
-
-    if args.file is not None:
-        save = Path(args.file)
-    else:
-        save = True
 
     seeds = [search_for_artist(seed) for seed in args.seeds]
 
     print("Connecting {} ...".format(" and ".join(f"'{seed}'" for seed in seeds)))
 
-    graph, (fig, ax) = grow_and_plot(*seeds, save=save)
+    graph, (fig, ax) = grow_and_plot(*seeds, output_folder=Path("output"))
