@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import Counter
-from typing import Any, Callable, Dict, Optional, Sequence, Tuple
+from typing import Any, Callable, Optional, Tuple
 
 import numpy as np
 from scipy.stats import percentileofscore
@@ -10,11 +10,11 @@ from lib.models.album import Album
 from lib.models.track import Track
 
 Item = Any
-Items = Sequence[Item]
-ItemPicker = Callable[[Item, Item, Item, Items], bool]
-Metrics = Sequence[float]
+Items = list[Item]
+ItemPicker = Callable[[Items, Items, Item, Items], bool]
+Metrics = list[float]
 SeedPicker = Callable[[Items, Optional[Item]], Tuple[Item, Item]]
-Tracks = Sequence[Track]
+Tracks = list[Track]
 
 
 MAX_SMOOTH_CYCLES = 30
@@ -78,8 +78,8 @@ def quick_pick(
 
 
 def _get_average_values(
-    left: Item, right: Item, to_add: Item, values: Dict[Item, Metrics]
-) -> Dict[str, Metrics]:
+    left: Item, right: Item, to_add: Item, values: dict[Item, Metrics]
+) -> dict[str, Metrics]:
     averages = {}
 
     left_values = [values[x] for x in left]
@@ -99,7 +99,7 @@ def _get_average_values(
 
 def _get_categorical_scores(
     left: Item, right: Item, to_add: Item
-) -> Dict[str, Metrics]:
+) -> dict[str, Metrics]:
     scores = {}
 
     # key, mode, artist
@@ -124,7 +124,7 @@ def _get_categorical_scores(
 
 def _scores(
     items: Items, metrics_func: Callable[[Item], Metrics]
-) -> Dict[Item, Metrics]:
+) -> dict[Item, Metrics]:
     metrics = np.array([metrics_func(item) for item in items])
 
     scores = metrics.copy()
@@ -179,9 +179,9 @@ def _story_picker(tracks: Tracks) -> ItemPicker:
     return picker
 
 
-def _artists_of_tracks(tracks: Tracks) -> Dict[Track, int]:
+def _artists_of_tracks(tracks: Tracks) -> dict[Track, int]:
     """Identifies artists of tracks and counts each artist's appearances."""
-    artists = Counter()
+    artists: Counter[Track] = Counter()
     for track in tracks:
         artists.update(track.artist_ids)
     return artists
@@ -250,7 +250,7 @@ def _smart_seed_picker(tracks: Tracks) -> SeedPicker:
 
 
 def _swap_to_smooth(
-    track_0: Track, track_1: Track, track_2: Track, *, values: Dict[Track, Metrics]
+    track_0: Track, track_1: Track, track_2: Track, *, values: dict[Track, Metrics]
 ) -> bool:
     # if 0 and 1 share artists and 0 and 2 do not, swap
     # if vice versa, keep
