@@ -9,7 +9,7 @@ url = "https://everynoise.com/"
 
 response = requests.get(url)
 
-soup = BeautifulSoup(response.content, 'html.parser')
+soup = BeautifulSoup(response.content, "html.parser")
 
 genre_elements = soup.find_all("div", class_="genre scanme")
 

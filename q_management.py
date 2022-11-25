@@ -80,9 +80,10 @@ def separate_dump_tracks_to_q_playlists(user):
     for q, q_id in Q_IDS.items():
         playlist_tracks = set(tracks_from_playlist(q_id)(user))
 
-        tracks_to_add = set(
-            dump_frame.loc[dump_frame["playlist"] == q, "id"].values
-        ) - playlist_tracks
+        tracks_to_add = (
+            set(dump_frame.loc[dump_frame["playlist"] == q, "id"].values)
+            - playlist_tracks
+        )
 
         print(f"Adding {len(tracks_to_add)} tracks to '{q}'")
         for to_add in take_x_at_a_time(tracks_to_add, 100):
@@ -99,9 +100,7 @@ def prepare_q_playlists(user):
     for q, q_id in Q_IDS.items():
         playlist_tracks = set(tracks_from_playlist(q_id)(user))
 
-        already_saved = {
-            track.id for track in playlist_tracks & user_tracks
-        }
+        already_saved = {track.id for track in playlist_tracks & user_tracks}
 
         print(f"Removing {len(already_saved)} saved tracks from '{q}'")
         for to_remove in take_x_at_a_time(already_saved, 100):

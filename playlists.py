@@ -37,9 +37,7 @@ _playlists = [
     ),
     Playlist(
         "cool jazz",
-        track_filters=[
-            filter_by_genre_pattern(pattern := ".*cool.*")
-        ],
+        track_filters=[filter_by_genre_pattern(pattern := ".*cool.*")],
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
@@ -100,7 +98,8 @@ _playlists = [
         track_filters=[
             filter_by_genre_pattern(pattern := ".*(japan|j-).*"),
             filter_by_artist_attribute(
-                lambda x: x.id not in {
+                lambda x: x.id
+                not in {
                     "7C2DSqaNkh0w77O5Jz1FKh",  # archie shepp
                     "5jtGuhEEDh07yaFfm8qHg7",  # cecil taylor
                     "3uPWecBPNXAChysw1uOJwI",  # don cherry
