@@ -3,7 +3,7 @@ from scipy.spatial.distance import euclidean as distance
 
 from lib.genre_positions import genre_position
 from lib.genres import artists_of_genres_matching
-from lib.models.album import Album
+from lib.models.album import get_album
 from lib.models.artist import Artist
 from lib.models.track import Track
 from lib.shuffling import smart_shuffle
@@ -17,7 +17,9 @@ def _albums_from_artists(user, artists):
 
 def filter_by_album_attribute(album_filter_func):
     def filter_tracks(tracks):
-        return [track for track in tracks if album_filter_func(Album(track.album_id))]
+        return [
+            track for track in tracks if album_filter_func(get_album(track.album_id))
+        ]
 
     return filter_tracks
 

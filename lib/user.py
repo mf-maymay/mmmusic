@@ -4,7 +4,7 @@ import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-from lib.models.album import Album, get_tracks_from_albums
+from lib.models.album import get_album, get_tracks_from_albums
 from lib.models.artist import Artist
 from lib.utils import no_timeout
 
@@ -42,7 +42,7 @@ class User:
 
             while albums_on_page:
                 albums.extend(
-                    Album(item["album"]["id"]) for item in albums_on_page["items"]
+                    get_album(item["album"]["id"]) for item in albums_on_page["items"]
                 )
                 albums_on_page = self.sp.next(albums_on_page)
             self._albums = tuple(sorted(albums))

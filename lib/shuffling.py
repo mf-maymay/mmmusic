@@ -6,7 +6,7 @@ import numpy as np
 from scipy.stats import percentileofscore
 
 from lib.genre_positions import genre_position
-from lib.models.album import Album
+from lib.models.album import get_album
 from lib.models.track import Track
 
 Item = Any
@@ -136,7 +136,7 @@ def _scores(
 def _balanced_metrics(track: Track) -> Metrics:
     return [track[metric] for metric in METRICS] + [
         track["duration_ms"],
-        int(Album(track.album_id).release_date.year),
+        int(get_album(track.album_id).release_date.year),
         *genre_position(track),
     ]
 
@@ -161,7 +161,7 @@ def _balanced_picker(tracks: Tracks) -> ItemPicker:
 
 def _story_metrics(track: Track) -> Metrics:
     return [track[metric] for metric in METRICS] + [
-        int(Album(track.album_id).release_date.year),
+        int(get_album(track.album_id).release_date.year),
         *genre_position(track),
     ]
 

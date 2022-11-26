@@ -3,7 +3,7 @@ import re
 
 import pandas as pd
 
-from lib.models.album import Album
+from lib.models.album import get_album
 from lib.models.artist import Artist
 from lib.playlist_utils import (
     clear_playlist,
@@ -46,7 +46,7 @@ def separate_dump_tracks_to_q_playlists(user):
     dump_frame = pd.DataFrame()
     dump_frame["track"] = dump_tracks
     dump_frame["id"] = [track.id for track in dump_frame["track"]]
-    dump_frame["album"] = [Album(track.album_id) for track in dump_frame["track"]]
+    dump_frame["album"] = [get_album(track.album_id) for track in dump_frame["track"]]
     dump_frame["genres"] = [
         tuple(
             sorted(

@@ -4,6 +4,7 @@ matplotlib
 networkx
 numpy
 pandas
+pydantic
 requests
 scipy
 spotipy
