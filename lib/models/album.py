@@ -35,6 +35,9 @@ class Album(BaseModel):
 
         return value
 
+    def __hash__(self):
+        return hash(self.id)
+
     def __lt__(self, other):
         return str(self) < str(other)
 
