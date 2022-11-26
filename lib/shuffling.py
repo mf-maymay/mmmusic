@@ -7,7 +7,7 @@ from scipy.stats import percentileofscore
 
 from lib.genre_positions import genre_position
 from lib.models.album import get_album
-from lib.models.track import Track
+from lib.models.track import Track, get_audio_features, get_track
 
 Item = Any
 Items = list[Item]
@@ -362,7 +362,7 @@ def smart_shuffle(tracks: Tracks, mode: str = "radio", smooth: Optional[bool] = 
 
 if __name__ == "__main__":
     tracks = [
-        Track(x)
+        get_track(x)
         for x in [
             "0vFabeTqtOtj918sjc5vYo",
             "3HWxpLKnTlz6jE3Vi5dTF2",

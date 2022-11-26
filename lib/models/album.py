@@ -6,7 +6,7 @@ from pydantic import BaseModel, validator
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
-from lib.models.track import Track
+from lib.models.track import Track, get_track
 from lib.utils import no_timeout
 
 AlbumID = str
@@ -63,7 +63,7 @@ def get_album_tracks(album: Album | AlbumID) -> list[Track]:
     album_tracks_json = _get_album_tracks_json(album.id)
 
     while album_tracks_json is not None and (items := album_tracks_json["items"]):
-        tracks.extend(Track(item["id"]) for item in items)
+        tracks.extend(get_track(item["id"]) for item in items)
 
         album_tracks_json = no_timeout(sp.next)(album_tracks_json)
 

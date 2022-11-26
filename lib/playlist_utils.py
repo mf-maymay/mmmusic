@@ -5,7 +5,7 @@ from lib.genre_positions import genre_position
 from lib.genres import artists_of_genres_matching
 from lib.models.album import get_album
 from lib.models.artist import get_artist
-from lib.models.track import Track
+from lib.models.track import get_track
 from lib.shuffling import smart_shuffle
 from lib.utils import no_timeout, take_x_at_a_time
 
@@ -91,7 +91,7 @@ def tracks_from_playlist(playlist_id):
         items = no_timeout(user.sp.playlist_items)(playlist_id)
 
         while items:
-            tracks.extend(Track(item["track"]["id"]) for item in items["items"])
+            tracks.extend(get_track(item["track"]["id"]) for item in items["items"])
             items = no_timeout(user.sp.next)(items)
         return tracks
 

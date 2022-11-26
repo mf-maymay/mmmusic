@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-from dataclasses import dataclass
 from functools import lru_cache
 
+from pydantic import BaseModel
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
 from lib.utils import no_timeout
+
+TrackID = str
 
 AUDIO_FEATURE_FIELDS = (
     "acousticness",
@@ -24,49 +26,11 @@ AUDIO_FEATURE_FIELDS = (
 )
 
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
+_get_track_json = lru_cache(maxsize=None)(no_timeout(sp.track))
+_get_audio_features_json = lru_cache(maxsize=None)(no_timeout(sp.audio_features))
 
 
-@dataclass(init=False, order=True, frozen=True)  # TODO: add slots=True
-class Track:
-    __slots__ = ("name", "id", "album_id", "artist_ids", "_audio_features")
-
-    name: str
-    id: str
-    album_id: str  # TODO: replace with Album instance
-    artist_ids: tuple  # TODO: replace with Artist instances
-
-    get_json = lru_cache(maxsize=None)(no_timeout(sp.track))
-
-    def __init__(self, track_id):
-        if hasattr(track_id, "id"):
-            # Track(Track(track_id)) == Track(track_id)
-            track_id = track_id.id
-        super().__setattr__("id", track_id)
-
-        info = type(self).get_json(track_id)
-
-        super().__setattr__("name", info["name"])
-        super().__setattr__("album_id", info["album"]["id"])
-        super().__setattr__(
-            "artist_ids", tuple(artist["id"] for artist in info["artists"])
-        )
-
-        super().__setattr__("_audio_features", None)
-
-    @property
-    def audio_features(self):
-        if self._audio_features is None:
-            super().__setattr__("_audio_features", AudioFeatures(self))
-        return self._audio_features
-
-    def __getitem__(self, key):  # TODO: remove ?
-        return self.audio_features[key]
-
-
-@dataclass(init=False, frozen=True)  # TODO: add slots=True
-class AudioFeatures:
-    __slots__ = ("id", *AUDIO_FEATURE_FIELDS)
-
+class AudioFeatures(BaseModel):
     id: str
     acousticness: float
     danceability: float
@@ -82,21 +46,63 @@ class AudioFeatures:
     time_signature: int
     valence: float
 
-    get_json = lru_cache(maxsize=None)(no_timeout(sp.audio_features))
-
-    def __init__(self, track_id):
-        if hasattr(track_id, "id"):
-            # AudioFeatures(Track(track_id)) == AudioFeatures(track_id)
-            track_id = track_id.id
-        super().__setattr__("id", track_id)
-
-        info = type(self).get_json(track_id)[0]
-
-        for field in AUDIO_FEATURE_FIELDS:
-            super().__setattr__(field, info[field])
-
     def __getitem__(self, key):
         return getattr(self, key)
+
+
+class Track(BaseModel):
+    name: str
+    id: str
+    album_id: str
+    artist_ids: tuple[str, ...]
+    _audio_features: AudioFeatures = None
+
+    class Config:
+        underscore_attrs_are_private = True
+
+    @property
+    def audio_features(self):
+        if self._audio_features is None:
+            self._audio_features = get_audio_features(self)
+        return self._audio_features
+
+    def __getitem__(self, key):
+        return self.audio_features[key]
+
+    def __hash__(self):
+        return hash(self.id)
+
+    def __lt__(self, other):
+        return str(self) < str(other)
+
+    def __str__(self):
+        return self.name
+
+
+def get_track(track_id: TrackID | Track) -> Track:
+    if isinstance(track_id, Track):
+        return track_id
+
+    track_json = _get_track_json(track_id)
+
+    return Track(
+        name=track_json["name"],
+        id=track_json["id"],
+        album_id=track_json["album"]["id"],
+        artist_ids=tuple(artist["id"] for artist in track_json["artists"]),
+    )
+
+
+def get_audio_features(track: TrackID | Track | AudioFeatures) -> AudioFeatures:
+    if isinstance(track, AudioFeatures):
+        return track
+
+    if isinstance(track, Track):
+        track = track.id
+
+    audio_features_json = _get_audio_features_json(track)
+
+    return AudioFeatures.parse_obj(audio_features_json[0])
 
 
 if __name__ == "__main__":
@@ -109,8 +115,8 @@ if __name__ == "__main__":
         "5vaCmKjItq2Da5BKNFHlEb",
     ]
 
-    tracks = [Track(x) for x in track_ids]
+    tracks = [get_track(track_id) for track_id in track_ids]
 
     track = tracks[0]
 
-    features = track.audio_features
+    features = get_audio_features(track)
