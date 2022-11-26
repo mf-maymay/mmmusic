@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from dataclasses import dataclass
 from functools import lru_cache
 
+from pydantic import BaseModel
 from requests.exceptions import HTTPError
 import spotipy
 from spotipy.exceptions import SpotifyException
@@ -9,75 +9,61 @@ from spotipy.oauth2 import SpotifyClientCredentials
 
 from lib.utils import no_timeout
 
+ArtistID = str
+
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
+_get_artist_json = lru_cache(maxsize=None)(no_timeout(sp.artist))
+_get_related_artists_json = lru_cache(maxsize=None)(
+    no_timeout(sp.artist_related_artists)
+)
 
 
-@dataclass(init=False, order=True, frozen=True)  # TODO: add slots=True
-class Artist:
-    __slots__ = ("name", "id", "genres", "popularity")
-
+class Artist(BaseModel):
     name: str
     id: str
-    genres: tuple
+    genres: tuple[str, ...]
     popularity: int
 
-    get_json = lru_cache(maxsize=None)(no_timeout(sp.artist))
+    def __hash__(self):
+        return hash(self.id)
 
-    def __init__(self, artist_id):
-        if hasattr(artist_id, "id"):
-            # Artist(Artist(artist_id)) == Artist(artist_id)
-            artist_id = artist_id.id
-        super().__setattr__("id", artist_id)
-
-        info = type(self).get_json(artist_id)
-
-        super().__setattr__("name", info["name"])
-        super().__setattr__("genres", tuple(sorted(info["genres"])))
-        super().__setattr__("popularity", info["popularity"])
+    def __lt__(self, other):
+        return str(self) < str(other)
 
     def __str__(self):
         return self.name
 
-    def related(self):
-        return RelatedArtists(self)
+
+def get_artist(artist_id: ArtistID | Artist) -> Artist:
+    if isinstance(artist_id, Artist):
+        return artist_id
+
+    artist_json = _get_artist_json(artist_id)
+
+    return Artist.parse_obj(artist_json)
 
 
-@dataclass(init=False, frozen=True)  # TODO: add slots=True
-class RelatedArtists:
-    __slots__ = ("id", "artists")
+def get_related_artists(artist: ArtistID | Artist) -> tuple[Artist, ...]:
+    if isinstance(artist, Artist):
+        artist = artist.id
 
-    id: str
-    artists: tuple
+    related_artists_json = _get_related_artists_json(artist)
 
-    get_json = lru_cache(maxsize=None)(no_timeout(sp.artist_related_artists))
-
-    def __init__(self, artist_id):
-        if hasattr(artist_id, "id"):
-            # RelatedArtists(Artist(artist_id)) == RelatedArtists(artist_id)
-            artist_id = artist_id.id
-        super().__setattr__("id", artist_id)
-
-        info = type(self).get_json(artist_id)
-
-        super().__setattr__(
-            "artists", tuple(Artist(artist["id"]) for artist in info["artists"])
-        )
-
-    def __iter__(self):
-        return iter(self.artists)
+    return tuple(get_artist(artist["id"]) for artist in related_artists_json["artists"])
 
 
-def search_for_artist(search_text):
+def search_for_artist(search_text: str) -> Artist:
     try:
-        return Artist(search_text)
+        return get_artist(search_text)
     except (HTTPError, SpotifyException):
-        search = no_timeout(sp.search)  # TODO: declare globally
+        search = no_timeout(sp.search)
         search_result = search(search_text, limit=1, type="artist")
-        return Artist(search_result["artists"]["items"][0]["id"])
+        return get_artist(search_result["artists"]["items"][0]["id"])
 
 
 if __name__ == "__main__":
-    artist = Artist("0oSGxfWSnnOXhD2fKuz2Gy")
-    related = artist.related()
+    artist = get_artist("0oSGxfWSnnOXhD2fKuz2Gy")
+
+    related = get_related_artists(artist)
 
     tool = search_for_artist("tool")

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from lib.models.artist import Artist
+from lib.models.artist import get_artist
 from lib.models.track import Track
 
 GenreCoordinates = namedtuple("GenreCoordinates", ["top", "left"])
@@ -25,7 +25,7 @@ average_genre_position = GenreCoordinates(
 def genre_position(track: Track) -> tuple:
     genres = set()
     for artist in track.artist_ids:
-        genres |= Artist(artist).genres & genre_positions.keys()
+        genres |= get_artist(artist).genres & genre_positions.keys()
         # XXX: genres missing from genre_positions are ignored
 
     if not genres:

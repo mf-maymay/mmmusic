@@ -3,7 +3,7 @@ from collections import defaultdict
 from itertools import permutations
 import re
 
-from lib.models.artist import Artist
+from lib.models.artist import get_artist
 
 
 def genres_and_members(artists):
@@ -54,7 +54,7 @@ def genre_overlaps(artists):
     mutuals = defaultdict(set)
 
     for artist in artists:
-        for pair in permutations(Artist(artist).genres, 2):
+        for pair in permutations(get_artist(artist).genres, 2):
             mutuals[pair].add(artist)
 
     return dict(mutuals)

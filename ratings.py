@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 
-from lib.models.artist import Artist
+from lib.models.artist import get_artist
 from lib.user import User
 from lib.utils import no_timeout
 
@@ -53,7 +53,7 @@ def sputnik_rating(artist, album):
 
 
 def _artist_album_pair(album):
-    return Artist(album.artist_ids[0]).name, album.name
+    return get_artist(album.artist_ids[0]).name, album.name
 
 
 def get_user_album_ratings(user):

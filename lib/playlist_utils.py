@@ -4,7 +4,7 @@ from scipy.spatial.distance import euclidean as distance
 from lib.genre_positions import genre_position
 from lib.genres import artists_of_genres_matching
 from lib.models.album import get_album
-from lib.models.artist import Artist
+from lib.models.artist import get_artist
 from lib.models.track import Track
 from lib.shuffling import smart_shuffle
 from lib.utils import no_timeout, take_x_at_a_time
@@ -30,7 +30,8 @@ def filter_by_artist_attribute(artist_filter_func):
             track
             for track in tracks
             if all(
-                artist_filter_func(Artist(artist_id)) for artist_id in track.artist_ids
+                artist_filter_func(get_artist(artist_id))
+                for artist_id in track.artist_ids
             )
         ]  # XXX: any or all?
 
@@ -56,7 +57,7 @@ def filter_by_genre_pattern(pattern):
             track
             for track in tracks
             if artists_of_genres_matching(
-                pattern, [Artist(artist_id) for artist_id in track.artist_ids]
+                pattern, [get_artist(artist_id) for artist_id in track.artist_ids]
             )  # TODO: switch to actual regex evaluation
         ]
 

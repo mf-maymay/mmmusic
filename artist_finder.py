@@ -8,7 +8,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from lib.models.artist import Artist
+from lib.models.artist import get_artist, get_related_artists
 
 
 def expand(artists, graph=None) -> nx.Graph:
@@ -25,7 +25,7 @@ def expand(artists, graph=None) -> nx.Graph:
         argument as a subgraph, and with an edge (a, r) for each artist, a,
         from the artists argument and each related artist of a, r.
     """
-    artists = {Artist(artist) for artist in artists}
+    artists = {get_artist(artist) for artist in artists}
 
     if graph is None:
         graph = nx.Graph()
@@ -34,7 +34,9 @@ def expand(artists, graph=None) -> nx.Graph:
     graph.add_nodes_from(artists)
 
     for artist in artists:
-        graph.add_edges_from((artist, related) for related in artist.related())
+        graph.add_edges_from(
+            (artist, related) for related in get_related_artists(artist)
+        )
     return graph
 
 
@@ -52,7 +54,7 @@ def grow(seeds, graph=None) -> nx.Graph:
         argument as a subgraph, and with each object in the seeds argument
         within and connected to each other by paths of related artists.
     """
-    seeds = {Artist(seed) for seed in seeds}
+    seeds = {get_artist(seed) for seed in seeds}
 
     if graph is None:
         graph = nx.Graph()
@@ -71,7 +73,7 @@ def grow(seeds, graph=None) -> nx.Graph:
         if not new_artists:
             raise RuntimeError("No new artists found.")
     for artist in new_artists:
-        for related in artist.related():
+        for related in get_related_artists(artist):
             if related in graph.nodes:
                 graph.add_edge(artist, related)  # new interconnections
     return graph
@@ -193,7 +195,7 @@ def plot(
         A tuple (fig, ax) containing the created plt.Figure (fig) and plt.Axes
         (ax) objects.
     """
-    seeds = {Artist(seed) for seed in seeds}
+    seeds = {get_artist(seed) for seed in seeds}
 
     if seeds - graph.nodes:
         raise ValueError("Not all seeds are in graph.")
@@ -221,7 +223,7 @@ def plot(
     color = {k: dist[k] / max_dist for k in graph.nodes}
 
     node_labels = {
-        artist_id: Artist(artist_id).name.replace(r"$", r"\$")
+        artist_id: get_artist(artist_id).name.replace(r"$", r"\$")
         for artist_id in graph.nodes
     }
 
@@ -277,7 +279,7 @@ def grow_and_plot(
         the seeds argument -- and the created plt.Figure (fig) and plt.Axes
         (ax) objects.
     """
-    seed_artists = {Artist(seed) for seed in seeds}
+    seed_artists = {get_artist(seed) for seed in seeds}
 
     graph = grow(seed_artists, graph=graph)
     graph = trim(graph, keepers=seed_artists)

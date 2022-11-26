@@ -5,7 +5,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
 from lib.models.album import get_album, get_tracks_from_albums
-from lib.models.artist import Artist
+from lib.models.artist import get_artist
 from lib.utils import no_timeout
 
 DEFAULT_SCOPE = "playlist-modify-private,user-library-read"
@@ -52,7 +52,7 @@ class User:
         if self._artists is None:
             artists = set()
             for album in self.albums():
-                artists.update(Artist(artist_id) for artist_id in album.artist_ids)
+                artists.update(get_artist(artist_id) for artist_id in album.artist_ids)
             self._artists = tuple(sorted(artists))
         return self._artists
 
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     artist_albums = defaultdict(list)
     for album in sorted(user.albums(), key=lambda a: a.release_date):
         for artist_id in album.artist_ids:
-            artist_albums[Artist(artist_id)].append(album)
+            artist_albums[get_artist(artist_id)].append(album)
 
     for artist, albums in sorted(
         artist_albums.items(), key=lambda k: (len(k[1]), k[0])

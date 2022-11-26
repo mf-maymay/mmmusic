@@ -4,7 +4,7 @@ import re
 import pandas as pd
 
 from lib.models.album import get_album
-from lib.models.artist import Artist
+from lib.models.artist import get_artist
 from lib.playlist_utils import (
     clear_playlist,
     shuffle_playlist,
@@ -53,7 +53,7 @@ def separate_dump_tracks_to_q_playlists(user):
                 set(
                     genre
                     for artist_id in album.artist_ids
-                    for genre in Artist(artist_id).genres
+                    for genre in get_artist(artist_id).genres
                 )
             )
         )
