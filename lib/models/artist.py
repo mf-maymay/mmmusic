@@ -33,7 +33,7 @@ def get_artist(artist_id: ArtistID | Artist) -> Artist:
     return Artist.parse_obj(artist_json)
 
 
-def get_related_artists(artist: ArtistID | Artist) -> tuple[Artist, ...]:
+def get_artist_related_artists(artist: ArtistID | Artist) -> tuple[Artist, ...]:
     if isinstance(artist, Artist):
         artist = artist.id
 
@@ -53,6 +53,6 @@ def search_for_artist(search_text: str) -> Artist:
 if __name__ == "__main__":
     artist = get_artist("0oSGxfWSnnOXhD2fKuz2Gy")
 
-    related = get_related_artists(artist)
+    related = get_artist_related_artists(artist)
 
     tool = search_for_artist("tool")

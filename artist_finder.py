@@ -8,7 +8,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from lib.models.artist import get_artist, get_related_artists
+from lib.models.artist import get_artist, get_artist_related_artists
 
 
 def expand(artists, graph=None) -> nx.Graph:
@@ -35,7 +35,7 @@ def expand(artists, graph=None) -> nx.Graph:
 
     for artist in artists:
         graph.add_edges_from(
-            (artist, related) for related in get_related_artists(artist)
+            (artist, related) for related in get_artist_related_artists(artist)
         )
     return graph
 
@@ -73,7 +73,7 @@ def grow(seeds, graph=None) -> nx.Graph:
         if not new_artists:
             raise RuntimeError("No new artists found.")
     for artist in new_artists:
-        for related in get_related_artists(artist):
+        for related in get_artist_related_artists(artist):
             if related in graph.nodes:
                 graph.add_edge(artist, related)  # new interconnections
     return graph
