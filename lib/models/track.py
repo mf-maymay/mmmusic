@@ -92,7 +92,7 @@ def get_audio_features(track: TrackID | Track | AudioFeatures) -> AudioFeatures:
     if isinstance(track, Track):
         track = track.id
 
-    audio_features_json = spotify.get_audio_features(track)
+    audio_features_json = spotify.get_track_audio_features(track)
 
     return AudioFeatures.parse_obj(audio_features_json)
 

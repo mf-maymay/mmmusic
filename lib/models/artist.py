@@ -37,7 +37,7 @@ def get_related_artists(artist: ArtistID | Artist) -> tuple[Artist, ...]:
     if isinstance(artist, Artist):
         artist = artist.id
 
-    related_artists_json = spotify.get_related_artists(artist)
+    related_artists_json = spotify.get_artist_related_artists(artist)
 
     return tuple(get_artist(artist["id"]) for artist in related_artists_json)
 

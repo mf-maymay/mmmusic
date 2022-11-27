@@ -10,10 +10,9 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
 _get_album = no_timeout(sp.album)
 _get_album_tracks = no_timeout(sp.album_tracks)
 _get_artist = no_timeout(sp.artist)
-_get_related_artists = no_timeout(sp.artist_related_artists)  # TODO: rename
+_get_artist_related_artists = no_timeout(sp.artist_related_artists)
 _get_track = no_timeout(sp.track)
-_get_audio_features = no_timeout(sp.audio_features)  # TODO: rename
-
+_get_track_audio_features = no_timeout(sp.audio_features)
 _next = no_timeout(sp.next)
 _search = no_timeout(sp.search)
 
@@ -43,8 +42,8 @@ def get_artist(artist_id: str) -> dict:
 
 
 @cache
-def get_related_artists(artist_id: str) -> list[dict]:
-    return _get_related_artists(artist_id)["artists"]
+def get_artist_related_artists(artist_id: str) -> list[dict]:
+    return _get_artist_related_artists(artist_id)["artists"]
 
 
 @cache
@@ -53,8 +52,8 @@ def get_track(track_id: str) -> dict:
 
 
 @cache
-def get_audio_features(track_id: str) -> dict:
-    return _get_audio_features(track_id)[0]
+def get_track_audio_features(track_id: str) -> dict:
+    return _get_track_audio_features(track_id)[0]
 
 
 def search_for_artist(search_text: str) -> dict:
