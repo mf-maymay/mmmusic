@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+from functools import cache
+
 from pydantic import BaseModel
 from requests.exceptions import HTTPError
 from spotipy.exceptions import SpotifyException
@@ -24,6 +25,7 @@ class Artist(BaseModel):
         return self.name
 
 
+@cache
 def get_artist(artist_id: ArtistID | Artist) -> Artist:
     if isinstance(artist_id, Artist):
         return artist_id
@@ -33,6 +35,7 @@ def get_artist(artist_id: ArtistID | Artist) -> Artist:
     return Artist.parse_obj(artist_json)
 
 
+@cache
 def get_artist_related_artists(artist: ArtistID | Artist) -> tuple[Artist, ...]:
     if isinstance(artist, Artist):
         artist = artist.id
@@ -47,7 +50,7 @@ def search_for_artist(search_text: str) -> Artist:
         return get_artist(search_text)
     except (HTTPError, SpotifyException):
         search_result = spotify.search_for_artist(search_text)
-        return get_artist(search_result["id"])
+        return get_artist(search_result["id"])  # TODO: parse from result
 
 
 if __name__ == "__main__":

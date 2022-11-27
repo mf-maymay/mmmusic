@@ -1,5 +1,3 @@
-from functools import cache
-
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
@@ -17,12 +15,10 @@ _next = no_timeout(sp.next)
 _search = no_timeout(sp.search)
 
 
-@cache
 def get_album(album_id: str) -> dict:
     return _get_album(album_id)
 
 
-@cache
 def get_album_tracks(album_id: str) -> list[dict]:
     tracks = []
 
@@ -36,22 +32,18 @@ def get_album_tracks(album_id: str) -> list[dict]:
     return tracks
 
 
-@cache
 def get_artist(artist_id: str) -> dict:
     return _get_artist(artist_id)
 
 
-@cache
 def get_artist_related_artists(artist_id: str) -> list[dict]:
     return _get_artist_related_artists(artist_id)["artists"]
 
 
-@cache
 def get_track(track_id: str) -> dict:
     return _get_track(track_id)
 
 
-@cache
 def get_track_audio_features(track_id: str) -> dict:
     return _get_track_audio_features(track_id)[0]
 

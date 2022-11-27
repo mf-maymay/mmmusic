@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+from functools import cache
+
 from pydantic import BaseModel
 
 from lib.models import spotify
@@ -71,6 +72,7 @@ class Track(BaseModel):
         return self.name
 
 
+@cache
 def get_track(track_id: TrackID | Track) -> Track:
     if isinstance(track_id, Track):
         return track_id
@@ -85,6 +87,7 @@ def get_track(track_id: TrackID | Track) -> Track:
     )
 
 
+@cache
 def get_track_audio_features(track: TrackID | Track | AudioFeatures) -> AudioFeatures:
     if isinstance(track, AudioFeatures):
         return track

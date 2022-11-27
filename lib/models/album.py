@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 from datetime import date
+from functools import cache
 
 from pydantic import BaseModel, validator
 
@@ -38,6 +38,7 @@ class Album(BaseModel):
         return self.name
 
 
+@cache
 def get_album(album_id: AlbumID | Album) -> Album:
     if isinstance(album_id, Album):
         return album_id
@@ -48,6 +49,7 @@ def get_album(album_id: AlbumID | Album) -> Album:
     return Album.parse_obj({**album_json, "artist_ids": artist_ids})
 
 
+@cache
 def get_album_tracks(album: Album | AlbumID) -> list[Track]:  # TODO: return tuple
     album = get_album(album)
 
