@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
-from functools import lru_cache
-
 from pydantic import BaseModel
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
 
-from lib.utils import no_timeout
+from lib.models import spotify
 
 TrackID = str
 
@@ -24,10 +20,6 @@ AUDIO_FEATURE_FIELDS = (
     "time_signature",
     "valence",
 )
-
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
-_get_track_json = lru_cache(maxsize=None)(no_timeout(sp.track))
-_get_audio_features_json = lru_cache(maxsize=None)(no_timeout(sp.audio_features))
 
 
 class AudioFeatures(BaseModel):
@@ -83,7 +75,7 @@ def get_track(track_id: TrackID | Track) -> Track:
     if isinstance(track_id, Track):
         return track_id
 
-    track_json = _get_track_json(track_id)
+    track_json = spotify.get_track(track_id)
 
     return Track(
         name=track_json["name"],
@@ -100,9 +92,9 @@ def get_audio_features(track: TrackID | Track | AudioFeatures) -> AudioFeatures:
     if isinstance(track, Track):
         track = track.id
 
-    audio_features_json = _get_audio_features_json(track)
+    audio_features_json = spotify.get_audio_features(track)
 
-    return AudioFeatures.parse_obj(audio_features_json[0])
+    return AudioFeatures.parse_obj(audio_features_json)
 
 
 if __name__ == "__main__":
