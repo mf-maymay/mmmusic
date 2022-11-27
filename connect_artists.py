@@ -290,7 +290,7 @@ def grow_and_plot(
 
 if __name__ == "__main__":
     # example usage:
-    # python artist_finder.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX
+    # python connect_artists.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
