@@ -55,7 +55,7 @@ class Track(BaseModel):
     @property
     def audio_features(self):
         if self._audio_features is None:
-            self._audio_features = get_audio_features(self)
+            self._audio_features = get_track_audio_features(self)
         return self._audio_features
 
     def __getitem__(self, key):
@@ -85,7 +85,7 @@ def get_track(track_id: TrackID | Track) -> Track:
     )
 
 
-def get_audio_features(track: TrackID | Track | AudioFeatures) -> AudioFeatures:
+def get_track_audio_features(track: TrackID | Track | AudioFeatures) -> AudioFeatures:
     if isinstance(track, AudioFeatures):
         return track
 
@@ -111,4 +111,4 @@ if __name__ == "__main__":
 
     track = tracks[0]
 
-    features = get_audio_features(track)
+    features = track.audio_features
