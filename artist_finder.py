@@ -8,7 +8,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from lib.models.artist import get_artist, get_artist_related_artists
+from lib.models.artist import get_artist, get_artist_related_artists, search_for_artist
 
 
 def expand(artists, graph=None) -> nx.Graph:
@@ -290,17 +290,19 @@ def grow_and_plot(
 
 if __name__ == "__main__":
     # example usage:
-    # artist_finder.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX
-
-    from lib.models.artist import search_for_artist
+    # python artist_finder.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "seeds", nargs="+", help=("IDs of artists, separated by spaces")
+        "artists", nargs="*", help=("artists (as IDs or names), separated by spaces")
     )
     args = parser.parse_args()
 
-    seeds = [search_for_artist(seed) for seed in args.seeds]
+    inputs = (
+        args.artists if args.artists else [input("Artist #1: "), input("Artist #2: ")]
+    )
+
+    seeds = [search_for_artist(artist) for artist in inputs]
 
     print("Connecting {} ...".format(" and ".join(f"'{seed}'" for seed in seeds)))
 
