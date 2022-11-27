@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import date
-from functools import lru_cache
 
 from pydantic import BaseModel, validator
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
 
+from lib.models import spotify
 from lib.models.track import Track, get_track
-from lib.utils import no_timeout
 
 AlbumID = str
-
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
-_get_album_json = lru_cache(maxsize=None)(no_timeout(sp.album))
-_get_album_tracks_json = lru_cache(maxsize=None)(no_timeout(sp.album_tracks))
 
 
 class Album(BaseModel):
@@ -49,25 +42,16 @@ def get_album(album_id: AlbumID | Album) -> Album:
     if isinstance(album_id, Album):
         return album_id
 
-    album_json = _get_album_json(album_id)
+    album_json = spotify.get_album(album_id)
     artist_ids = tuple(artist["id"] for artist in album_json["artists"])
 
     return Album.parse_obj({**album_json, "artist_ids": artist_ids})
 
 
-def get_album_tracks(album: Album | AlbumID) -> list[Track]:
+def get_album_tracks(album: Album | AlbumID) -> list[Track]:  # TODO: return tuple
     album = get_album(album)
 
-    tracks: list[Track] = []
-
-    album_tracks_json = _get_album_tracks_json(album.id)
-
-    while album_tracks_json is not None and (items := album_tracks_json["items"]):
-        tracks.extend(get_track(item["id"]) for item in items)
-
-        album_tracks_json = no_timeout(sp.next)(album_tracks_json)
-
-    return tracks
+    return [get_track(track["id"]) for track in spotify.get_album_tracks(album.id)]
 
 
 def get_tracks_from_albums(albums: list[Album | AlbumID]) -> tuple[Track, ...]:
