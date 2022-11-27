@@ -3,6 +3,7 @@ import argparse
 from itertools import combinations
 from pathlib import Path
 from typing import Any
+import webbrowser
 
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
@@ -160,7 +161,6 @@ def plot(
     edge_color="#000102",
     font_color="#b9cdfb",
     fig_color="#2e4272",
-    output_folder: Path | None = None,
     **plot_kwargs,  # passed to nx.draw
 ) -> tuple[plt.Figure, plt.Axes]:
     """
@@ -185,9 +185,6 @@ def plot(
         edge_color: Optional; A string representing a color for matplotlib.
         font_color: Optional; A string representing a color for matplotlib.
         fig_color: Optional; A string representing a color for matplotlib.
-        save: If true, save the created plot to the /output directory.
-            (For finer control, opt to instead use `fig.savefig(...)` from the
-            returned plt.Figure object.)
         plot_kwargs: Optional; Keyword arguments to pass to networkx.draw (and
             to matplotlib, by extention).
 
@@ -247,13 +244,6 @@ def plot(
 
     fig.tight_layout()
 
-    if output_folder is not None:
-        file_path = output_folder / "{}.png".format(
-            "-".join(sorted(a.id for a in seeds))
-        )
-
-        fig.savefig(file_path, facecolor=fig_color)
-
     return fig, ax
 
 
@@ -306,4 +296,12 @@ if __name__ == "__main__":
 
     print("Connecting {} ...".format(" and ".join(f"'{seed}'" for seed in seeds)))
 
-    graph, (fig, ax) = grow_and_plot(*seeds, output_folder=Path("output"))
+    graph, (fig, ax) = grow_and_plot(*seeds)
+
+    file_path = Path("output") / "{}.png".format(
+        "-".join(sorted(seed.id for seed in seeds))
+    )
+
+    fig.savefig(file_path)
+
+    webbrowser.open(str(file_path))
