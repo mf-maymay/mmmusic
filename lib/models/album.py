@@ -50,21 +50,21 @@ def get_album(album_id: AlbumID | Album) -> Album:
 
 
 @cache
-def get_album_tracks(album: Album | AlbumID) -> list[Track]:  # TODO: return tuple
+def get_album_tracks(album: Album | AlbumID) -> tuple[Track, ...]:
     album = get_album(album)
 
-    return [get_track(track["id"]) for track in spotify.get_album_tracks(album.id)]
+    return tuple(get_track(track["id"]) for track in spotify.get_album_tracks(album.id))
 
 
 def get_tracks_from_albums(albums: list[Album | AlbumID]) -> tuple[Track, ...]:
-    return tuple(track for album in albums for track in get_album_tracks(album))
+    return sum((get_album_tracks(album) for album in albums), start=())
 
 
 if __name__ == "__main__":
-    album_id = "5Tw0sanofDSd7h44GySmoa"
+    album = get_album("5Tw0sanofDSd7h44GySmoa")
 
-    album = get_album(album_id)
+    tracks_from_album = get_album_tracks(album)
 
-    tracks = get_album_tracks(album_id)
+    assert len(tracks_from_album) > 50
 
-    assert len(tracks) > 50
+    tracks_from_albums = get_tracks_from_albums([album, "3539EbNgIdEDGBKkUf4wno"])
