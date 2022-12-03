@@ -7,7 +7,7 @@ from scipy.stats import percentileofscore
 
 from lib.genre_positions import genre_position
 from lib.models.album import get_album
-from lib.models.track import Track, get_audio_features, get_track
+from lib.models.track import Track, get_track
 
 Item = Any
 Items = list[Item]
@@ -39,7 +39,7 @@ def similarity(u: Metrics, v: Metrics) -> float:
     return np.dot(u, v) / np.sqrt(np.dot(u, u) * np.dot(v, v))
 
 
-def quick_pick(
+def quick_pick(  # TODO: separate
     items: Items,
     add_to_left: ItemPicker,
     seed_picker: Optional[SeedPicker] = None,
