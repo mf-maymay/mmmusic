@@ -3,6 +3,7 @@ from collections import namedtuple
 from functools import cache
 import json
 from pathlib import Path
+from typing import Iterable
 
 import numpy as np
 
@@ -12,7 +13,7 @@ GenreAttributes = namedtuple("GenreAttributes", ["top", "left"])
 
 
 @cache
-def get_genre_attributes():
+def get_genre_attributes() -> dict[str, GenreAttributes]:
     with _genre_positions_file_path.open() as f:
         genre_positions = json.load(f)
 
@@ -21,6 +22,13 @@ def get_genre_attributes():
     }
 
 
+def get_genre_attribute_means(genres: Iterable[str]) -> GenreAttributes:
+    genre_positions = get_genre_attributes()
+    return GenreAttributes(
+        *np.mean([genre_positions[genre] for genre in genres], axis=0)
+    )
+
+
 @cache
-def get_genre_attributes_means():
-    return GenreAttributes(*np.mean(list(get_genre_attributes().values()), axis=0))
+def get_default_genre_attributes() -> GenreAttributes:
+    return get_genre_attribute_means(get_genre_attributes())

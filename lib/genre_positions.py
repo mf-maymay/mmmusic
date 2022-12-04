@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-import numpy as np
-
 from lib.models.artist import get_artist
 from lib.models.genre_attributes import (
-    GenreAttributes,
+    get_default_genre_attributes,
+    get_genre_attribute_means,
     get_genre_attributes,
-    get_genre_attributes_means,
 )
 from lib.models.track import Track
 
@@ -19,8 +17,6 @@ def genre_position(track: Track) -> tuple:
         # NOTE: genres missing from genre_positions are ignored.
 
     if not genres:
-        return get_genre_attributes_means()
+        return get_default_genre_attributes()
 
-    return GenreAttributes(
-        *np.mean([genre_positions[genre] for genre in genres], axis=0)
-    )
+    return get_genre_attribute_means(genres)
