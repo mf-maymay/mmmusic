@@ -5,7 +5,7 @@ from typing import Any, Callable, Optional, Tuple
 import numpy as np
 from scipy.stats import percentileofscore
 
-from lib.genres import genre_position
+from lib.genres import get_track_genre_attributes
 from lib.models.album import get_album
 from lib.models.track import Track, get_track
 
@@ -137,7 +137,7 @@ def _balanced_metrics(track: Track) -> Metrics:
     return [track[metric] for metric in METRICS] + [
         track["duration_ms"],
         int(get_album(track.album_id).release_date.year),
-        *genre_position(track),
+        *get_track_genre_attributes(track),
     ]
 
 
@@ -162,7 +162,7 @@ def _balanced_picker(tracks: Tracks) -> ItemPicker:
 def _story_metrics(track: Track) -> Metrics:
     return [track[metric] for metric in METRICS] + [
         int(get_album(track.album_id).release_date.year),
-        *genre_position(track),
+        *get_track_genre_attributes(track),
     ]
 
 

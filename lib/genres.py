@@ -13,16 +13,18 @@ from lib.models.genre_attributes import (
 from lib.models.track import Track
 
 
-def genre_position(track: Track) -> GenreAttributes:
-    genre_positions = get_genre_attributes()
+def get_track_genre_attributes(track: Track) -> GenreAttributes:
+    genre_attributes = get_genre_attributes()
 
-    genres = set()
+    track_genres = set()
     for artist in track.artist_ids:
-        genres |= get_artist(artist).genres & genre_positions.keys()
-        # NOTE: genres missing from genre_positions are ignored.
+        track_genres |= get_artist(artist).genres & genre_attributes.keys()
+        # NOTE: genres missing from genre_attributes are ignored.
 
     return (
-        get_genre_attribute_means(genres) if genres else get_default_genre_attributes()
+        get_genre_attribute_means(track_genres)
+        if track_genres
+        else get_default_genre_attributes()
     )
 
 
