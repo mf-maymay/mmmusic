@@ -5,7 +5,7 @@ from typing import Any, Callable, Optional, Tuple
 import numpy as np
 from scipy.stats import percentileofscore
 
-from lib.genre_positions import genre_position
+from lib.genres import genre_position
 from lib.models.album import get_album
 from lib.models.track import Track, get_track
 
