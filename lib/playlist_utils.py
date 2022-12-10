@@ -1,18 +1,10 @@
 # -*- coding: utf-8 -*-
-from scipy.spatial.distance import euclidean as distance
-
-from lib.genre_positions import genre_position
 from lib.genres import artists_of_genres_matching
 from lib.models.album import get_album
 from lib.models.artist import get_artist
 from lib.models.track import get_track
 from lib.shuffling import smart_shuffle
 from lib.utils import no_timeout, take_x_at_a_time
-
-
-def _albums_from_artists(user, artists):
-    artists = set(artists)
-    return sorted({album for album in user.albums() if set(album.artist_ids) & artists})
 
 
 def filter_by_album_attribute(album_filter_func):
@@ -34,19 +26,6 @@ def filter_by_artist_attribute(artist_filter_func):
                 for artist_id in track.artist_ids
             )
         ]  # XXX: any or all?
-
-    return filter_tracks
-
-
-def filter_by_genre_coordinates(top, left, *, max_distance):
-    def filter_tracks(tracks):
-        tracks = [
-            track
-            for track in tracks
-            if distance((top, left), genre_position(track)) < max_distance
-        ]
-
-        return tracks
 
     return filter_tracks
 
