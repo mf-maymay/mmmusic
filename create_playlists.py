@@ -17,6 +17,11 @@ _playlists = [
     Playlist("2020s", track_filters=[filter_by_release_year(2020, 2029)]),
     Playlist("ALL"),
     Playlist(
+        "ambient",
+        track_filters=[filter_by_genre_pattern(pattern := ".*ambient.*")],
+        description=f"genre matches '{pattern}'",
+    ),
+    Playlist(
         "bad vibes",
         description="high energy, low valence",
         track_filters=[
