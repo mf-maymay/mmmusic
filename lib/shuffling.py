@@ -295,9 +295,7 @@ def _swap_to_smooth(
     cos_0_1 = similarity(values[track_0], values[track_1])
     cos_0_2 = similarity(values[track_0], values[track_2])
 
-    swap_for_cosine = cos_0_2 > cos_0_1
-
-    return swap_for_cosine
+    return cos_0_2 > cos_0_1
 
 
 def smooth_playlist(tracks: Tracks) -> Tracks:
@@ -355,9 +353,7 @@ def smart_shuffle(tracks: Tracks, mode: str = "radio", smooth: Optional[bool] = 
         smooth = True
     ordered = quick_pick(tracks, picker, seed_picker=seed_picker)
 
-    if smooth:
-        return smooth_playlist(ordered)
-    return ordered
+    return smooth_playlist(ordered) if smooth else ordered
 
 
 if __name__ == "__main__":

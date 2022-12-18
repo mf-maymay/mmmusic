@@ -50,11 +50,11 @@ def separate_dump_tracks_to_q_playlists(user):
     dump_frame["genres"] = [
         tuple(
             sorted(
-                set(
+                {
                     genre
                     for artist_id in album.artist_ids
                     for genre in get_artist(artist_id).genres
-                )
+                }
             )
         )
         for album in dump_frame["album"]
