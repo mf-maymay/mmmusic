@@ -28,10 +28,7 @@ def expand(artists, graph=None) -> nx.Graph:
     """
     artists = {get_artist(artist) for artist in artists}
 
-    if graph is None:
-        graph = nx.Graph()
-    else:
-        graph = graph.copy()
+    graph = nx.Graph() if graph is None else graph.copy()
     graph.add_nodes_from(artists)
 
     for artist in artists:
@@ -57,10 +54,7 @@ def grow(seeds, graph=None) -> nx.Graph:
     """
     seeds = {get_artist(seed) for seed in seeds}
 
-    if graph is None:
-        graph = nx.Graph()
-    else:
-        graph = graph.copy()
+    graph = nx.Graph() if graph is None else graph.copy()
     graph.add_nodes_from(seeds)
 
     new_artists = seeds
@@ -95,12 +89,11 @@ def trim(graph, keepers=()) -> nx.Graph:
     """
     graph = graph.copy()
 
-    # Remove leaves until none left.
-    to_remove = [x for x in graph.nodes if graph.degree(x) < 2 and x not in keepers]
-
-    while to_remove:
+    while to_remove := [
+        node for node in graph.nodes if graph.degree(node) < 2 and node not in keepers
+    ]:
         graph.remove_nodes_from(to_remove)
-        to_remove = [x for x in graph.nodes if graph.degree(x) < 2 and x not in keepers]
+
     return graph
 
 
@@ -129,28 +122,29 @@ def paths_subgraph(graph, seeds, max_len=None) -> tuple[nx.Graph, dict]:
     """
     graph = graph.copy()
 
-    paths: dict[tuple[Any, Any], list] = {}
+    paths_per_pair: dict[tuple[Any, Any], list] = {}
 
     for pair in combinations(seeds, 2):
-        paths[pair] = []
+        paths_per_pair[pair] = []
         pair_max_len = max_len  # Specifically for when max_len is None.
         for path in nx.shortest_simple_paths(graph, *pair):
             if pair_max_len is None:
-                paths[pair].append(path)
+                paths_per_pair[pair].append(path)
                 # Set pair_max_len to shortest length between paired nodes.
-                pair_max_len = len(paths[pair][-1])
+                pair_max_len = len(paths_per_pair[pair][-1])
             elif len(path) <= pair_max_len:
-                paths[pair].append(path)
+                paths_per_pair[pair].append(path)
             else:  # nx.shortest_simple_paths yields paths of increasing length
                 break
     keepers = set()
 
-    for pair in paths:
-        for path in paths[pair]:
+    for paths in paths_per_pair.values():
+        for path in paths:
             keepers.update(path)
+
     graph.remove_nodes_from(graph.nodes - keepers)
 
-    return graph, paths
+    return graph, paths_per_pair
 
 
 def plot(
@@ -204,7 +198,7 @@ def plot(
         pres = []
         dists = []
 
-        for i, artist_id in enumerate(seeds):
+        for artist_id in seeds:
             pres.append(nx.bfs_predecessors(graph, artist_id))
             dists.append({artist_id: 0})
         for i, artist_id in enumerate(seeds):
@@ -288,9 +282,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    inputs = (
-        args.artists if args.artists else [input("Artist #1: "), input("Artist #2: ")]
-    )
+    inputs = args.artists or [input("Artist #1: "), input("Artist #2: ")]
 
     seeds = [search_for_artist(artist) for artist in inputs]
 
@@ -298,9 +290,7 @@ if __name__ == "__main__":
 
     graph, (fig, ax) = grow_and_plot(*seeds)
 
-    file_path = Path("output") / "{}.png".format(
-        "-".join(sorted(seed.id for seed in seeds))
-    )
+    file_path = Path("output") / f'{"-".join(sorted(seed.id for seed in seeds))}.png'
 
     fig.savefig(file_path)
 
