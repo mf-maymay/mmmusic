@@ -80,46 +80,36 @@ def quick_pick(  # TODO: separate
 def _get_average_values(
     left: Item, right: Item, to_add: Item, values: dict[Item, Metrics]
 ) -> dict[str, Metrics]:
-    averages = {}
-
     left_values = [values[x] for x in left]
-    averages["left"] = np.average(left_values, axis=0)
-    averages["left with new"] = np.average(
-        np.vstack((left_values, values[to_add])), axis=0
-    )
-
     right_values = [values[x] for x in right]
-    averages["right"] = np.average(right_values, axis=0)
-    averages["right with new"] = np.average(
-        np.vstack((right_values, values[to_add])), axis=0
-    )
-
-    return averages
+    return {
+        "left": np.average(left_values, axis=0),
+        "left with new": np.average(np.vstack((left_values, values[to_add])), axis=0),
+        "right": np.average(right_values, axis=0),
+        "right with new": np.average(np.vstack((right_values, values[to_add])), axis=0),
+    }
 
 
 def _get_categorical_scores(
     left: Item, right: Item, to_add: Item
 ) -> dict[str, Metrics]:
-    scores = {}
-
     # key, mode, artist
     left_values = [
         sum(track["key"] == to_add["key"] for track in left),
         sum(track["mode"] == to_add["mode"] for track in left),
         sum(track.artist_ids[0] == to_add.artist_ids[0] for track in left),
     ]
-    scores["left"] = [x / len(left) for x in left_values]
-    scores["left with new"] = [(x + 1) / (len(left) + 1) for x in left_values]
-
     right_values = [
         sum(track["key"] == to_add["key"] for track in right),
         sum(track["mode"] == to_add["mode"] for track in right),
         sum(track.artist_ids[0] == to_add.artist_ids[0] for track in right),
     ]
-    scores["right"] = [x / len(right) for x in right_values]
-    scores["right with new"] = [(x + 1) / (len(right) + 1) for x in right_values]
-
-    return scores
+    return {
+        "left": [x / len(left) for x in left_values],
+        "left with new": [(x + 1) / (len(left) + 1) for x in left_values],
+        "right": [x / len(right) for x in right_values],
+        "right with new": [(x + 1) / (len(right) + 1) for x in right_values],
+    }
 
 
 def _scores(
