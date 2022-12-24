@@ -13,7 +13,11 @@ from lib.playlist_utils import (
 from lib.user import User
 from lib.utils import take_x_at_a_time
 
-DUMP_ID = "5AZxg3qZIC7cGnxWa7EuSd"
+CANDIDATES_ID = "5AZxg3qZIC7cGnxWa7EuSd"
+
+Q_ALL_ID = "4Mr3AVGL2jGI4Jc2qr3PLf"
+
+REJECTS_ID = "2Cm0uu5nAGb1ISfXPluvks"
 
 Q_IDS = {
     "q - harder": "5mRa71QUmE6EWavxTA22g6",
@@ -34,7 +38,7 @@ Q_PATTERNS = [
 # Identify playlists for tracks
 def separate_dump_tracks_to_q_playlists(user):
     print("Identifying 'dump' tracks")
-    dump_tracks = tracks_from_playlist(DUMP_ID)(user)  # XXX
+    dump_tracks = tracks_from_playlist(CANDIDATES_ID)(user)  # XXX
 
     print(f"Found {len(dump_tracks)} tracks in 'dump' playlist")
 
@@ -91,7 +95,7 @@ def separate_dump_tracks_to_q_playlists(user):
 
     # Clear dump
     print("Clearing dump")
-    clear_playlist(user, DUMP_ID)
+    clear_playlist(user, CANDIDATES_ID)
 
 
 def prepare_q_playlists(user):
