@@ -39,11 +39,11 @@ print("Adding candidates...")
 
 add_tracks_to_playlist(Q_ALL_ID, tracks=set(candidates) - set(q_all_tracks), user=user)
 
-clear_playlist(user, CANDIDATES_ID)
+clear_playlist(CANDIDATES_ID, user=user)
 
 # Remove rejects from 'q - all'
 print("Removing rejects...")
 
 remove_tracks_from_playlist(Q_ALL_ID, tracks=rejects, user=user)
 
-clear_playlist(user, REJECTS_ID)
+clear_playlist(REJECTS_ID, user=user)

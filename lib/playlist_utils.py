@@ -3,6 +3,7 @@ from lib.models.album import get_album
 from lib.models.artist import get_artist
 from lib.models.track import get_track
 from lib.shuffling import smart_shuffle
+from lib.user import User
 from lib.utils import no_timeout, take_x_at_a_time
 
 
@@ -52,6 +53,7 @@ def filter_by_track_attribute(track_filter_func):
 def filter_by_release_year(start_year, end_year):
     if start_year is None:
         start_year = float("-inf")
+
     if end_year is None:
         end_year = float("inf")
 
@@ -76,9 +78,10 @@ def tracks_from_playlist(playlist_id):
     return get_tracks
 
 
-def clear_playlist(user, playlist_id):
+def clear_playlist(playlist_id, *, user: User):
     # get tracks
     tracks = tracks_from_playlist(playlist_id)(user)
+
     # clear playlist
     for subset in take_x_at_a_time(tracks, 100):
         to_remove = [track.id for track in subset]
@@ -87,17 +90,20 @@ def clear_playlist(user, playlist_id):
         )
 
 
-def shuffle_playlist(user, playlist_id):
+def shuffle_playlist(playlist_id, *, user: User):
     # get tracks
     tracks = tracks_from_playlist(playlist_id)(user)
+
     # clear playlist
     for subset in take_x_at_a_time(tracks, 100):
         to_remove = [track.id for track in subset]
         no_timeout(user.sp.user_playlist_remove_all_occurrences_of_tracks)(
             user.username, playlist_id, to_remove
         )
+
     # shuffle tracks
     shuffled = smart_shuffle(tracks)
+
     # write back to playlist
     for subset in take_x_at_a_time(shuffled, 100):
         to_add = [track.id for track in subset]

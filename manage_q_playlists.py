@@ -94,7 +94,7 @@ def separate_dump_tracks_to_q_playlists(user):
 
     # Clear dump
     print("Clearing dump")
-    clear_playlist(user, CANDIDATES_ID)
+    clear_playlist(CANDIDATES_ID, user=user)
 
 
 def prepare_q_playlists(user):
@@ -112,7 +112,7 @@ def prepare_q_playlists(user):
             )
 
         print(f"Shuffling '{q}'")
-        shuffle_playlist(user, q_id)
+        shuffle_playlist(q_id, user=user)
 
 
 if __name__ == "__main__":
