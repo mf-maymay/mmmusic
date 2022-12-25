@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import argparse
 from itertools import combinations
 from pathlib import Path

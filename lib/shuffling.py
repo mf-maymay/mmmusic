@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from collections import Counter
 from typing import Any, Callable, Optional, Tuple
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from lib.playlist import Playlist
 from lib.playlist_utils import (
     filter_by_artist_attribute,
