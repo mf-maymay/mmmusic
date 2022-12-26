@@ -195,6 +195,7 @@ if __name__ == "__main__":
         print(f"Ordering '{playlist.name}' tracks ...")
         playlist.order_tracks()
         print()
+
     for key in to_create:
         playlist = playlists[key]
-        playlist.create(user, confirm=True)
+        playlist.create(user)

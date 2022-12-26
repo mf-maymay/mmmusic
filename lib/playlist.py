@@ -33,27 +33,29 @@ class Playlist:
     def order_tracks(self):
         if not self.tracks:
             raise ValueError("No tracks to order")
+
         self.tracks = self.order_tracks_func(self.tracks)
 
     @no_timeout  # TODO: wrap sp calls, instead
-    def create(self, user, confirm=True):
+    def create(self, user):
         if not self.tracks:
             self.get_tracks(user)
             self.order_tracks()
-        if not confirm or input(f"Create playlist '{self.name}'? (y/n): ")[0] in "yY":
-            print(f"Creating '{self.name}' ...")
 
-            playlist = user.sp.user_playlist_create(
-                user.username, self.name, public=False, description=self.description
+        print(f"Creating '{self.name}' ...")
+
+        playlist = user.sp.user_playlist_create(
+            user.username, self.name, public=False, description=self.description
+        )
+
+        if len(self.tracks) > MAX_TRACKS:
+            print(
+                "Playlist has {:,} tracks. Only adding first {:,} ...".format(
+                    len(self.tracks), MAX_TRACKS
+                )
             )
 
-            if len(self.tracks) > MAX_TRACKS:
-                print(
-                    "Playlist has {:,} tracks. Only adding first {:,} ...".format(
-                        len(self.tracks), MAX_TRACKS
-                    )
-                )
-            tracks = self.tracks[:MAX_TRACKS]
-
-            for to_add in take_x_at_a_time([track.id for track in tracks], 100):
-                user.sp.user_playlist_add_tracks(user.username, playlist["id"], to_add)
+        for to_add in take_x_at_a_time(
+            [track.id for track in self.tracks[:MAX_TRACKS]], 100
+        ):
+            user.sp.user_playlist_add_tracks(user.username, playlist["id"], to_add)
