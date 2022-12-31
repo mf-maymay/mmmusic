@@ -1,8 +1,9 @@
 from lib.playlist_utils import (
     add_tracks_to_playlist,
     clear_playlist,
-    tracks_from_playlist,
     remove_tracks_from_playlist,
+    shuffle_playlist,
+    tracks_from_playlist,
 )
 from lib.user import User
 
@@ -53,3 +54,8 @@ print(f"Removing {len(already_saved_to_remove):,} already-saved tracks...")
 remove_tracks_from_playlist(Q_ALL_ID, tracks=already_saved_to_remove, user=user)
 
 q_all_tracks -= already_saved_to_remove
+
+# Shuffle 'q - all'
+print("Shuffing 'q - all'...")
+
+shuffle_playlist(Q_ALL_ID, user=user)
