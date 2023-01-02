@@ -1,4 +1,5 @@
 from datetime import date
+from concurrent.futures import ThreadPoolExecutor
 from functools import cache
 
 from pydantic import BaseModel, validator
@@ -57,7 +58,8 @@ def get_album_tracks(album: Album | AlbumID) -> tuple[Track, ...]:
 
 
 def get_tracks_from_albums(albums: list[Album | AlbumID]) -> tuple[Track, ...]:
-    return sum((get_album_tracks(album) for album in albums), start=())
+    with ThreadPoolExecutor() as executor:
+        return sum(executor.map(get_album_tracks, albums), start=())
 
 
 if __name__ == "__main__":
