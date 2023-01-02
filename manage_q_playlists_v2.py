@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from datetime import datetime as dt
 
 from lib.playlist_utils import (
     add_tracks_to_playlist,
@@ -13,8 +14,12 @@ from lib.user import User
 @contextmanager
 def note_when_done(message: str):
     print(message, end="", flush=True)
+    start = dt.now()
     yield
-    print(" \N{Check Mark}")
+    total_secs = (dt.now() - start).total_seconds()
+    total_mins, secs = divmod(int(total_secs), 60)
+    hours, mins = divmod(total_mins, 60)
+    print(f" Done. (Took {hours}h {mins}m {secs}s.)")
 
 
 CANDIDATES_ID = "5AZxg3qZIC7cGnxWa7EuSd"
