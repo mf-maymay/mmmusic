@@ -198,4 +198,5 @@ if __name__ == "__main__":
 
     for key in to_create:
         playlist = playlists[key]
+        print(f"Creating '{playlist.name}' ...")
         playlist.create(user)

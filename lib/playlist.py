@@ -38,13 +38,7 @@ class Playlist:
 
     @no_timeout  # TODO: wrap sp calls, instead
     def create(self, user):
-        if not self.tracks:
-            self.get_tracks(user)
-            self.order_tracks()
-
-        print(f"Creating '{self.name}' ...")
-
-        playlist = user.sp.user_playlist_create(
+        response = user.sp.user_playlist_create(
             user.username, self.name, public=False, description=self.description
         )
 
@@ -58,4 +52,4 @@ class Playlist:
         for to_add in take_x_at_a_time(
             [track.id for track in self.tracks[:MAX_TRACKS]], 100
         ):
-            user.sp.user_playlist_add_tracks(user.username, playlist["id"], to_add)
+            user.sp.user_playlist_add_tracks(user.username, response["id"], to_add)
