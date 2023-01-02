@@ -52,6 +52,11 @@ _playlists = [
         description=f"genre matches '{pattern}'",
     ),
     Playlist(
+        "electronic",
+        track_filters=[filter_by_genre_pattern(pattern := ".*electronic.*")],
+        description=f"genre matches '{pattern}'",
+    ),
+    Playlist(
         "emo/math",
         track_filters=[filter_by_genre_pattern(pattern := ".*(emo|math).*")],
         description=f"genre matches '{pattern}'",
