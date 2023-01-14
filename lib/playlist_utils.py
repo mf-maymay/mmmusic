@@ -65,7 +65,7 @@ def filter_by_release_year(start_year, end_year):
     return filter_by_album_attribute(release_date_filter)
 
 
-def tracks_from_playlist(playlist_id):
+def get_tracks_from_playlist(playlist_id):
     def get_tracks(user):
         tracks = []
         items = no_timeout(user.sp.playlist_items)(playlist_id)
@@ -80,7 +80,7 @@ def tracks_from_playlist(playlist_id):
 
 def clear_playlist(playlist_id, *, user: User):
     # get tracks
-    tracks = tracks_from_playlist(playlist_id)(user)
+    tracks = get_tracks_from_playlist(playlist_id)(user)
 
     # clear playlist
     for subset in take_x_at_a_time(tracks, 100):
@@ -92,7 +92,7 @@ def clear_playlist(playlist_id, *, user: User):
 
 def shuffle_playlist(playlist_id, *, user: User):
     # get tracks
-    tracks = tracks_from_playlist(playlist_id)(user)
+    tracks = get_tracks_from_playlist(playlist_id)(user)
 
     # clear playlist
     for subset in take_x_at_a_time(tracks, 100):

@@ -4,9 +4,9 @@ from datetime import datetime as dt
 from lib.playlist_utils import (
     add_tracks_to_playlist,
     clear_playlist,
+    get_tracks_from_playlist,
     remove_tracks_from_playlist,
     shuffle_playlist,
-    tracks_from_playlist,
 )
 from lib.user import User
 
@@ -30,11 +30,11 @@ user = User()
 
 # Get playlist tracks
 with note_when_done("Getting tracks..."):
-    candidates = set(tracks_from_playlist(CANDIDATES_ID)(user))
+    candidates = set(get_tracks_from_playlist(CANDIDATES_ID)(user))
 
-    q_all_tracks = set(tracks_from_playlist(Q_ALL_ID)(user))
+    q_all_tracks = set(get_tracks_from_playlist(Q_ALL_ID)(user))
 
-    rejects = set(tracks_from_playlist(REJECTS_ID)(user))
+    rejects = set(get_tracks_from_playlist(REJECTS_ID)(user))
 
     user_tracks = set(user.all_tracks())
 

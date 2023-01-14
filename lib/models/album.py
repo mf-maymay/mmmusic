@@ -1,5 +1,5 @@
-from datetime import date
 from concurrent.futures import ThreadPoolExecutor
+from datetime import date
 from functools import cache
 
 from pydantic import BaseModel, validator
