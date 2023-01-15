@@ -6,6 +6,35 @@ from lib.playlist_utils import get_tracks_from_playlist
 from lib.user import User
 
 
+def plot(xs, ys):
+    fig, ax = plt.subplots()
+
+    fig.set_facecolor("grey")
+    ax.set_facecolor("lightgrey")
+
+    ax.plot(xs, ys, "w", alpha=0.2, linewidth=0.5, zorder=1)
+
+    ax.scatter(
+        xs,
+        ys,
+        s=16,
+        c=np.arange(len(xs)),
+        cmap="cividis",
+        linewidths=0.1,
+        edgecolors="white",
+        zorder=2,
+    )
+
+    # NOTE: Plenty of tracks have the same genre coordinates, so they get stacked.
+
+    ax.set_xlabel("top")
+    ax.set_ylabel("left")
+
+    fig.tight_layout()
+
+    return fig, ax
+
+
 PLAYLIST_ID = "5AndDQTKOCzIuGM4fJhXnT"
 
 user = User()
@@ -17,29 +46,6 @@ coordinate_pairs = np.array([get_track_genre_attributes(track) for track in trac
 xs = coordinate_pairs[:, 0]
 ys = coordinate_pairs[:, 1]
 
-fig, ax = plt.subplots()
-
-fig.set_facecolor("grey")
-ax.set_facecolor("lightgrey")
-
-ax.plot(xs, ys, "w", alpha=0.2, linewidth=0.5, zorder=1)
-
-ax.scatter(
-    xs,
-    ys,
-    s=16,
-    c=np.arange(len(xs)),
-    cmap="cividis",
-    linewidths=0.1,
-    edgecolors="white",
-    zorder=2,
-)
-
-# NOTE: Plenty of tracks have the same genre coordinates, so they get stacked.
-
-ax.set_xlabel("top")
-ax.set_ylabel("left")
-
-fig.tight_layout()
+fig, ax = plot(xs, ys)
 
 fig.show()
