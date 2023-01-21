@@ -166,6 +166,11 @@ _playlists = [
         ],
     ),
     Playlist(
+        "trip hop",
+        track_filters=[filter_by_genre_pattern(pattern := ".*trip.*")],
+        description=f"genre matches '{pattern}'",
+    ),
+    Playlist(
         "tropical",
         track_filters=[
             filter_by_genre_pattern(pattern := ".*(brazil|latin|mpb|reggae).*")
