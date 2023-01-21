@@ -58,7 +58,8 @@ def get_album_tracks(album: Album | AlbumID) -> tuple[Track, ...]:
 
 
 def get_tracks_from_albums(albums: list[Album | AlbumID]) -> tuple[Track, ...]:
-    with ThreadPoolExecutor() as executor:
+    max_workers = 4  # (temp fix) Limit workers to avoid 429s.
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
         return sum(executor.map(get_album_tracks, albums), start=())
 
 
