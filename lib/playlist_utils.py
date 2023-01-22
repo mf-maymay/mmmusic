@@ -78,11 +78,7 @@ def clear_playlist(playlist_id, *, user: User):
     tracks = get_tracks_from_playlist(playlist_id, user=user)
 
     # clear playlist
-    for subset in take_x_at_a_time(tracks, 100):
-        to_remove = [track.id for track in subset]
-        no_timeout(user.sp.user_playlist_remove_all_occurrences_of_tracks)(
-            user.username, playlist_id, to_remove
-        )
+    remove_tracks_from_playlist(playlist_id, tracks=tracks, user=user)
 
 
 def get_tracks_from_playlist(playlist_id, *, user: User):
