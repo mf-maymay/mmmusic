@@ -65,6 +65,26 @@ def filter_by_release_year(start_year, end_year):
     return filter_by_album_attribute(release_date_filter)
 
 
+# Playlist management
+def add_tracks_to_playlist(playlist_id, *, tracks, user: User):
+    tracks = [track if isinstance(track, str) else track.id for track in tracks]
+
+    for to_add in take_x_at_a_time(tracks, 100):
+        user.sp.user_playlist_add_tracks(user.username, playlist_id, to_add)
+
+
+def clear_playlist(playlist_id, *, user: User):
+    # get tracks
+    tracks = get_tracks_from_playlist(playlist_id, user=user)
+
+    # clear playlist
+    for subset in take_x_at_a_time(tracks, 100):
+        to_remove = [track.id for track in subset]
+        no_timeout(user.sp.user_playlist_remove_all_occurrences_of_tracks)(
+            user.username, playlist_id, to_remove
+        )
+
+
 def get_tracks_from_playlist(playlist_id, *, user: User):
     tracks = []
 
@@ -77,14 +97,11 @@ def get_tracks_from_playlist(playlist_id, *, user: User):
     return tracks
 
 
-def clear_playlist(playlist_id, *, user: User):
-    # get tracks
-    tracks = get_tracks_from_playlist(playlist_id, user=user)
+def remove_tracks_from_playlist(playlist_id, *, tracks, user: User):
+    tracks = [track if isinstance(track, str) else track.id for track in tracks]
 
-    # clear playlist
-    for subset in take_x_at_a_time(tracks, 100):
-        to_remove = [track.id for track in subset]
-        no_timeout(user.sp.user_playlist_remove_all_occurrences_of_tracks)(
+    for to_remove in take_x_at_a_time(tracks, 100):
+        user.sp.user_playlist_remove_all_occurrences_of_tracks(
             user.username, playlist_id, to_remove
         )
 
@@ -107,19 +124,3 @@ def shuffle_playlist(playlist_id, *, user: User):
     for subset in take_x_at_a_time(shuffled, 100):
         to_add = [track.id for track in subset]
         no_timeout(user.sp.user_playlist_add_tracks)(user.username, playlist_id, to_add)
-
-
-def add_tracks_to_playlist(playlist_id, *, tracks, user: User):
-    tracks = [track if isinstance(track, str) else track.id for track in tracks]
-
-    for to_add in take_x_at_a_time(tracks, 100):
-        user.sp.user_playlist_add_tracks(user.username, playlist_id, to_add)
-
-
-def remove_tracks_from_playlist(playlist_id, *, tracks, user: User):
-    tracks = [track if isinstance(track, str) else track.id for track in tracks]
-
-    for to_remove in take_x_at_a_time(tracks, 100):
-        user.sp.user_playlist_remove_all_occurrences_of_tracks(
-            user.username, playlist_id, to_remove
-        )
