@@ -106,13 +106,13 @@ def shuffle_playlist(playlist_id, *, user: User):
     # get tracks
     tracks = get_tracks_from_playlist(playlist_id, user=user)
 
-    # clear playlist
-    clear_playlist(playlist_id, user=user)
-
     # shuffle tracks
     shuffled = smart_shuffle(tracks)
 
-    # write back to playlist
+    # clear playlist
+    clear_playlist(playlist_id, user=user)
+
+    # write shuffled tracks to playlist
     for subset in take_x_at_a_time(shuffled, 100):
         to_add = [track.id for track in subset]
         no_timeout(user.sp.user_playlist_add_tracks)(user.username, playlist_id, to_add)
