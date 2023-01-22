@@ -74,10 +74,8 @@ def add_tracks_to_playlist(playlist_id, *, tracks, user: User):
 
 
 def clear_playlist(playlist_id, *, user: User):
-    # get tracks
     tracks = get_tracks_from_playlist(playlist_id, user=user)
 
-    # clear playlist
     remove_tracks_from_playlist(playlist_id, tracks=tracks, user=user)
 
 
@@ -102,15 +100,15 @@ def remove_tracks_from_playlist(playlist_id, *, tracks, user: User):
         )
 
 
-def shuffle_playlist(playlist_id, *, user: User):
-    # get tracks
-    tracks = get_tracks_from_playlist(playlist_id, user=user)
-
-    # shuffle tracks
-    shuffled = smart_shuffle(tracks)
-
-    # clear playlist
+def replace_playlist(playlist_id, *, new_tracks, user: User):
     clear_playlist(playlist_id, user=user)
 
-    # write shuffled tracks to playlist
-    add_tracks_to_playlist(playlist_id, tracks=shuffled, user=user)
+    add_tracks_to_playlist(playlist_id, tracks=new_tracks, user=user)
+
+
+def shuffle_playlist(playlist_id, *, user: User):
+    tracks = get_tracks_from_playlist(playlist_id, user=user)
+
+    shuffled = smart_shuffle(tracks)
+
+    replace_playlist(playlist_id, new_tracks=shuffled, user=user)
