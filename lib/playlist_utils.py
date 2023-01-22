@@ -70,7 +70,7 @@ def add_tracks_to_playlist(playlist_id, *, tracks, user: User):
     tracks = [track if isinstance(track, str) else track.id for track in tracks]
 
     for to_add in take_x_at_a_time(tracks, 100):
-        user.sp.user_playlist_add_tracks(user.username, playlist_id, to_add)
+        no_timeout(user.sp.user_playlist_add_tracks)(user.username, playlist_id, to_add)
 
 
 def clear_playlist(playlist_id, *, user: User):
@@ -101,7 +101,7 @@ def remove_tracks_from_playlist(playlist_id, *, tracks, user: User):
     tracks = [track if isinstance(track, str) else track.id for track in tracks]
 
     for to_remove in take_x_at_a_time(tracks, 100):
-        user.sp.user_playlist_remove_all_occurrences_of_tracks(
+        no_timeout(user.sp.user_playlist_remove_all_occurrences_of_tracks)(
             user.username, playlist_id, to_remove
         )
 
