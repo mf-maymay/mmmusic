@@ -30,11 +30,11 @@ user = User()
 
 # Get playlist tracks
 with note_when_done("Getting tracks..."):
-    candidates = set(get_tracks_from_playlist(CANDIDATES_ID)(user))
+    candidates = set(get_tracks_from_playlist(CANDIDATES_ID, user=user))
 
-    q_all_tracks = set(get_tracks_from_playlist(Q_ALL_ID)(user))
+    q_all_tracks = set(get_tracks_from_playlist(Q_ALL_ID, user=user))
 
-    rejects = set(get_tracks_from_playlist(REJECTS_ID)(user))
+    rejects = set(get_tracks_from_playlist(REJECTS_ID, user=user))
 
     user_tracks = set(user.all_tracks())
 

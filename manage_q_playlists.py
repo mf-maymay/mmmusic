@@ -37,7 +37,7 @@ Q_PATTERNS = [
 # Identify playlists for tracks
 def separate_dump_tracks_to_q_playlists(user):
     print("Identifying 'dump' tracks")
-    dump_tracks = get_tracks_from_playlist(CANDIDATES_ID)(user)  # XXX
+    dump_tracks = get_tracks_from_playlist(CANDIDATES_ID, user=user)
 
     print(f"Found {len(dump_tracks)} tracks in 'dump' playlist")
 
@@ -81,7 +81,7 @@ def separate_dump_tracks_to_q_playlists(user):
 
     # Add tracks to playlists
     for q, q_id in Q_IDS.items():
-        playlist_tracks = set(get_tracks_from_playlist(q_id)(user))
+        playlist_tracks = set(get_tracks_from_playlist(q_id, user=user))
 
         tracks_to_add = (
             set(dump_frame.loc[dump_frame["playlist"] == q, "id"].values)
@@ -101,7 +101,7 @@ def prepare_q_playlists(user):
     user_tracks = set(user.all_tracks())
 
     for q, q_id in Q_IDS.items():
-        playlist_tracks = set(get_tracks_from_playlist(q_id)(user))
+        playlist_tracks = set(get_tracks_from_playlist(q_id, user=user))
 
         already_saved = {track.id for track in playlist_tracks & user_tracks}
 

@@ -39,7 +39,7 @@ PLAYLIST_ID = "5AndDQTKOCzIuGM4fJhXnT"
 
 user = User()
 
-tracks = get_tracks_from_playlist(PLAYLIST_ID)(user)
+tracks = get_tracks_from_playlist(PLAYLIST_ID, user=user)
 
 coordinate_pairs = np.array([get_track_genre_attributes(track) for track in tracks])
 
