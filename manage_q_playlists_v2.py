@@ -19,7 +19,10 @@ def note_when_done(message: str):
     total_secs = (dt.now() - start).total_seconds()
     total_mins, secs = divmod(int(total_secs), 60)
     hours, mins = divmod(total_mins, 60)
-    print(f" Done. (Took {hours}h {mins}m {secs}s.)")
+    print(
+        f" \x1b[1;32;20mDone.\033[0m"
+        f" (\x1b[33;20mTook {hours}h {mins}m {secs}s.\033[0m)"
+    )
 
 
 CANDIDATES_ID = "5AZxg3qZIC7cGnxWa7EuSd"
