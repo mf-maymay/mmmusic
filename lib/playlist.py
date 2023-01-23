@@ -29,7 +29,7 @@ class Playlist:
         self.track_filters = tuple(track_filters)
         self.order_tracks_func = order_tracks_func
 
-        self.tracks = []
+        self.tracks = None
 
     def get_tracks(self, user):
         self.tracks = self.track_source(user)
@@ -38,8 +38,8 @@ class Playlist:
             self.tracks = track_filter(self.tracks)
 
     def order_tracks(self):
-        if not self.tracks:
-            raise ValueError("No tracks to order")
+        if self.tracks is None:
+            raise ValueError("tracks not set")
 
         self.tracks = self.order_tracks_func(self.tracks)
 
