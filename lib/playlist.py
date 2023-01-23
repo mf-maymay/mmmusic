@@ -1,4 +1,4 @@
-from lib.playlist_management import create_playlist
+from lib.playlist_management import add_tracks_to_playlist, create_playlist
 from lib.shuffling import smart_shuffle
 from lib.user import User
 from lib.utils import no_timeout, take_x_at_a_time
@@ -43,14 +43,4 @@ class Playlist:
             name=self.name, description=self.description, user=user
         )
 
-        if len(self.tracks) > MAX_TRACKS:
-            print(
-                "Playlist has {:,} tracks. Only adding first {:,} ...".format(
-                    len(self.tracks), MAX_TRACKS
-                )
-            )
-
-        for to_add in take_x_at_a_time(
-            [track.id for track in self.tracks[:MAX_TRACKS]], 100
-        ):
-            user.sp.user_playlist_add_tracks(user.username, playlist_id, to_add)
+        add_tracks_to_playlist(playlist_id, tracks=self.tracks, user=user)
