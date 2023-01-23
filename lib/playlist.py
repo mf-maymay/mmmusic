@@ -50,5 +50,5 @@ class Playlist:
 
         add_tracks_to_playlist(self.id, tracks=self.tracks, user=user)
 
-    def replace(self, user):
+    def recreate(self, user):
         replace_playlist(self.id, new_tracks=self.tracks, user=user)
