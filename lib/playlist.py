@@ -11,11 +11,14 @@ class Playlist:
         self,
         name,
         *,
+        playlist_id=None,
         description="",
         track_source=User.all_tracks,
         track_filters=(),
         order_tracks_func=smart_shuffle,
     ):
+        self.id = playlist_id
+
         self.name = name
         self.description = description
 
@@ -23,7 +26,7 @@ class Playlist:
         self.track_filters = tuple(track_filters)
         self.order_tracks_func = order_tracks_func
 
-        self.tracks = []  # XXX
+        self.tracks = []
 
     def get_tracks(self, user):
         self.tracks = self.track_source(user)
