@@ -1,7 +1,6 @@
 from lib.playlist_management import add_tracks_to_playlist, create_playlist
 from lib.shuffling import smart_shuffle
 from lib.user import User
-from lib.utils import no_timeout, take_x_at_a_time
 
 MAX_TRACKS = 11_000
 
@@ -40,7 +39,6 @@ class Playlist:
 
         self.tracks = self.order_tracks_func(self.tracks)
 
-    @no_timeout  # TODO: wrap sp calls, instead
     def create(self, user):
         playlist_id = create_playlist(
             name=self.name, description=self.description, user=user
