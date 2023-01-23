@@ -79,6 +79,14 @@ def clear_playlist(playlist_id, *, user: User):
     remove_tracks_from_playlist(playlist_id, tracks=tracks, user=user)
 
 
+def create_playlist(*, public=False, name, description, user: User) -> str:
+    response = no_timeout(user.sp.user_playlist_create)(
+        user.username, name, public=public, description=description
+    )
+
+    return response["id"]
+
+
 def get_tracks_from_playlist(playlist_id, *, user: User):
     tracks = []
 

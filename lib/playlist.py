@@ -1,3 +1,4 @@
+from lib.playlist_utils import create_playlist
 from lib.shuffling import smart_shuffle
 from lib.user import User
 from lib.utils import no_timeout, take_x_at_a_time
@@ -38,8 +39,8 @@ class Playlist:
 
     @no_timeout  # TODO: wrap sp calls, instead
     def create(self, user):
-        response = user.sp.user_playlist_create(
-            user.username, self.name, public=False, description=self.description
+        playlist_id = create_playlist(
+            name=self.name, description=self.description, user=user
         )
 
         if len(self.tracks) > MAX_TRACKS:
@@ -52,4 +53,4 @@ class Playlist:
         for to_add in take_x_at_a_time(
             [track.id for track in self.tracks[:MAX_TRACKS]], 100
         ):
-            user.sp.user_playlist_add_tracks(user.username, response["id"], to_add)
+            user.sp.user_playlist_add_tracks(user.username, playlist_id, to_add)
