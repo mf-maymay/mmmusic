@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from datetime import datetime as dt
 
+from lib.playlist import Playlist
 from lib.playlist_management import (
     add_tracks_to_playlist,
     clear_playlist,
@@ -8,6 +9,7 @@ from lib.playlist_management import (
     remove_tracks_from_playlist,
     shuffle_playlist,
 )
+from lib.playlist_utils import filter_by_genre_pattern
 from lib.user import User
 
 
@@ -28,6 +30,20 @@ def note_when_done(message: str):
 CANDIDATES_ID = "5AZxg3qZIC7cGnxWa7EuSd"
 Q_ALL_ID = "4Mr3AVGL2jGI4Jc2qr3PLf"
 REJECTS_ID = "2Cm0uu5nAGb1ISfXPluvks"
+
+Q_PLAYLISTS = {
+    "q - harder": {
+        "id": "5mRa71QUmE6EWavxTA22g6",
+        "pattern": ".*(core|doom|metal|punk).*",
+    },
+    "q - hop": {"id": "0sFhYQaTiuZlG1vMDSiFMR", "pattern": ".*hop.*"},
+    "q - jazz": {"id": "4HQnus8hcLfX5pYtG95pKY", "pattern": ".*jazz.*"},
+    "q - misc": {
+        "id": "7DOqATuWsl640ustK8lhhI",
+        "pattern": "^(?!.*?(core|doom|hop|jazz|metal|punk|rock)).*",
+    },
+    "q - rock": {"id": "1tlzpLpRdQXUicLbhIJMcM", "pattern": ".*rock.*"},
+}
 
 user = User()
 
@@ -74,3 +90,17 @@ q_all_tracks -= already_saved_to_remove
 # Shuffle 'q - all'
 with note_when_done("Shuffing 'q - all'..."):
     shuffle_playlist(Q_ALL_ID, user=user)
+
+# Recreate Q playlists
+for playlist_name, details in Q_PLAYLISTS.items():
+    with note_when_done(f"Recreating '{playlist_name}'..."):
+        playlist = Playlist(
+            playlist_name,
+            playlist_id=details["id"],
+            track_filters=[filter_by_genre_pattern(pattern := details["pattern"])],
+            track_source=lambda user: q_all_tracks,
+        )
+
+        playlist.get_tracks(user)
+        playlist.order_tracks()
+        playlist.recreate(user)
