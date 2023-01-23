@@ -4,7 +4,7 @@ import pandas as pd
 
 from lib.models.album import get_album
 from lib.models.artist import get_artist
-from lib.playlist_utils import (
+from lib.playlist_management import (
     clear_playlist,
     get_tracks_from_playlist,
     shuffle_playlist,

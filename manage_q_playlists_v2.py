@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from datetime import datetime as dt
 
-from lib.playlist_utils import (
+from lib.playlist_management import (
     add_tracks_to_playlist,
     clear_playlist,
     get_tracks_from_playlist,
