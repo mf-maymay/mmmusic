@@ -1,4 +1,8 @@
-from lib.playlist_management import add_tracks_to_playlist, create_playlist
+from lib.playlist_management import (
+    add_tracks_to_playlist,
+    create_playlist,
+    replace_playlist,
+)
 from lib.shuffling import smart_shuffle
 from lib.user import User
 
@@ -40,8 +44,11 @@ class Playlist:
         self.tracks = self.order_tracks_func(self.tracks)
 
     def create(self, user):
-        playlist_id = create_playlist(
+        self.id = create_playlist(
             name=self.name, description=self.description, user=user
         )
 
-        add_tracks_to_playlist(playlist_id, tracks=self.tracks, user=user)
+        add_tracks_to_playlist(self.id, tracks=self.tracks, user=user)
+
+    def replace(self, user):
+        replace_playlist(self.id, new_tracks=self.tracks, user=user)
