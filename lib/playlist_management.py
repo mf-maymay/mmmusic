@@ -3,11 +3,18 @@ from lib.shuffling import smart_shuffle
 from lib.user import User
 from lib.utils import no_timeout, take_x_at_a_time
 
+MAX_TRACKS = 11_000
+
 
 def add_tracks_to_playlist(playlist_id, *, tracks, user: User):
     tracks = [track if isinstance(track, str) else track.id for track in tracks]
 
-    for to_add in take_x_at_a_time(tracks, 100):
+    if len(tracks) > MAX_TRACKS:
+        print(
+            f"Playlist has {len(tracks):,} tracks. Only adding first {MAX_TRACKS:,} ..."
+        )
+
+    for to_add in take_x_at_a_time(tracks[:MAX_TRACKS], 100):
         no_timeout(user.sp.user_playlist_add_tracks)(user.username, playlist_id, to_add)
 
 
