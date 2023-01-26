@@ -35,20 +35,21 @@ def get_artist_albums(artist: str) -> list[SputnikAlbum]:
         {
             "name": element.text,
             "artist": artist,
-            "rating": float(text)
+            "rating": float(rating_element.text)
             if (
-                text := element.parent.parent.parent.find("table")
-                .find("b", text=valid_rating)
-                .text
+                rating_element := element.parent.parent.parent.find("table").find(
+                    "b", text=valid_rating
+                )
             )
             is not None
             else None,
-            "votes": int(
-                element.parent.parent.parent.find("table")
-                .find("font", text=valid_vote)
-                .text.partition(" Votes")[0]
-                .replace(",", "")
-            ),
+            "votes": int(votes_element.text.partition(" Votes")[0].replace(",", ""))
+            if (
+                votes_element := element.parent.parent.parent.find("table").find(
+                    "font", text=valid_vote
+                )
+            )
+            else None,
         }
         for element in album_name_elements
     ]
