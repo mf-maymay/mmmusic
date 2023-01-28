@@ -1,10 +1,10 @@
-from lib.playlist import Playlist
-from lib.playlist_utils import (
+from lib.filter import (
     filter_by_artist_attribute,
     filter_by_genre_pattern,
     filter_by_release_year,
     filter_by_track_attribute,
 )
+from lib.playlist import Playlist
 from lib.user import User
 
 _playlists = [

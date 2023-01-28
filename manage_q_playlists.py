@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from datetime import datetime as dt
 
+from lib.filter import filter_by_genre_pattern
 from lib.playlist import Playlist
 from lib.playlist_management import (
     add_tracks_to_playlist,
@@ -9,7 +10,6 @@ from lib.playlist_management import (
     remove_tracks_from_playlist,
     shuffle_playlist,
 )
-from lib.playlist_utils import filter_by_genre_pattern
 from lib.user import User
 
 
