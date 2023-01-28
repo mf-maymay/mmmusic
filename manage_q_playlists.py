@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from datetime import datetime as dt
 
-from lib.filter import filter_by_genre_pattern
+from lib.filter import by_genre_pattern
 from lib.playlist import Playlist
 from lib.playlist_management import (
     add_tracks_to_playlist,
@@ -97,7 +97,7 @@ for playlist_name, details in Q_PLAYLISTS.items():
         playlist = Playlist(
             playlist_name,
             playlist_id=details["id"],
-            track_filters=[filter_by_genre_pattern(pattern := details["pattern"])],
+            track_filters=[by_genre_pattern(pattern := details["pattern"])],
             track_source=lambda user: q_all_tracks,
         )
 

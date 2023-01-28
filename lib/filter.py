@@ -3,7 +3,7 @@ from lib.models.album import get_album
 from lib.models.artist import get_artist
 
 
-def filter_by_album_attribute(album_filter_func):
+def by_album_attribute(album_filter_func):
     def filter_tracks(tracks):
         return [
             track for track in tracks if album_filter_func(get_album(track.album_id))
@@ -12,7 +12,7 @@ def filter_by_album_attribute(album_filter_func):
     return filter_tracks
 
 
-def filter_by_artist_attribute(artist_filter_func):
+def by_artist_attribute(artist_filter_func):
     def filter_tracks(tracks):
         return [
             track
@@ -26,7 +26,7 @@ def filter_by_artist_attribute(artist_filter_func):
     return filter_tracks
 
 
-def filter_by_genre_pattern(pattern):
+def by_genre_pattern(pattern):
     def filter_tracks(tracks):
         return [
             track
@@ -39,14 +39,14 @@ def filter_by_genre_pattern(pattern):
     return filter_tracks
 
 
-def filter_by_track_attribute(track_filter_func):
+def by_track_attribute(track_filter_func):
     def filter_tracks(tracks):
         return [track for track in tracks if track_filter_func(track)]
 
     return filter_tracks
 
 
-def filter_by_release_year(start_year, end_year):
+def by_release_year(start_year, end_year):
     if start_year is None:
         start_year = float("-inf")
 
@@ -58,4 +58,4 @@ def filter_by_release_year(start_year, end_year):
             start_year <= album.release_date.year <= end_year
         )
 
-    return filter_by_album_attribute(release_date_filter)
+    return by_album_attribute(release_date_filter)
