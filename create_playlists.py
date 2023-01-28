@@ -1,4 +1,4 @@
-from lib.filter import (
+from lib.filters import (
     by_artist_attribute,
     by_genre_pattern,
     by_release_year,
