@@ -16,8 +16,6 @@ SeedPicker = Callable[[Items, Optional[Item]], Tuple[Item, Item]]
 Tracks = list[Track]
 
 
-MAX_SMOOTH_CYCLES = 30
-
 METRICS = (
     "danceability",
     "energy",
@@ -238,89 +236,7 @@ def _smart_seed_picker(tracks: Tracks) -> SeedPicker:
     return picker
 
 
-def _swap_to_smooth(
-    track_0: Track, track_1: Track, track_2: Track, *, values: dict[Track, Metrics]
-) -> bool:
-    # if 0 and 1 share artists and 0 and 2 do not, swap
-    # if vice versa, keep
-    artists_0 = set(track_0.artist_ids)
-    artists_1 = set(track_1.artist_ids)
-    artists_2 = set(track_2.artist_ids)
-
-    swap_for_artists = (artists_0 & artists_1) and not (artists_0 & artists_2)
-
-    keep_for_artists = (artists_0 & artists_2) and not (artists_0 & artists_1)
-
-    if swap_for_artists:
-        return True
-    if keep_for_artists:
-        return False
-    # if key of 1 is inappropriate for 0 and the key of 2 is appropriate, swap
-    # if vice versa, keep
-    good_keys = (
-        track_0["key"]
-        + (
-            np.array([0, 2, 4, 5, 7, 9, 11])
-            if track_0["mode"]
-            else np.array([0, 2, 3, 5, 7, 8, 10])
-        )
-        % 12
-    )
-    good_modes = (1, 0, 0, 1, 1, 0, 0) if track_0["mode"] else (0, 0, 1, 0, 0, 1, 1)
-
-    swap_for_key = (track_1["key"], track_1["mode"]) not in zip(
-        good_keys, good_modes
-    ) and (track_2["key"], track_2["mode"],) in zip(good_keys, good_modes)
-
-    keep_for_key = (track_2["key"], track_2["mode"]) not in zip(
-        good_keys, good_modes
-    ) and (track_1["key"], track_1["mode"],) in zip(good_keys, good_modes)
-
-    if swap_for_key:
-        return True
-    if keep_for_key:
-        return False
-    # if 0 and 2 are more similar than 0 and 1
-    cos_0_1 = similarity(values[track_0], values[track_1])
-    cos_0_2 = similarity(values[track_0], values[track_2])
-
-    return cos_0_2 > cos_0_1
-
-
-def smooth_playlist(tracks: Tracks) -> Tracks:
-    tracks = list(tracks)
-
-    if len(tracks) <= 2:
-        return tracks
-    cycle_len = len(tracks)
-    swap_count = 0
-    last_swap = 0
-
-    scores_for_swaps = _scores(tracks, _story_metrics)
-
-    for i in range(MAX_SMOOTH_CYCLES * cycle_len - 2):
-        if _swap_to_smooth(
-            tracks[i % cycle_len],
-            tracks[(i + 1) % cycle_len],
-            tracks[(i + 2) % cycle_len],
-            values=scores_for_swaps,
-        ):
-            tracks[(i + 1) % cycle_len], tracks[(i + 2) % cycle_len] = (
-                tracks[(i + 2) % cycle_len],
-                tracks[(i + 1) % cycle_len],
-            )
-            last_swap = i
-            swap_count += 1
-        elif i - last_swap > cycle_len:
-            break
-    print(f"smoothed after {i // cycle_len} cycles and {swap_count} swaps")
-
-    return tracks
-
-
-def smart_shuffle(tracks: Tracks, mode: str = "radio", smooth: Optional[bool] = None):
-    # smooth defaults to True except for radio mode
-
+def smart_shuffle(tracks: Tracks, mode: str = "radio"):
     tracks = list(tracks)
 
     seed_picker = None
@@ -330,19 +246,14 @@ def smart_shuffle(tracks: Tracks, mode: str = "radio", smooth: Optional[bool] = 
     elif mode == "radio":
         picker = _radio_picker(tracks)
         seed_picker = _smart_seed_picker(tracks)
-        if smooth is None:
-            smooth = False  # Don't smooth by default for radio mode
     elif mode == "smart":
         picker = _smart_picker(tracks)
     elif mode == "story":
         picker = _story_picker(tracks)
     else:
         raise ValueError("Invalid mode")
-    if smooth is None:
-        smooth = True
-    ordered = quick_pick(tracks, picker, seed_picker=seed_picker)
 
-    return smooth_playlist(ordered) if smooth else ordered
+    return quick_pick(tracks, picker, seed_picker=seed_picker)
 
 
 if __name__ == "__main__":
