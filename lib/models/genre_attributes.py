@@ -6,7 +6,7 @@ from typing import Iterable
 
 import numpy as np
 
-_genre_positions_file_path = Path(__file__).parent / "genre_positions.json"
+_genre_positions_file_path = Path(__file__).parent / "data/genre_positions.json"
 
 GenreAttributes = namedtuple("GenreAttributes", ["top", "left"])
 
