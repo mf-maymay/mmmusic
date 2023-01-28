@@ -1,123 +1,106 @@
-import re
+from contextlib import contextmanager
+from datetime import datetime as dt
 
-import pandas as pd
-
-from lib.models.album import get_album
-from lib.models.artist import get_artist
+from lib.playlist import Playlist
 from lib.playlist_management import (
+    add_tracks_to_playlist,
     clear_playlist,
     get_tracks_from_playlist,
+    remove_tracks_from_playlist,
     shuffle_playlist,
 )
+from lib.playlist_utils import filter_by_genre_pattern
 from lib.user import User
-from lib.utils import take_x_at_a_time
+
+
+@contextmanager
+def note_when_done(message: str):
+    print(message, end="", flush=True)
+    start = dt.now()
+    yield
+    total_secs = (dt.now() - start).total_seconds()
+    total_mins, secs = divmod(int(total_secs), 60)
+    hours, mins = divmod(total_mins, 60)
+    print(
+        f" \x1b[1;32;20mDone.\033[0m"
+        f" (\x1b[33;20mTook {hours}h {mins}m {secs}s.\033[0m)"
+    )
+
 
 CANDIDATES_ID = "5AZxg3qZIC7cGnxWa7EuSd"
-
 Q_ALL_ID = "4Mr3AVGL2jGI4Jc2qr3PLf"
-
 REJECTS_ID = "2Cm0uu5nAGb1ISfXPluvks"
 
-Q_IDS = {
-    "q - harder": "5mRa71QUmE6EWavxTA22g6",
-    "q - hop": "0sFhYQaTiuZlG1vMDSiFMR",
-    "q - jazz": "4HQnus8hcLfX5pYtG95pKY",
-    "q - misc": "7DOqATuWsl640ustK8lhhI",
-    "q - rock": "1tlzpLpRdQXUicLbhIJMcM",
+Q_PLAYLISTS = {
+    "q - harder": {
+        "id": "5mRa71QUmE6EWavxTA22g6",
+        "pattern": ".*(core|doom|metal|punk).*",
+    },
+    "q - hop": {"id": "0sFhYQaTiuZlG1vMDSiFMR", "pattern": ".*hop.*"},
+    "q - jazz": {"id": "4HQnus8hcLfX5pYtG95pKY", "pattern": ".*jazz.*"},
+    "q - misc": {
+        "id": "7DOqATuWsl640ustK8lhhI",
+        "pattern": "^(?!.*?(core|doom|hop|jazz|metal|punk|rock)).*",
+    },
+    "q - rock": {"id": "1tlzpLpRdQXUicLbhIJMcM", "pattern": ".*rock.*"},
 }
 
-Q_PATTERNS = [
-    ("q - hop", ".*hop.*"),
-    ("q - harder", ".*(core|doom|metal|punk).*"),
-    ("q - jazz", ".*jazz.*"),
-    ("q - rock", ".*rock.*"),
-]
+user = User()
 
+# Get playlist tracks
+with note_when_done("Getting tracks..."):
+    candidates = set(get_tracks_from_playlist(CANDIDATES_ID, user=user))
 
-# Identify playlists for tracks
-def separate_dump_tracks_to_q_playlists(user):
-    print("Identifying 'dump' tracks")
-    dump_tracks = get_tracks_from_playlist(CANDIDATES_ID, user=user)
+    q_all_tracks = set(get_tracks_from_playlist(Q_ALL_ID, user=user))
 
-    print(f"Found {len(dump_tracks)} tracks in 'dump' playlist")
+    rejects = set(get_tracks_from_playlist(REJECTS_ID, user=user))
 
-    if not dump_tracks:
-        return
-
-    print("Mapping tracks to 'q' playlists")
-
-    dump_frame = pd.DataFrame()
-    dump_frame["track"] = dump_tracks
-    dump_frame["id"] = [track.id for track in dump_frame["track"]]
-    dump_frame["album"] = [get_album(track.album_id) for track in dump_frame["track"]]
-    dump_frame["genres"] = [
-        tuple(
-            sorted(
-                {
-                    genre
-                    for artist_id in album.artist_ids
-                    for genre in get_artist(artist_id).genres
-                }
-            )
-        )
-        for album in dump_frame["album"]
-    ]
-    dump_frame["playlist"] = None
-
-    for q, pattern in Q_PATTERNS:
-        print(f"Identifying '{q}' tracks")
-        compiled = re.compile(pattern)
-        dump_frame["playlist"] = [
-            playlist
-            if pd.notna(playlist)
-            else q
-            if any(map(compiled.fullmatch, genres))
-            else None
-            for playlist, genres in zip(dump_frame["playlist"], dump_frame["genres"])
-        ]
-
-    print("Identifying 'q - misc' tracks")
-    dump_frame.loc[dump_frame["playlist"].isna(), "playlist"] = "q - misc"
-
-    # Add tracks to playlists
-    for q, q_id in Q_IDS.items():
-        playlist_tracks = set(get_tracks_from_playlist(q_id, user=user))
-
-        tracks_to_add = (
-            set(dump_frame.loc[dump_frame["playlist"] == q, "id"].values)
-            - playlist_tracks
-        )
-
-        print(f"Adding {len(tracks_to_add)} tracks to '{q}'")
-        for to_add in take_x_at_a_time(tracks_to_add, 100):
-            user.sp.user_playlist_add_tracks(user.username, q_id, to_add)
-
-    # Clear dump
-    print("Clearing dump")
-    clear_playlist(CANDIDATES_ID, user=user)
-
-
-def prepare_q_playlists(user):
     user_tracks = set(user.all_tracks())
 
-    for q, q_id in Q_IDS.items():
-        playlist_tracks = set(get_tracks_from_playlist(q_id, user=user))
+# Add candidates to 'q - all'
+candidates_to_add = candidates - q_all_tracks
 
-        already_saved = {track.id for track in playlist_tracks & user_tracks}
+with note_when_done(f"Adding {len(candidates_to_add):,} candidates..."):
+    add_tracks_to_playlist(Q_ALL_ID, tracks=candidates_to_add, user=user)
 
-        print(f"Removing {len(already_saved)} saved tracks from '{q}'")
-        for to_remove in take_x_at_a_time(already_saved, 100):
-            user.sp.user_playlist_remove_all_occurrences_of_tracks(
-                user.username, q_id, to_remove
-            )
+q_all_tracks |= candidates_to_add
 
-        print(f"Shuffling '{q}'")
-        shuffle_playlist(q_id, user=user)
+clear_playlist(CANDIDATES_ID, user=user)
 
+# Remove rejects from 'q - all'
+rejects_to_remove = rejects & q_all_tracks
 
-if __name__ == "__main__":
-    user = User()
+with note_when_done(f"Removing {len(rejects_to_remove):,} rejects..."):
+    remove_tracks_from_playlist(Q_ALL_ID, tracks=rejects_to_remove, user=user)
 
-    separate_dump_tracks_to_q_playlists(user)
+q_all_tracks -= rejects_to_remove
 
-    prepare_q_playlists(user)
+clear_playlist(REJECTS_ID, user=user)
+
+# Remove already-saved from 'q - all'
+already_saved_to_remove = q_all_tracks & user_tracks
+
+with note_when_done(
+    f"Removing {len(already_saved_to_remove):,} already-saved tracks..."
+):
+    remove_tracks_from_playlist(Q_ALL_ID, tracks=already_saved_to_remove, user=user)
+
+q_all_tracks -= already_saved_to_remove
+
+# Shuffle 'q - all'
+with note_when_done("Shuffing 'q - all'..."):
+    shuffle_playlist(Q_ALL_ID, user=user)
+
+# Recreate Q playlists
+for playlist_name, details in Q_PLAYLISTS.items():
+    with note_when_done(f"Recreating '{playlist_name}'..."):
+        playlist = Playlist(
+            playlist_name,
+            playlist_id=details["id"],
+            track_filters=[filter_by_genre_pattern(pattern := details["pattern"])],
+            track_source=lambda user: q_all_tracks,
+        )
+
+        playlist.get_tracks(user)
+        playlist.order_tracks()
+        playlist.recreate(user)
