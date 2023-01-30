@@ -25,7 +25,8 @@ def similarity(u: Metrics, v: Metrics) -> float:
 
 
 def get_metrics_for_track(track: Track) -> Metrics:
-    return [track[metric] for metric in METRICS] + [
+    return [
+        *(track[metric] for metric in METRICS),
         int(get_album(track.album_id).release_date.year),
         *get_track_genre_attributes(track),
     ]
