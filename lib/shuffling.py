@@ -4,7 +4,7 @@ from typing import Any, Callable, Optional, Tuple
 import numpy as np
 from scipy.stats import percentileofscore
 
-from lib.metrics import Metrics, get_metrics_for_track, similarity
+from lib.features import Metrics, get_metrics_for_track, similarity
 from lib.models.track import Track, get_track
 
 Item = Any
