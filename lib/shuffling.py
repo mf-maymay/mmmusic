@@ -98,7 +98,7 @@ def _scores(
     return dict(zip(items, scores))
 
 
-def _story_metrics(track: Track) -> Metrics:
+def get_metrics_for_track(track: Track) -> Metrics:
     return [track[metric] for metric in METRICS] + [
         int(get_album(track.album_id).release_date.year),
         *get_track_genre_attributes(track),
@@ -106,7 +106,7 @@ def _story_metrics(track: Track) -> Metrics:
 
 
 def _story_picker(tracks: Tracks) -> ItemPicker:
-    values = _scores(tracks, _story_metrics)
+    values = _scores(tracks, get_metrics_for_track)
 
     def picker(left: Tracks, right: Tracks, to_add: Track, items: Tracks) -> bool:
         # maximize polarity
@@ -152,7 +152,7 @@ def _radio_picker(tracks: Tracks) -> ItemPicker:
 
 
 def _smart_seed_picker(tracks: Tracks) -> SeedPicker:
-    values = _scores(tracks, _story_metrics)
+    values = _scores(tracks, get_metrics_for_track)
 
     def picker(items: Tracks, left_neighbor: Optional[Track]) -> Tuple[Track, Track]:
         if left_neighbor is None:
