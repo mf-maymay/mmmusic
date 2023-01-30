@@ -4,36 +4,16 @@ from typing import Any, Callable, Optional, Tuple
 import numpy as np
 from scipy.stats import percentileofscore
 
-from lib.genres import get_track_genre_attributes
-from lib.models.album import get_album
+from lib.metrics import Metrics, get_metrics_for_track, similarity
 from lib.models.track import Track, get_track
 
 Item = Any
 Items = list[Item]
 ItemPicker = Callable[[Items, Items, Item, Items], bool]
-Metrics = list[float]
 SeedPicker = Callable[[Items, Optional[Item]], Tuple[Item, Item]]
 Tracks = list[Track]
 
-
-METRICS = (
-    "danceability",
-    "energy",
-    "loudness",
-    "speechiness",
-    "acousticness",
-    "instrumentalness",
-    "liveness",
-    "valence",
-    "tempo",
-)
-
 _shuffle = np.random.default_rng().shuffle
-
-
-def similarity(u: Metrics, v: Metrics) -> float:
-    """Calculates the cosine similarity of two vectors."""
-    return np.dot(u, v) / np.sqrt(np.dot(u, u) * np.dot(v, v))
 
 
 def quick_pick(  # TODO: separate
@@ -96,13 +76,6 @@ def _scores(
     for j, col in enumerate(metrics.T):
         scores[:, j] = [percentileofscore(col, x, kind="mean") for x in col]
     return dict(zip(items, scores))
-
-
-def get_metrics_for_track(track: Track) -> Metrics:
-    return [track[metric] for metric in METRICS] + [
-        int(get_album(track.album_id).release_date.year),
-        *get_track_genre_attributes(track),
-    ]
 
 
 def _story_picker(tracks: Tracks) -> ItemPicker:
