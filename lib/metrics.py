@@ -6,7 +6,7 @@ from lib.models.track import Track
 
 Metrics = list[float]
 
-METRICS = (
+TRACK_FEATURES = (
     "danceability",
     "energy",
     "loudness",
@@ -26,7 +26,7 @@ def similarity(u: Metrics, v: Metrics) -> float:
 
 def get_metrics_for_track(track: Track) -> Metrics:
     return [
-        *(track[metric] for metric in METRICS),
+        *(track[feature] for feature in TRACK_FEATURES),
         int(get_album(track.album_id).release_date.year),
         *get_track_genre_attributes(track),
     ]
