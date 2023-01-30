@@ -54,19 +54,6 @@ def quick_pick(  # TODO: separate
     return new_left + new_right
 
 
-def _get_average_values(
-    left: Item, right: Item, to_add: Item, values: dict[Item, Metrics]
-) -> dict[str, Metrics]:
-    left_values = [values[x] for x in left]
-    right_values = [values[x] for x in right]
-    return {
-        "left": np.average(left_values, axis=0),
-        "left with new": np.average(np.vstack((left_values, values[to_add])), axis=0),
-        "right": np.average(right_values, axis=0),
-        "right with new": np.average(np.vstack((right_values, values[to_add])), axis=0),
-    }
-
-
 def _scores(
     items: Items, metrics_func: Callable[[Item], Metrics]
 ) -> dict[Item, Metrics]:
@@ -83,10 +70,15 @@ def _story_picker(tracks: Tracks) -> ItemPicker:
 
     def picker(left: Tracks, right: Tracks, to_add: Track, items: Tracks) -> bool:
         # maximize polarity
-        averages = _get_average_values(left, right, to_add, values)
-        return similarity(averages["left with new"], averages["right"]) < similarity(
-            averages["left"], averages["right with new"]
-        )
+        left_values = [values[x] for x in left]
+        right_values = [values[x] for x in right]
+
+        left = np.average(left_values, axis=0)
+        left_with_new = np.average(np.vstack((left_values, values[to_add])), axis=0)
+        right = np.average(right_values, axis=0)
+        right_with_new = np.average(np.vstack((right_values, values[to_add])), axis=0)
+
+        return similarity(left_with_new, right) < similarity(left, right_with_new)
 
     return picker
 
