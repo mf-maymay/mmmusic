@@ -173,18 +173,11 @@ def _smart_seed_picker(tracks: Tracks) -> SeedPicker:
     return picker
 
 
-def smart_shuffle(tracks: Tracks, mode: str = "radio"):
+def smart_shuffle(tracks: Tracks):
     tracks = list(tracks)
 
-    seed_picker = None
-
-    if mode == "radio":
-        picker = _radio_picker(tracks)
-        seed_picker = _smart_seed_picker(tracks)
-    elif mode == "story":
-        picker = _story_picker(tracks)
-    else:
-        raise ValueError("Invalid mode")
+    picker = _radio_picker(tracks)
+    seed_picker = _smart_seed_picker(tracks)
 
     return quick_pick(tracks, picker, seed_picker=seed_picker)
 
@@ -202,4 +195,4 @@ if __name__ == "__main__":
         ]
     ]
 
-    ordered = smart_shuffle(tracks, mode="radio")
+    ordered = smart_shuffle(tracks)
