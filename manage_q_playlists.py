@@ -55,7 +55,7 @@ with note_when_done("Getting tracks..."):
 
     rejects = set(get_tracks_from_playlist(REJECTS_ID, user=user))
 
-    user_tracks = set(user.all_tracks())
+    user_tracks = set(user.get_tracks_from_saved_albums())
 
 # Add candidates to 'q - all'
 candidates_to_add = candidates - q_all_tracks

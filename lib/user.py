@@ -55,7 +55,7 @@ class User:
             self._artists = tuple(sorted(artists))
         return self._artists
 
-    def all_tracks(self):
+    def get_tracks_from_saved_albums(self):
         if self._tracks is None:
             self._tracks = get_tracks_from_albums(self.get_saved_albums())
         return self._tracks

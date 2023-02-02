@@ -16,7 +16,7 @@ class Playlist:
         *,
         playlist_id=None,
         description="",
-        track_source=User.all_tracks,
+        track_source=User.get_tracks_from_saved_albums,
         track_filters=(),
         order_tracks_func=smart_shuffle,
     ):
