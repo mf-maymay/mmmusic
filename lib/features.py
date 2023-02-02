@@ -1,9 +1,12 @@
+from typing import Callable
+
 import numpy as np
+from scipy.stats import percentileofscore
 
 from lib.genres import get_track_genre_attributes
 from lib.models.album import get_album
 from lib.models.track import Track
-from lib.types import Metrics
+from lib.types import Item, Items, Metrics, Tracks
 
 TRACK_FEATURES = (
     "danceability",
@@ -29,3 +32,21 @@ def get_metrics_for_track(track: Track) -> Metrics:
         int(get_album(track.album_id).release_date.year),
         *get_track_genre_attributes(track),
     ]
+
+
+def get_percentile_scores_for_attributes_of_items(
+    items: Items, *, item_attributes_func: Callable[[Item], Metrics]
+) -> dict[Item, Metrics]:
+    metrics = np.array([item_attributes_func(item) for item in items])
+    scores = metrics.copy()
+
+    for j, col in enumerate(metrics.T):
+        scores[:, j] = [percentileofscore(col, x, kind="mean") for x in col]
+
+    return dict(zip(items, scores))
+
+
+def get_scores_for_tracks(tracks: Tracks) -> dict[Track, Metrics]:
+    return get_percentile_scores_for_attributes_of_items(
+        tracks, item_attributes_func=get_metrics_for_track
+    )

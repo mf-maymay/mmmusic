@@ -1,12 +1,11 @@
 from collections import Counter
-from typing import Callable, Optional
+from typing import Optional
 
 import numpy as np
-from scipy.stats import percentileofscore
 
-from lib.features import get_metrics_for_track, similarity
+from lib.features import get_scores_for_tracks, similarity
 from lib.models.track import Track, get_track
-from lib.types import Item, ItemPicker, Items, Metrics, SeedPicker, Tracks
+from lib.types import Item, ItemPicker, Items, SeedPicker, Tracks
 
 _shuffle = np.random.default_rng().shuffle
 
@@ -49,19 +48,8 @@ def quick_pick(  # TODO: separate
     return new_left + new_right
 
 
-def _scores(
-    items: Items, metrics_func: Callable[[Item], Metrics]
-) -> dict[Item, Metrics]:
-    metrics = np.array([metrics_func(item) for item in items])
-
-    scores = metrics.copy()
-    for j, col in enumerate(metrics.T):
-        scores[:, j] = [percentileofscore(col, x, kind="mean") for x in col]
-    return dict(zip(items, scores))
-
-
 def _story_picker(tracks: Tracks) -> ItemPicker:
-    values = _scores(tracks, get_metrics_for_track)
+    values = get_scores_for_tracks(tracks)
 
     def picker(left: Tracks, right: Tracks, to_add: Track, items: Tracks) -> bool:
         # maximize polarity
@@ -112,7 +100,7 @@ def _radio_picker(tracks: Tracks) -> ItemPicker:
 
 
 def _smart_seed_picker(tracks: Tracks) -> SeedPicker:
-    values = _scores(tracks, get_metrics_for_track)
+    values = get_scores_for_tracks(tracks)
 
     def picker(items: Tracks, left_neighbor: Optional[Track]) -> tuple[Track, Track]:
         if left_neighbor is None:
