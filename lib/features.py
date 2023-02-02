@@ -3,8 +3,7 @@ import numpy as np
 from lib.genres import get_track_genre_attributes
 from lib.models.album import get_album
 from lib.models.track import Track
-
-Metrics = list[float]
+from lib.types import Metrics
 
 TRACK_FEATURES = (
     "danceability",

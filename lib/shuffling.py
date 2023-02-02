@@ -1,17 +1,12 @@
 from collections import Counter
-from typing import Any, Callable, Optional, Tuple
+from typing import Callable, Optional
 
 import numpy as np
 from scipy.stats import percentileofscore
 
-from lib.features import Metrics, get_metrics_for_track, similarity
+from lib.features import get_metrics_for_track, similarity
 from lib.models.track import Track, get_track
-
-Item = Any
-Items = list[Item]
-ItemPicker = Callable[[Items, Items, Item, Items], bool]
-SeedPicker = Callable[[Items, Optional[Item]], Tuple[Item, Item]]
-Tracks = list[Track]
+from lib.types import Item, ItemPicker, Items, Metrics, SeedPicker, Tracks
 
 _shuffle = np.random.default_rng().shuffle
 
@@ -119,7 +114,7 @@ def _radio_picker(tracks: Tracks) -> ItemPicker:
 def _smart_seed_picker(tracks: Tracks) -> SeedPicker:
     values = _scores(tracks, get_metrics_for_track)
 
-    def picker(items: Tracks, left_neighbor: Optional[Track]) -> Tuple[Track, Track]:
+    def picker(items: Tracks, left_neighbor: Optional[Track]) -> tuple[Track, Track]:
         if left_neighbor is None:
             left_seed = items[0]
         else:
