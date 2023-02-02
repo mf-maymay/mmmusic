@@ -6,9 +6,10 @@ from lib.models import sputnik
 from lib.user import User
 
 
-def get_user_album_ratings(user):
+def get_user_album_ratings(user: User) -> pd.DataFrame:
     artist_album_ratings = {  # Artist -> list[SputnikAlbum]
-        artist: sputnik.get_artist_albums(artist) for artist in user.artists()
+        artist: sputnik.get_artist_albums(artist)
+        for artist in user.get_artists_of_saved_albums()
     }
 
     artist_saved_albums = defaultdict(set)  # artist_id (str) -> set[Album]

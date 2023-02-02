@@ -44,6 +44,6 @@ if __name__ == "__main__":
 
     user = User()
 
-    artists = user.artists()
+    artists = user.get_artists_of_saved_albums()
 
     genre_map(artists, size_min=14, draw=True)

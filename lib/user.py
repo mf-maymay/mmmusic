@@ -47,7 +47,7 @@ class User:
             self._albums = tuple(sorted(albums))
         return self._albums
 
-    def artists(self):
+    def get_artists_of_saved_albums(self):
         if self._artists is None:
             artists = set()
             for album in self.get_saved_albums():
