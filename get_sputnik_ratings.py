@@ -12,7 +12,7 @@ def get_user_album_ratings(user):
     }
 
     artist_saved_albums = defaultdict(set)  # artist_id (str) -> set[Album]
-    for album in user.albums():
+    for album in user.get_saved_albums():
         for artist_id in album.artist_ids:
             artist_saved_albums[artist_id].add(album)
 

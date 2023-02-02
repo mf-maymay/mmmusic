@@ -33,7 +33,7 @@ class User:
         self.sp = spotipy.Spotify(auth_manager=auth_manager, retries=None)
 
     @no_timeout
-    def albums(self):
+    def get_saved_albums(self):
         if self._albums is None:
             albums = []
 
@@ -50,14 +50,14 @@ class User:
     def artists(self):
         if self._artists is None:
             artists = set()
-            for album in self.albums():
+            for album in self.get_saved_albums():
                 artists.update(get_artist(artist_id) for artist_id in album.artist_ids)
             self._artists = tuple(sorted(artists))
         return self._artists
 
     def all_tracks(self):
         if self._tracks is None:
-            self._tracks = get_tracks_from_albums(self.albums())
+            self._tracks = get_tracks_from_albums(self.get_saved_albums())
         return self._tracks
 
     def __hash__(self):
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     user = User()
 
     artist_albums = defaultdict(list)
-    for album in sorted(user.albums(), key=lambda a: a.release_date):
+    for album in sorted(user.get_saved_albums(), key=lambda a: a.release_date):
         for artist_id in album.artist_ids:
             artist_albums[get_artist(artist_id)].append(album)
 
