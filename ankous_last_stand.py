@@ -3,25 +3,37 @@ from lib.models.track import get_track
 from lib.playlist import Playlist
 from lib.user import User
 
+seeds = [
+    get_track("1ibHApXtb0pgplmNDRLHrJ"),  # Achilles Last Stand by Led Zeppelin
+    get_track("4g14R1u5Vc4hYUP56qyM3N"),  # La faulx by Univers Zero
+    get_track("0yY0Gba40gNEBFCWWMZGZo"),  # Summoning the Rain by Drudkh
+]
+
 user = User()
 
 all_tracks = user.get_tracks_from_saved_albums()
 
-als = get_track("1ibHApXtb0pgplmNDRLHrJ")
-
-assert als in all_tracks
+assert all(seed in all_tracks for seed in seeds)
 
 track_scores = get_scores_for_tracks(all_tracks)
 
-als_scores = track_scores[als]
+similarity_vectors = {
+    track: [similarity(track_scores[track], track_scores[seed]) for seed in seeds]
+    for track in all_tracks
+}
 
-ordered_by_sim_asc = sorted(
-    all_tracks, key=lambda x: similarity(als_scores, track_scores[x])
+similarity_scalars = {
+    track: sum(similarity_vectors[track])  # higher -> more similar
+    for track in all_tracks
+}
+
+ordered_by_sim_desc = sorted(all_tracks, key=similarity_scalars.get, reverse=True)
+
+most_similar = ordered_by_sim_desc[:69]
+
+als_playlist = Playlist(
+    "Ankou's Last Stand", track_source=lambda x: set(most_similar) | set(seeds)
 )
-
-most_similar = ordered_by_sim_asc[-69:]
-
-als_playlist = Playlist("Ankou's Last Stand", track_source=lambda x: most_similar)
 
 als_playlist.get_tracks(user)
 
