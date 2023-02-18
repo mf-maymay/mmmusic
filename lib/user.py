@@ -12,7 +12,7 @@ DEFAULT_SCOPE = "playlist-modify-private,user-library-read"
 
 class User:
     def __init__(self, username=None, *, redirect_uri=None):
-        username_from_environ = os.environ.get("SPOTIFY_USERNAME")
+        username_from_environ = os.environ.get("SPOTIPY_CLIENT_USERNAME")
 
         self.username = (
             username
