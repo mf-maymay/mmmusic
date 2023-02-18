@@ -22,7 +22,7 @@ jobs:
         pip install -r requirements.txt
     - name: Set up OAuth token cache
       run: |
-        echo ${{ secrets.CACHED_TOKEN }} > .cache-${{ SPOTIFY_USERNAME }}
+        echo ${{ secrets.CACHED_TOKEN }} > .cache-${{ secrets.SPOTIFY_USERNAME }}
     - name: Managing Q Playlists
       run: |
         python manage_q_playlists.py
