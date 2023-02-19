@@ -2,18 +2,22 @@ from functools import wraps
 
 import requests
 
+from lib.logging import get_logger
+
 
 def no_timeout(func):
     @wraps(func)
     def wrapped(*args, **kwargs):
+        logger = get_logger()
+
         while True:
             try:
                 return func(*args, **kwargs)
             except requests.ConnectionError:
-                print(f"ConnectionError on {func.__name__}. Retrying...")
+                logger.warning("ConnectionError on %r. Retrying...", func.__name__)
                 continue
             except requests.ReadTimeout:
-                print(f"ReadTimout on {func.__name__}. Retrying...")
+                logger.warning("ReadTimout on %r. Retrying...", func.__name__)
                 continue
 
     return wrapped
