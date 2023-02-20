@@ -257,5 +257,5 @@ if __name__ == "__main__":
             print(f"Creating '{playlist.name}' ...")
             playlist.create(user)
         else:
-            print(f"Rereating '{playlist.name}' ...")
+            print(f"Recreating '{playlist.name}' ...")
             playlist.recreate(user)
