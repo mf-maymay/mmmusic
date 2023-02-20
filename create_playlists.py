@@ -118,7 +118,7 @@ _playlists = [
     ),
     Playlist(
         "happy minor",
-        playlist_id="1q5q58SLwTypxrAnPBHUGL",
+        playlist_id="1WbpDe3WzdzW8q2i3KyHxp",
         track_filters=[
             by_track_attribute(lambda x: x["mode"] == 0),
             by_track_attribute(lambda x: x["valence"] >= 0.6),
