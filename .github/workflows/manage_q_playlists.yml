@@ -1,7 +1,9 @@
 name: Manage Q Playlists
 
 on:
-  workflow_dispatch
+  schedule:
+    - cron: 0 2 * * *
+  workflow_dispatch:
 
 env:
   SPOTIPY_CLIENT_ID: ${{ secrets.SPOTIPY_CLIENT_ID }}
