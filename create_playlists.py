@@ -38,7 +38,7 @@ _playlists = [
         playlist_id="2mTcMKBO5WZf7OuBGTL9v1",
         track_filters=[by_release_year(2020, 2029)],
     ),
-    Playlist("ALL"),
+    Playlist("ALL", playlist_id="6vgITEENg2J5mJhW9scpns"),
     Playlist(
         "ambient",
         playlist_id="1YV73mm0afshcS0dRnUGnA",
