@@ -7,6 +7,7 @@ from lib.filters import (
 from lib.playlist import Playlist
 from lib.playlist_management import get_tracks_from_playlist
 from lib.user import User
+from lib.utils import time_and_note_when_done
 
 _playlists = [
     Playlist(
@@ -246,24 +247,24 @@ if __name__ == "__main__":
     for key in to_create:
         playlist = playlists[key]
 
-        print(f"\nGetting '{playlist.name}' tracks ...")
-        playlist.get_tracks(user)
+        with time_and_note_when_done(f"\nGetting '{playlist.name}' tracks..."):
+            playlist.get_tracks(user)
 
         if playlist.id is not None and set(
             get_tracks_from_playlist(playlist.id, user=user)
         ) == set(playlist.tracks):
             print(
                 f"Skipping processing for '{playlist.name}' "
-                f"because its tracks have not changed"
+                f"because its tracks have not changed."
             )
             continue
 
-        print(f"Ordering '{playlist.name}' tracks ...")
-        playlist.order_tracks()
+        with time_and_note_when_done(f"Ordering '{playlist.name}' tracks..."):
+            playlist.order_tracks()
 
         if playlist.id is None:
-            print(f"Creating '{playlist.name}' ...")
-            playlist.create(user)
+            with time_and_note_when_done(f"Creating '{playlist.name}'..."):
+                playlist.create(user)
         else:
-            print(f"Recreating '{playlist.name}' ...")
-            playlist.recreate(user)
+            with time_and_note_when_done(f"Recreating '{playlist.name}'..."):
+                playlist.recreate(user)
