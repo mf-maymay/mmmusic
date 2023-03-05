@@ -5,6 +5,7 @@ from lib.filters import (
     by_track_attribute,
 )
 from lib.playlist import Playlist
+from lib.playlist_management import get_tracks_from_playlist
 from lib.user import User
 
 _playlists = [
@@ -244,14 +245,21 @@ if __name__ == "__main__":
 
     for key in to_create:
         playlist = playlists[key]
-        print(f"Getting '{playlist.name}' tracks ...")
+
+        print(f"\nGetting '{playlist.name}' tracks ...")
         playlist.get_tracks(user)
+
+        if playlist.id is not None and set(
+            get_tracks_from_playlist(playlist.id, user=user)
+        ) == set(playlist.tracks):
+            print(
+                f"Skipping processing for '{playlist.name}' "
+                f"because its tracks have not changed"
+            )
+            continue
+
         print(f"Ordering '{playlist.name}' tracks ...")
         playlist.order_tracks()
-        print()
-
-    for key in to_create:
-        playlist = playlists[key]
 
         if playlist.id is None:
             print(f"Creating '{playlist.name}' ...")
