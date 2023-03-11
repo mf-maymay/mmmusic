@@ -5,8 +5,8 @@ from lib.user import User
 
 seeds = [
     get_track("1ibHApXtb0pgplmNDRLHrJ"),  # Achilles Last Stand by Led Zeppelin
-    get_track("4g14R1u5Vc4hYUP56qyM3N"),  # La faulx by Univers Zero
-    get_track("0yY0Gba40gNEBFCWWMZGZo"),  # Summoning the Rain by Drudkh
+    # get_track("4g14R1u5Vc4hYUP56qyM3N"),  # La faulx by Univers Zero
+    # get_track("0yY0Gba40gNEBFCWWMZGZo"),  # Summoning the Rain by Drudkh
 ]
 
 user = User()
@@ -32,7 +32,8 @@ ordered_by_sim_desc = sorted(all_tracks, key=similarity_scalars.get, reverse=Tru
 most_similar = ordered_by_sim_desc[:69]
 
 als_playlist = Playlist(
-    "Ankou's Last Stand", track_source=lambda x: set(most_similar) | set(seeds)
+    "Ankou's Last Stand",
+    track_source=lambda x: list(set(most_similar) | set(seeds)) + seeds * 2,
 )
 
 als_playlist.get_tracks(user)
