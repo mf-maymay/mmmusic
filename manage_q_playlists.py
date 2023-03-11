@@ -17,13 +17,13 @@ REJECTS_ID = "2Cm0uu5nAGb1ISfXPluvks"
 Q_PLAYLISTS = {
     "q - harder": {
         "id": "5mRa71QUmE6EWavxTA22g6",
-        "pattern": ".*(core|doom|metal|punk).*",
+        "pattern": "^(?!.*?(hop|rap)).*(core|doom|metal|punk).*",
     },
-    "q - hop": {"id": "0sFhYQaTiuZlG1vMDSiFMR", "pattern": ".*hop.*"},
+    "q - hop": {"id": "0sFhYQaTiuZlG1vMDSiFMR", "pattern": ".*(hop|rap).*"},
     "q - jazz": {"id": "4HQnus8hcLfX5pYtG95pKY", "pattern": ".*jazz.*"},
     "q - misc": {
         "id": "7DOqATuWsl640ustK8lhhI",
-        "pattern": "^(?!.*?(core|doom|hop|jazz|metal|punk|rock)).*",
+        "pattern": "^(?!.*?(core|doom|hop|jazz|metal|punk|rap|rock)).*",
     },
     "q - rock": {"id": "1tlzpLpRdQXUicLbhIJMcM", "pattern": ".*rock.*"},
 }
