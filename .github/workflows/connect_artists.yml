@@ -26,3 +26,8 @@ jobs:
     - name: Connect Artists
       run: |
         python connect_artists.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX
+    - name: Save Output
+      uses: actions/upload-artifact@v3
+      with:
+        name: connection-graph
+        path: output/*.png
