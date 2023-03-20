@@ -2,6 +2,15 @@ name: Connect Artists
 
 on:
   workflow_dispatch:
+    inputs:
+      artist_1:
+        description: Seed Artist \#1
+        required: true
+        type: string
+      artist_2:
+        description: Seed Artist \#2
+        required: true
+        type: string
 
 env:
   SPOTIPY_CLIENT_ID: ${{ secrets.SPOTIPY_CLIENT_ID }}
@@ -25,7 +34,7 @@ jobs:
         echo '${{ secrets.CACHED_TOKEN }}' > .cache-${{ secrets.SPOTIFY_USERNAME }}
     - name: Connect Artists
       run: |
-        python connect_artists.py 0oKYiTD5CdNbrofRvM1dIr 0tIODqvzGUoEaK26rK4pvX
+        python connect_artists.py '${{ inputs.artist_1 }}'  '${{ inputs.artist_2 }}'
     - name: Save Output
       uses: actions/upload-artifact@v3
       with:
