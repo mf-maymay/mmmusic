@@ -289,8 +289,10 @@ if __name__ == "__main__":
 
     graph, (fig, ax) = grow_and_plot(*seeds)
 
-    file_path = Path("output") / f'{"-".join(sorted(seed.id for seed in seeds))}.png'
+    output_folder = Path("output")
+    output_folder.mkdir(exist_ok=True)
 
+    file_path = output_folder / f'{"-".join(sorted(seed.id for seed in seeds))}.png'
     fig.savefig(file_path)
 
     webbrowser.open(str(file_path))
