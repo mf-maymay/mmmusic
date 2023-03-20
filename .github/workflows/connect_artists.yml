@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       artist_1:
-        description: Seed Artist \#1
+        description: Seed Artist
         required: true
         type: string
       artist_2:
-        description: Seed Artist \#2
+        description: Seed Artist
         required: true
         type: string
 
