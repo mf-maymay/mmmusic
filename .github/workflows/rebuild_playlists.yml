@@ -2,7 +2,7 @@ name: Rebuild Playlists
 
 on:
   schedule:
-    - cron: 0 5 * * *
+    - cron: 0 5 * * 0,2,4,6
   workflow_dispatch:
 
 env:
