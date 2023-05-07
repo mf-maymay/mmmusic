@@ -2,7 +2,7 @@ from collections import defaultdict
 
 import pandas as pd
 
-from lib.models import sputnik
+from lib.external import sputnik
 from lib.user import User
 
 
