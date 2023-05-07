@@ -2,7 +2,7 @@ from functools import cache
 
 from pydantic import BaseModel
 
-from lib.models import spotify
+from lib.external import spotify
 
 TrackID = str
 

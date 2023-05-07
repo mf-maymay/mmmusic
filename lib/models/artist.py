@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from requests.exceptions import HTTPError
 from spotipy.exceptions import SpotifyException
 
-from lib.models import spotify
+from lib.external import spotify
 
 ArtistID = str
 
