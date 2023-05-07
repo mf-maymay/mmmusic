@@ -5,6 +5,25 @@ import cssutils
 import requests
 
 
+def get_artists_for_genre(genre: str) -> set:
+    """Returns a set of artist names that belong to the genre map."""
+    url = f"https://everynoise.com/engenremap-{genre}.html"  # naive
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    canvas = soup.find(class_="canvas", attrs={"role": "main"})
+
+    if canvas is None:
+        raise RuntimeError
+
+    return {
+        element.text[:-2] for element in canvas.find_all("div", class_="genre scanme")
+    }
+
+
 def get_genre_positions() -> dict:
     response = requests.get("https://everynoise.com/")
     response.raise_for_status()
