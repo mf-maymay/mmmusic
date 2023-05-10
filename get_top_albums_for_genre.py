@@ -18,13 +18,15 @@ def get_genre_album_ratings_dataframe(genre: str) -> pd.DataFrame:
         pd.DataFrame(sum(artist_albums.values(), []))
         .rename(columns={"name": "album"})
         .dropna()
-        .sort_values(["rating", "votes"], ascending=False, ignore_index=True)
     )
 
     ratings["confidence level"] = get_score_confidence_levels(ratings["votes"])
 
     ratings.sort_values(
-        "confidence level", ascending=False, ignore_index=True, inplace=True
+        ["confidence level", "rating", "votes"],
+        ascending=False,
+        ignore_index=True,
+        inplace=True,
     )
 
     return ratings
