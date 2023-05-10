@@ -31,7 +31,9 @@ def get_genre_album_ratings_dataframe(genre: str) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    df = get_genre_album_ratings_dataframe("neofolk")
+    genre = input("Genre: ")
+
+    df = get_genre_album_ratings_dataframe(genre)
 
     filtered_df = df[(df["confidence level"] > 0) & (df["rating"] > 4)]
 

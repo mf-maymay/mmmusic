@@ -1,13 +1,22 @@
 import json
+import re
 
 from bs4 import BeautifulSoup
 import cssutils
 import requests
 
+_GENRE_CHARS_TO_SQUASH = re.compile("[^a-zA-Z0-9]+")
+
+
+def _everynoise_name_for_genre(genre: str) -> str:
+    return _GENRE_CHARS_TO_SQUASH.sub("", genre)
+
 
 def get_artists_for_genre(genre: str) -> set:
     """Returns a set of artist names that belong to the genre map."""
-    url = f"https://everynoise.com/engenremap-{genre}.html"  # naive
+    genre = _everynoise_name_for_genre(genre)
+
+    url = f"https://everynoise.com/engenremap-{genre}.html"
 
     response = requests.get(url)
     response.raise_for_status()
