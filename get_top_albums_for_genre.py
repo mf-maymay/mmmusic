@@ -20,6 +20,9 @@ def get_genre_album_ratings_dataframe(genre: str) -> pd.DataFrame:
         .dropna()
     )
 
+    if ratings.empty:
+        raise RuntimeError(f"No ratings were found for the {genre!r} albums.")
+
     ratings["confidence level"] = get_score_confidence_levels(ratings["votes"])
 
     ratings.sort_values(
