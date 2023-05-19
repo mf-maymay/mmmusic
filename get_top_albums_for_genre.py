@@ -37,10 +37,11 @@ def get_genre_album_ratings_dataframe(genre: str) -> pd.DataFrame:
 
 if __name__ == "__main__":
     genre = input("Genre: ")
+    min_rating = float(input("Minimum rating: "))
 
     df = get_genre_album_ratings_dataframe(genre)
 
-    filtered_df = df[(df["confidence level"] > 0) & (df["rating"] > 4)]
+    filtered_df = df[(df["confidence level"] > 0) & (df["rating"] >= min_rating)]
 
     print("Top albums:")
     for _, row in filtered_df.iterrows():
