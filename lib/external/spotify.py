@@ -1,18 +1,28 @@
+from functools import cache
+
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
 from lib.utils import no_timeout
 
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
 
-_get_album = no_timeout(sp.album)
-_get_album_tracks = no_timeout(sp.album_tracks)
-_get_artist = no_timeout(sp.artist)
-_get_artist_related_artists = no_timeout(sp.artist_related_artists)
-_get_track = no_timeout(sp.track)
-_get_track_audio_features = no_timeout(sp.audio_features)
-_next = no_timeout(sp.next)
-_search = no_timeout(sp.search)
+@cache
+def get_client_credentials_managed_client() -> spotipy.Spotify:
+    return spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
+
+
+_get_album = no_timeout(get_client_credentials_managed_client().album)
+_get_album_tracks = no_timeout(get_client_credentials_managed_client().album_tracks)
+_get_artist = no_timeout(get_client_credentials_managed_client().artist)
+_get_artist_related_artists = no_timeout(
+    get_client_credentials_managed_client().artist_related_artists
+)
+_get_track = no_timeout(get_client_credentials_managed_client().track)
+_get_track_audio_features = no_timeout(
+    get_client_credentials_managed_client().audio_features
+)
+_next = no_timeout(get_client_credentials_managed_client().next)
+_search = no_timeout(get_client_credentials_managed_client().search)
 
 
 def get_album(album_id: str) -> dict:
