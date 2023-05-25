@@ -251,7 +251,7 @@ if __name__ == "__main__":
         playlist = playlists[key]
 
         with time_and_note_when_done(f"\nGetting '{playlist.name}' tracks..."):
-            playlist.get_tracks(user)
+            playlist.get_tracks()
 
         if playlist.id is not None and set(
             get_tracks_from_playlist(playlist.id, user=user)
@@ -267,7 +267,7 @@ if __name__ == "__main__":
 
         if playlist.id is None:
             with time_and_note_when_done(f"Creating '{playlist.name}'..."):
-                playlist.create(user)
+                playlist.create()
         else:
             with time_and_note_when_done(f"Recreating '{playlist.name}'..."):
-                playlist.recreate(user)
+                playlist.recreate()

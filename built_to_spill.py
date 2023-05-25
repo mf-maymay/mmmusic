@@ -14,11 +14,11 @@ user = User()
 
 playlist = Playlist(
     "Building Up Built To Spill",
-    track_source=track_source,
+    track_source=partial(track_source, user),
     order_tracks_func=partial(smart_shuffle, picker_factory=_story_picker),
     user=user,
 )
 
-playlist.get_tracks(user)
+playlist.get_tracks()
 playlist.order_tracks()
-playlist.create(user)
+playlist.create()

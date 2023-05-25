@@ -17,7 +17,7 @@ class Playlist:
         user: User,
         playlist_id=None,
         description="",
-        track_source=User.get_tracks_from_saved_albums,
+        track_source=None,
         track_filters=(),
         order_tracks_func=smart_shuffle,
     ):
@@ -28,14 +28,18 @@ class Playlist:
 
         self.user = user
 
-        self.track_source = track_source
+        self.track_source = (
+            track_source
+            if track_source is not None
+            else user.get_tracks_from_saved_albums
+        )
         self.track_filters = tuple(track_filters)
         self.order_tracks_func = order_tracks_func
 
         self.tracks = None
 
-    def get_tracks(self, user):
-        self.tracks = self.track_source(user)
+    def get_tracks(self):
+        self.tracks = self.track_source()
 
         for track_filter in self.track_filters:
             self.tracks = track_filter(self.tracks)
@@ -46,12 +50,12 @@ class Playlist:
 
         self.tracks = self.order_tracks_func(self.tracks)
 
-    def create(self, user):
+    def create(self):
         self.id = create_playlist(
-            name=self.name, description=self.description, user=user
+            name=self.name, description=self.description, user=self.user
         )
 
-        add_tracks_to_playlist(self.id, tracks=self.tracks, user=user)
+        add_tracks_to_playlist(self.id, tracks=self.tracks, user=self.user)
 
-    def recreate(self, user):
-        replace_playlist(self.id, new_tracks=self.tracks, user=user)
+    def recreate(self):
+        replace_playlist(self.id, new_tracks=self.tracks, user=self.user)
