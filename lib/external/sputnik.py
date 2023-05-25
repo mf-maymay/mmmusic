@@ -4,7 +4,6 @@ from typing import TypedDict
 from bs4 import BeautifulSoup
 import requests
 
-
 valid_rating = re.compile("[0-5](\\.[0-9])?")
 valid_vote = re.compile("([0-9]|,)+ Votes")
 

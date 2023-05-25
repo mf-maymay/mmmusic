@@ -2,7 +2,7 @@ from functools import partial
 
 from lib.playlist import Playlist
 from lib.playlist_management import get_tracks_from_playlist
-from lib.shuffling import smart_shuffle, _story_picker
+from lib.shuffling import _story_picker, smart_shuffle
 from lib.user import User
 
 
