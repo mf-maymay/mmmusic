@@ -11,9 +11,6 @@ def get_client_credentials_managed_client() -> spotipy.Spotify:
     return spotipy.Spotify(auth_manager=SpotifyClientCredentials(), retries=None)
 
 
-_next = no_timeout(get_client_credentials_managed_client().next)
-
-
 def get_album(album_id: str) -> dict:
     _get_album = no_timeout(get_client_credentials_managed_client().album)
     return _get_album(album_id)
@@ -21,6 +18,7 @@ def get_album(album_id: str) -> dict:
 
 def get_album_tracks(album_id: str) -> list[dict]:
     _get_album_tracks = no_timeout(get_client_credentials_managed_client().album_tracks)
+    _next = no_timeout(get_client_credentials_managed_client().next)
 
     tracks = []
 
