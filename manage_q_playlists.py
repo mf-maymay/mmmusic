@@ -82,6 +82,7 @@ for playlist_name, details in Q_PLAYLISTS.items():
             playlist_id=details["id"],
             track_filters=[by_genre_pattern(pattern := details["pattern"])],
             track_source=lambda user: q_all_tracks,
+            user=user,
         )
 
         playlist.get_tracks(user)

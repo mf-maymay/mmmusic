@@ -14,6 +14,7 @@ class Playlist:
         self,
         name,
         *,
+        user: User,
         playlist_id=None,
         description="",
         track_source=User.get_tracks_from_saved_albums,
@@ -24,6 +25,8 @@ class Playlist:
 
         self.name = name
         self.description = description
+
+        self.user = user
 
         self.track_source = track_source
         self.track_filters = tuple(track_filters)

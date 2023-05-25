@@ -16,6 +16,7 @@ playlist = Playlist(
     "Building Up Built To Spill",
     track_source=track_source,
     order_tracks_func=partial(smart_shuffle, picker_factory=_story_picker),
+    user=user,
 )
 
 playlist.get_tracks(user)

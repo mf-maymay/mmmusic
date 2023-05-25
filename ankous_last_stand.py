@@ -34,6 +34,7 @@ most_similar = ordered_by_sim_desc[:69]
 als_playlist = Playlist(
     "Ankou's Last Stand",
     track_source=lambda x: list(set(most_similar) | set(seeds)) + seeds * 2,
+    user=user,
 )
 
 als_playlist.get_tracks(user)
