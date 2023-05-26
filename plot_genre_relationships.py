@@ -40,7 +40,7 @@ def genre_map(artists, *, size_min=1, draw=False):
 
 
 if __name__ == "__main__":
-    from lib.user import User
+    from lib.users import User
 
     user = User()
 

@@ -4,7 +4,7 @@ from lib.playlist_management import (
     replace_playlist,
 )
 from lib.shuffling import smart_shuffle
-from lib.user import User
+from lib.users import User
 
 MAX_TRACKS = 11_000
 

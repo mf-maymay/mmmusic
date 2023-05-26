@@ -1,6 +1,6 @@
 from lib.models.tracks import get_track
 from lib.shuffling import smart_shuffle
-from lib.user import User
+from lib.users import User
 from lib.utils import no_timeout, take_x_at_a_time
 
 MAX_TRACKS = 11_000

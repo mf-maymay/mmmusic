@@ -1,5 +1,5 @@
 from lib.filters import by_genre_pattern
-from lib.playlist import Playlist
+from lib.playlists import Playlist
 from lib.playlist_management import (
     add_tracks_to_playlist,
     clear_playlist,
@@ -7,7 +7,7 @@ from lib.playlist_management import (
     remove_tracks_from_playlist,
     shuffle_playlist,
 )
-from lib.user import User
+from lib.users import User
 from lib.utils import time_and_note_when_done
 
 CANDIDATES_ID = "5AZxg3qZIC7cGnxWa7EuSd"

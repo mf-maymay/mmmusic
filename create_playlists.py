@@ -4,9 +4,9 @@ from lib.filters import (
     by_release_year,
     by_track_attribute,
 )
-from lib.playlist import Playlist
+from lib.playlists import Playlist
 from lib.playlist_management import get_tracks_from_playlist
-from lib.user import User
+from lib.users import User
 from lib.utils import time_and_note_when_done
 
 playlist_configs: list[dict] = [

@@ -1,7 +1,7 @@
 from lib.features import get_scores_for_tracks, similarity
 from lib.models.tracks import get_track
-from lib.playlist import Playlist
-from lib.user import User
+from lib.playlists import Playlist
+from lib.users import User
 
 seeds = [
     get_track("1ibHApXtb0pgplmNDRLHrJ"),  # Achilles Last Stand by Led Zeppelin

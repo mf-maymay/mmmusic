@@ -3,7 +3,7 @@ import numpy as np
 
 from lib.genres import get_track_genre_attributes
 from lib.playlist_management import get_tracks_from_playlist
-from lib.user import User
+from lib.users import User
 
 
 def plot(xs, ys):

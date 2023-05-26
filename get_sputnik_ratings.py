@@ -3,7 +3,7 @@ from collections import defaultdict
 import pandas as pd
 
 from lib.external import sputnik
-from lib.user import User
+from lib.users import User
 
 
 def get_user_album_ratings(user: User) -> pd.DataFrame:
