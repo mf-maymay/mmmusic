@@ -14,6 +14,7 @@ class TestArtist(unittest.TestCase):
             "id": "fake_track_id",
             "album": {"id": "fake_album_id"},
             "artists": [{"id": "fake_artist_id"}],
+            "popularity": 50,
         }
 
         track = get_track(fake_track_id)
@@ -27,6 +28,7 @@ class TestArtist(unittest.TestCase):
                 id="fake_track_id",
                 album_id="fake_album_id",
                 artist_ids=("fake_artist_id",),
+                popularity=50,
             ),
         )
 
@@ -37,6 +39,7 @@ class TestArtist(unittest.TestCase):
             id="fake_track_id",
             album_id="fake_album_id",
             artist_ids=("fake_artist_id",),
+            popularity=50,
         )
 
         track = get_track(fake_track)

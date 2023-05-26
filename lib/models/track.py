@@ -48,6 +48,7 @@ class Track(BaseModel):
     id: str
     album_id: str
     artist_ids: tuple[str, ...]
+    popularity: int
     _audio_features: AudioFeatures = None
 
     class Config:
@@ -84,6 +85,7 @@ def get_track(track_id: TrackID | Track) -> Track:
         id=track_json["id"],
         album_id=track_json["album"]["id"],
         artist_ids=tuple(artist["id"] for artist in track_json["artists"]),
+        popularity=track_json["popularity"],
     )
 
 
