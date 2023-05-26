@@ -1,4 +1,4 @@
-from lib.models.track import get_track
+from lib.models.tracks import get_track
 from lib.shuffling import smart_shuffle
 from lib.user import User
 from lib.utils import no_timeout, take_x_at_a_time

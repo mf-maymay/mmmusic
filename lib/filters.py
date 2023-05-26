@@ -1,6 +1,6 @@
 from lib.genres import artists_of_genres_matching
-from lib.models.album import get_album
-from lib.models.artist import get_artist
+from lib.models.albums import get_album
+from lib.models.artists import get_artist
 
 
 def by_album_attribute(album_filter_func):

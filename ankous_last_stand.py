@@ -1,5 +1,5 @@
 from lib.features import get_scores_for_tracks, similarity
-from lib.models.track import get_track
+from lib.models.tracks import get_track
 from lib.playlist import Playlist
 from lib.user import User
 

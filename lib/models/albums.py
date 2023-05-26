@@ -5,7 +5,7 @@ from functools import cache
 from pydantic import BaseModel, validator
 
 from lib.external import spotify
-from lib.models.track import Track, get_track
+from lib.models.tracks import Track, get_track
 
 AlbumID = str
 

@@ -1,11 +1,11 @@
 import unittest
 from unittest.mock import patch
 
-from lib.models.track import Track, get_track
+from lib.models.tracks import Track, get_track
 
 
 class TestArtist(unittest.TestCase):
-    @patch("lib.models.track.spotify", autospec=True)
+    @patch("lib.models.tracks.spotify", autospec=True)
     def test_get_track(self, mock_spotify):
         fake_track_id = "fake_track_id"
 
@@ -32,7 +32,7 @@ class TestArtist(unittest.TestCase):
             ),
         )
 
-    @patch("lib.models.track.spotify", autospec=True)
+    @patch("lib.models.tracks.spotify", autospec=True)
     def test_get_track_returns_track_as_is_when_supplied_track(self, mock_spotify):
         fake_track = Track(
             name="fake_name",

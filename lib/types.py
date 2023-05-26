@@ -1,6 +1,6 @@
 from typing import Any, Callable, Optional
 
-from lib.models.track import Track
+from lib.models.tracks import Track
 
 Item = Any
 Items = list[Item]

@@ -3,8 +3,8 @@ import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-from lib.models.album import get_album, get_tracks_from_albums
-from lib.models.artist import get_artist
+from lib.models.albums import get_album, get_tracks_from_albums
+from lib.models.artists import get_artist
 from lib.utils import no_timeout
 
 DEFAULT_SCOPE = "playlist-modify-private,playlist-modify-public,user-library-read"

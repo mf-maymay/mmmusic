@@ -4,8 +4,8 @@ import numpy as np
 from scipy.stats import percentileofscore
 
 from lib.genres import get_track_genre_attributes
-from lib.models.album import get_album
-from lib.models.track import Track
+from lib.models.albums import get_album
+from lib.models.tracks import Track
 from lib.types import Item, Items, Metrics, Tracks
 
 TRACK_FEATURES = (
