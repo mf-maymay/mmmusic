@@ -42,6 +42,15 @@ playlist_configs: list[dict] = [
     },
     {"name": "ALL", "playlist_id": "6vgITEENg2J5mJhW9scpns"},
     {
+        "name": "ALL, ordered by popularity",
+        "playlist_id": "7DpWFkySsh4Jb4RwhsM5HH",
+        "order_tracks_func": lambda tracks: sorted(
+            tracks,
+            key=lambda track: track.popularity,
+            reverse=True,
+        ),
+    },
+    {
         "name": "ambient",
         "playlist_id": "1YV73mm0afshcS0dRnUGnA",
         "track_filters": [by_genre_pattern(pattern := ".*ambient.*")],
@@ -179,6 +188,16 @@ playlist_configs: list[dict] = [
             by_genre_pattern(pattern := "^(?!.*?(proto-metal)).*(doom|metal|zeuhl).*")
         ],
         "description": f"genre matches '{pattern}'",
+    },
+    {
+        "name": "popular artists",
+        "playlist_id": "08pLTWx8LB58syQ8c7lXuW",
+        "track_filters": [by_artist_attribute(lambda x: x.popularity >= 70)],
+    },
+    {
+        "name": "popular tracks",
+        "playlist_id": "60BlxvTBWRivesoeC2YEWI",
+        "track_filters": [by_track_attribute(lambda x: x.popularity >= 65)],
     },
     {
         "name": "post-rock",
