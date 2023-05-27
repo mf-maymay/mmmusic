@@ -8,4 +8,6 @@ pydantic
 requests
 scipy
 spotipy
+tabulate
 types-requests
+types-tabulate

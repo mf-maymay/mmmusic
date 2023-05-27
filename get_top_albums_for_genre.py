@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from tabulate import tabulate
 
 from lib.external.everynoise import get_artists_for_genre
 from lib.external.sputnik import get_artist_albums
@@ -41,11 +42,9 @@ if __name__ == "__main__":
 
     df = get_genre_album_ratings_dataframe(genre)
 
-    filtered_df = df[(df["confidence level"] > 0) & (df["rating"] >= min_rating)]
+    filtered_df = df[
+        (df["confidence level"] > 0) & (df["rating"] >= min_rating)
+    ].reset_index(drop=True)
 
-    print("Top albums:")
-    for _, row in filtered_df.iterrows():
-        print(
-            f"- {row['album']!r} by {row['artist']}: {row['rating']} rating "
-            f"(votes: {row['votes']:,}, confidence level: {row['confidence level']})"
-        )
+    print("\nTop albums:")
+    print(tabulate(filtered_df, headers="keys", tablefmt="outline"))
