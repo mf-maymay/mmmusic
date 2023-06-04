@@ -1,1 +1,1 @@
-from generated_playlists import GeneratedPlaylist
+from .generated_playlists import GeneratedPlaylist
