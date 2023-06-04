@@ -4,7 +4,7 @@ from lib.filters import (
     by_release_year,
     by_track_attribute,
 )
-from lib.playlists import Playlist
+from lib.playlists import GeneratedPlaylist
 from lib.playlist_management import get_tracks_from_playlist
 from lib.users import User
 from lib.utils import time_and_note_when_done
@@ -260,7 +260,7 @@ if __name__ == "__main__":
     user = User()
 
     playlists = {
-        playlist_config["name"]: Playlist(**playlist_config, user=user)
+        playlist_config["name"]: GeneratedPlaylist(**playlist_config, user=user)
         for playlist_config in playlist_configs
     }
 

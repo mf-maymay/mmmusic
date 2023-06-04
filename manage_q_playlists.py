@@ -1,5 +1,5 @@
 from lib.filters import by_genre_pattern
-from lib.playlists import Playlist
+from lib.playlists import GeneratedPlaylist
 from lib.playlist_management import (
     add_tracks_to_playlist,
     clear_playlist,
@@ -77,7 +77,7 @@ with time_and_note_when_done("Shuffing 'q - all'..."):
 # Recreate Q playlists
 for playlist_name, details in Q_PLAYLISTS.items():
     with time_and_note_when_done(f"Recreating '{playlist_name}'..."):
-        playlist = Playlist(
+        playlist = GeneratedPlaylist(
             playlist_name,
             playlist_id=details["id"],
             track_filters=[by_genre_pattern(pattern := details["pattern"])],

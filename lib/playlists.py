@@ -9,7 +9,7 @@ from lib.users import User
 MAX_TRACKS = 11_000
 
 
-class Playlist:
+class GeneratedPlaylist:
     def __init__(
         self,
         name,
