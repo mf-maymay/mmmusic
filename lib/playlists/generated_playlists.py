@@ -1,4 +1,4 @@
-from lib.playlist_management import (
+from lib.playlists.management import (
     add_tracks_to_playlist,
     create_playlist,
     replace_playlist,

@@ -5,7 +5,7 @@ from lib.filters import (
     by_track_attribute,
 )
 from lib.playlists import GeneratedPlaylist
-from lib.playlist_management import get_tracks_from_playlist
+from lib.playlists.management import get_tracks_from_playlist
 from lib.users import User
 from lib.utils import time_and_note_when_done
 
