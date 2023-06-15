@@ -58,4 +58,6 @@ class GeneratedPlaylist:
         add_tracks_to_playlist(self.id, tracks=self.tracks, user=self.user)
 
     def recreate(self):
+        if self.id is None:
+            raise ValueError("id not set")
         replace_playlist(self.id, new_tracks=self.tracks, user=self.user)
