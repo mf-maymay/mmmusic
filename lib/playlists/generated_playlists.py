@@ -1,9 +1,9 @@
+from lib.models.playlist_configs import PlaylistConfig
 from lib.playlists.management import (
     add_tracks_to_playlist,
     create_playlist,
     replace_playlist,
 )
-from lib.shuffling import smart_shuffle
 from lib.users import User
 
 MAX_TRACKS = 11_000
@@ -12,29 +12,25 @@ MAX_TRACKS = 11_000
 class GeneratedPlaylist:
     def __init__(
         self,
-        name,
         *,
+        config: PlaylistConfig,
         user: User,
-        playlist_id=None,
-        description="",
-        track_source=None,
-        track_filters=(),
-        order_tracks_func=smart_shuffle,
     ):
-        self.id = playlist_id
-
-        self.name = name
-        self.description = description
-
+        self.config = config
         self.user = user
 
+        self.id = config.id
+
+        self.name = config.name
+        self.description = config.description
+
         self.track_source = (
-            track_source
-            if track_source is not None
+            config.track_source
+            if config.track_source is not None
             else user.get_tracks_from_saved_albums
         )
-        self.track_filters = tuple(track_filters)
-        self.order_tracks_func = order_tracks_func
+        self.track_filters = config.track_filters
+        self.order_tracks_func = config.order_tracks_func
 
         self.tracks = None
 

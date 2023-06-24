@@ -1,5 +1,6 @@
 from functools import partial
 
+from lib.models.playlist_configs import PlaylistConfig
 from lib.playlists import GeneratedPlaylist
 from lib.playlists.management import get_tracks_from_playlist
 from lib.shuffling import _story_picker, smart_shuffle
@@ -12,10 +13,14 @@ def track_source(user):
 
 user = User()
 
-playlist = GeneratedPlaylist(
-    "Building Up Built To Spill",
+playlist_config = PlaylistConfig(
+    name="Building Up Built To Spill",
     track_source=partial(track_source, user),
     order_tracks_func=partial(smart_shuffle, picker_factory=_story_picker),
+)
+
+playlist = GeneratedPlaylist(
+    config=playlist_config,
     user=user,
 )
 

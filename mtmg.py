@@ -1,3 +1,4 @@
+from lib.models.playlist_configs import PlaylistConfig
 from lib.playlists import GeneratedPlaylist
 from lib.playlists.management import get_tracks_from_playlist
 from lib.users import User
@@ -11,10 +12,14 @@ def track_source():
     return get_tracks_from_playlist(ID, user=user)
 
 
-playlist = GeneratedPlaylist(
-    "Monsters and Trains",
+playlist_config = PlaylistConfig(
+    name="Monsters and Trains",
     playlist_id=ID,
     track_source=track_source,
+)
+
+playlist = GeneratedPlaylist(
+    config=playlist_config,
     user=user,
 )
 
