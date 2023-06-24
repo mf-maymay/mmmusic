@@ -121,7 +121,7 @@ def _smart_seed_picker(tracks: Tracks) -> SeedPicker:
     return picker
 
 
-def smart_shuffle(tracks: Tracks, *, picker_factory=None):
+def smart_shuffle(tracks: Tracks, *, picker_factory=None) -> Tracks:
     tracks = list(tracks)
 
     picker_factory = _radio_picker if picker_factory is None else picker_factory
