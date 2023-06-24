@@ -8,6 +8,7 @@ from lib.playlists.management import (
     remove_tracks_from_playlist,
     shuffle_playlist,
 )
+from lib.track_sources import from_tracks
 from lib.users import User
 from lib.utils import time_and_note_when_done
 
@@ -80,9 +81,9 @@ for playlist_name, details in Q_PLAYLISTS.items():
     with time_and_note_when_done(f"Recreating '{playlist_name}'..."):
         playlist_config = PlaylistConfig(
             name=playlist_name,
-            playlist_id=details["id"],
+            id=details["id"],
             track_filters=[by_genre_pattern(pattern := details["pattern"])],
-            track_source=lambda user: q_all_tracks,
+            track_source=from_tracks(q_all_tracks),
         )
 
         playlist = GeneratedPlaylist(
