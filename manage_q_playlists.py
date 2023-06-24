@@ -82,7 +82,7 @@ for playlist_name, details in Q_PLAYLISTS.items():
             name=playlist_name,
             playlist_id=details["id"],
             track_filters=[by_genre_pattern(pattern := details["pattern"])],
-            track_source=lambda: q_all_tracks,
+            track_source=lambda user: q_all_tracks,
         )
 
         playlist = GeneratedPlaylist(

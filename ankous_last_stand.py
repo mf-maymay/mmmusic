@@ -34,7 +34,7 @@ most_similar = ordered_by_sim_desc[:69]
 
 als_playlist_config = PlaylistConfig(
     name="Ankou's Last Stand",
-    track_source=lambda: list(set(most_similar) | set(seeds)) + seeds * 2,
+    track_source=lambda user: list(set(most_similar) | set(seeds)) + seeds * 2,
 )
 
 als_playlist = GeneratedPlaylist(
@@ -43,7 +43,5 @@ als_playlist = GeneratedPlaylist(
 )
 
 als_playlist.get_tracks()
-
 als_playlist.order_tracks()
-
 als_playlist.create()

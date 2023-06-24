@@ -5,22 +5,20 @@ from lib.users import User
 
 ID = "67azW1qgFpSn7MDYO2QTl1"
 
-user = User()
 
-
-def track_source():
+def track_source(user):
     return get_tracks_from_playlist(ID, user=user)
 
 
 playlist_config = PlaylistConfig(
     name="Monsters and Trains",
-    playlist_id=ID,
+    id=ID,
     track_source=track_source,
 )
 
 playlist = GeneratedPlaylist(
     config=playlist_config,
-    user=user,
+    user=User(),
 )
 
 playlist.get_tracks()

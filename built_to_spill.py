@@ -6,22 +6,22 @@ from lib.playlists.management import get_tracks_from_playlist
 from lib.shuffling import _story_picker, smart_shuffle
 from lib.users import User
 
+ID = "0WXuGXw1OSkSct4aYW4Nnu"
+
 
 def track_source(user):
-    return get_tracks_from_playlist("0WXuGXw1OSkSct4aYW4Nnu", user=user)
+    return get_tracks_from_playlist(ID, user=user)
 
-
-user = User()
 
 playlist_config = PlaylistConfig(
     name="Building Up Built To Spill",
-    track_source=partial(track_source, user),
+    track_source=track_source,
     order_tracks_func=partial(smart_shuffle, picker_factory=_story_picker),
 )
 
 playlist = GeneratedPlaylist(
     config=playlist_config,
-    user=user,
+    user=User(),
 )
 
 playlist.get_tracks()

@@ -21,12 +21,6 @@ class GeneratedPlaylist:
 
         self.id = config.id
 
-        self.track_source = (
-            config.track_source
-            if config.track_source is not None
-            else user.get_tracks_from_saved_albums
-        )
-
         self.tracks = None
 
     @property
@@ -34,7 +28,7 @@ class GeneratedPlaylist:
         return self.config.name
 
     def get_tracks(self):
-        self.tracks = self.track_source()
+        self.tracks = self.config.track_source(self.user)
 
         for track_filter in self.config.track_filters:
             self.tracks = track_filter(self.tracks)
