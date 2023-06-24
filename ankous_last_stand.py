@@ -1,7 +1,7 @@
 from lib.features import get_scores_for_tracks, similarity
 from lib.models.playlist_configs import PlaylistConfig
 from lib.models.tracks import get_track
-from lib.playlists import GeneratedPlaylist
+from lib.playlists.generated_playlists import GeneratedPlaylist
 from lib.users import User
 
 seeds = [

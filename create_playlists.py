@@ -1,5 +1,5 @@
 from lib.data.playlist_configs import playlist_configs
-from lib.playlists import GeneratedPlaylist
+from lib.playlists.generated_playlists import GeneratedPlaylist
 from lib.playlists.management import get_tracks_from_playlist
 from lib.users import User
 from lib.utils import time_and_note_when_done

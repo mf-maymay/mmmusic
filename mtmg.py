@@ -1,5 +1,5 @@
 from lib.models.playlist_configs import PlaylistConfig
-from lib.playlists import GeneratedPlaylist
+from lib.playlists.generated_playlists import GeneratedPlaylist
 from lib.playlists.management import get_tracks_from_playlist
 from lib.users import User
 

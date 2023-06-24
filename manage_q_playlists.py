@@ -1,6 +1,6 @@
 from lib.filters import by_genre_pattern
 from lib.models.playlist_configs import PlaylistConfig
-from lib.playlists import GeneratedPlaylist
+from lib.playlists.generated_playlists import GeneratedPlaylist
 from lib.playlists.management import (
     add_tracks_to_playlist,
     clear_playlist,
