@@ -152,7 +152,7 @@ playlist_configs = [
             by_genre_pattern(pattern := ".*(japan|j-).*"),
             by_artist_attribute(
                 lambda x: x.id
-                not in PlaylistConfig(
+                not in {
                     "7C2DSqaNkh0w77O5Jz1FKh",  # archie shepp
                     "5jtGuhEEDh07yaFfm8qHg7",  # cecil taylor
                     "3uPWecBPNXAChysw1uOJwI",  # don cherry
@@ -160,7 +160,7 @@ playlist_configs = [
                     "3BG0nwVh3Gc7cuT4XdsLtt",  # joe henderson
                     "1EpLpC0tbCla8knfhET78p",  # mccoy tyner trio
                     "47odibUtrN3lnWx0p0pk2P",  # ornette coleman
-                )
+                }
             ),
         ],
         description=f"genre matches '{pattern}'",
