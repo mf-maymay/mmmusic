@@ -5,7 +5,7 @@ import numpy as np
 
 from lib.features import get_scores_for_tracks, similarity
 from lib.models.tracks import Track, get_track
-from lib.types import Item, ItemPicker, Items, SeedPicker, Tracks
+from lib.models.types import Item, ItemPicker, Items, SeedPicker, Tracks
 
 _shuffle = np.random.default_rng().shuffle
 
