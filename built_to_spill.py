@@ -2,20 +2,15 @@ from functools import partial
 
 from lib.models.playlist_configs import PlaylistConfig
 from lib.playlists.generated_playlists import GeneratedPlaylist
-from lib.playlists.management import get_tracks_from_playlist
 from lib.shuffling import _story_picker, smart_shuffle
+from lib.track_sources import from_playlist
 from lib.users import User
 
 ID = "0WXuGXw1OSkSct4aYW4Nnu"
 
-
-def track_source(user):
-    return get_tracks_from_playlist(ID, user=user)
-
-
 playlist_config = PlaylistConfig(
     name="Building Up Built To Spill",
-    track_source=track_source,
+    track_source=from_playlist(ID),
     order_tracks_func=partial(smart_shuffle, picker_factory=_story_picker),
 )
 

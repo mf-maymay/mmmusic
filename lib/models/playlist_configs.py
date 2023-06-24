@@ -1,17 +1,15 @@
-from typing import Callable
-
 import pydantic
 
-from lib.models.types import TrackListTransformer, Tracks
+from lib.models.types import TrackListTransformer
 from lib.shuffling import smart_shuffle
-from lib.users import User
+from lib.track_sources import TrackSource, from_saved_albums
 
 
 class PlaylistConfig(pydantic.BaseModel):
     id: str | None
     name: str
     description: str = ""
-    track_source: Callable[[User], Tracks] = User.get_tracks_from_saved_albums
+    track_source: TrackSource = from_saved_albums
     order_tracks_func: TrackListTransformer = smart_shuffle
     track_filters: list[TrackListTransformer] = []
 
