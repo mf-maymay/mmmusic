@@ -1,6 +1,6 @@
 from functools import cache
 
-from pydantic import BaseModel
+import pydantic
 
 from lib.external import spotify
 
@@ -23,7 +23,7 @@ AUDIO_FEATURE_FIELDS = (
 )
 
 
-class AudioFeatures(BaseModel):
+class AudioFeatures(pydantic.BaseModel):
     id: str
     acousticness: float
     danceability: float
@@ -43,7 +43,7 @@ class AudioFeatures(BaseModel):
         return getattr(self, key)
 
 
-class Track(BaseModel):
+class Track(pydantic.BaseModel):
     name: str
     id: str
     album_id: str

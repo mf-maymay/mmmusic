@@ -1,6 +1,6 @@
 from functools import cache
 
-from pydantic import BaseModel
+import pydantic
 from requests.exceptions import HTTPError
 from spotipy.exceptions import SpotifyException
 
@@ -9,7 +9,7 @@ from lib.external import spotify
 ArtistID = str
 
 
-class Artist(BaseModel):
+class Artist(pydantic.BaseModel):
     name: str
     id: str
     genres: tuple[str, ...]
