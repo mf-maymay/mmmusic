@@ -15,3 +15,10 @@ def from_playlist(playlist_id: str) -> TrackSource:
         return get_tracks_from_playlist(playlist_id, user=user)
 
     return track_source
+
+
+def from_tracks(tracks: Tracks) -> TrackSource:
+    def track_source(user: User) -> Tracks:
+        return tracks
+
+    return track_source

@@ -2,6 +2,7 @@ from lib.features import get_scores_for_tracks, similarity
 from lib.models.playlist_configs import PlaylistConfig
 from lib.models.tracks import get_track
 from lib.playlists.generated_playlists import GeneratedPlaylist
+from lib.track_sources import from_tracks
 from lib.users import User
 
 seeds = [
@@ -34,7 +35,7 @@ most_similar = ordered_by_sim_desc[:69]
 
 als_playlist_config = PlaylistConfig(
     name="Ankou's Last Stand",
-    track_source=lambda user: list(set(most_similar) | set(seeds)) + seeds * 2,
+    track_source=from_tracks(list(set(most_similar) | set(seeds)) + seeds * 2),
 )
 
 als_playlist = GeneratedPlaylist(
