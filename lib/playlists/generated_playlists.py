@@ -47,6 +47,9 @@ class GeneratedPlaylist:
         self.tracks = self.order_tracks_func(self.tracks)
 
     def create(self):
+        if self.id is not None:
+            raise ValueError("id is already set")
+
         self.id = create_playlist(
             name=self.name, description=self.description, user=self.user
         )
@@ -56,4 +59,5 @@ class GeneratedPlaylist:
     def recreate(self):
         if self.id is None:
             raise ValueError("id not set")
+
         replace_playlist(self.id, new_tracks=self.tracks, user=self.user)
