@@ -13,3 +13,6 @@ class PlaylistConfig(pydantic.BaseModel):
     track_source: Callable[[], Tracks] | None
     order_tracks_func: TrackListTransformer = smart_shuffle
     track_filters: list[TrackListTransformer] = []
+
+    class Config:
+        extra = pydantic.Extra.forbid
