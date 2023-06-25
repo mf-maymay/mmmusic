@@ -51,6 +51,7 @@ playlist_configs = [
     ),
     PlaylistConfig(
         name="Ankou's Last Stand",
+        id="4lyNSFxJIpJBDTP9wUq4C1",
         track_filters=[
             by_similarity_to_track(
                 "1ibHApXtb0pgplmNDRLHrJ",  # Achilles last stand
