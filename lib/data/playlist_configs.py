@@ -2,6 +2,7 @@ from lib.filters import (
     by_artist_attribute,
     by_genre_pattern,
     by_release_year,
+    by_similarity_to_track,
     by_track_attribute,
 )
 
@@ -48,7 +49,15 @@ playlist_configs = [
             reverse=True,
         ),
     ),
-
+    PlaylistConfig(
+        name="Ankou's Last Stand",
+        track_filters=[
+            by_similarity_to_track(
+                "1ibHApXtb0pgplmNDRLHrJ",  # Achilles last stand
+                limit=69,
+            )
+        ],
+    ),
     PlaylistConfig(
         name="ambient",
         id="1YV73mm0afshcS0dRnUGnA",
