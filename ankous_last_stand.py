@@ -1,41 +1,21 @@
-from lib.features import get_scores_for_tracks, similarity
 from lib.models.playlist_configs import PlaylistConfig
 from lib.models.tracks import get_track
+from lib.playlists.ordering import by_similarity
 from lib.playlists.generated_playlists import GeneratedPlaylist
 from lib.track_sources import from_tracks
 from lib.users import User
 
-seeds = [
-    get_track("1ibHApXtb0pgplmNDRLHrJ"),  # Achilles Last Stand by Led Zeppelin
-    # get_track("4g14R1u5Vc4hYUP56qyM3N"),  # La faulx by Univers Zero
-    # get_track("0yY0Gba40gNEBFCWWMZGZo"),  # Summoning the Rain by Drudkh
-]
+ACHILLES_LAST_STAND = get_track("1ibHApXtb0pgplmNDRLHrJ")
 
 user = User()
 
 all_tracks = user.get_tracks_from_saved_albums()
 
-assert all(seed in all_tracks for seed in seeds)
-
-track_scores = get_scores_for_tracks(all_tracks)
-
-similarity_vectors = {
-    track: [similarity(track_scores[track], track_scores[seed]) for seed in seeds]
-    for track in all_tracks
-}
-
-similarity_scalars = {
-    track: sum(similarity_vectors[track])  # higher -> more similar
-    for track in all_tracks
-}
-
-ordered_by_sim_desc = sorted(all_tracks, key=similarity_scalars.get, reverse=True)
-
-most_similar = ordered_by_sim_desc[:69]
+most_similar = by_similarity(seed=ACHILLES_LAST_STAND, tracks=all_tracks)[:69]
 
 als_playlist_config = PlaylistConfig(
     name="Ankou's Last Stand",
-    track_source=from_tracks(list(set(most_similar) | set(seeds)) + seeds * 2),
+    track_source=from_tracks(most_similar),
 )
 
 als_playlist = GeneratedPlaylist(
