@@ -5,8 +5,8 @@ from lib.filters import (
     by_similarity_to_track,
     by_track_attribute,
 )
-
 from lib.models.playlist_configs import PlaylistConfig
+from lib.track_sources import from_playlist
 
 playlist_configs = [
     PlaylistConfig(
@@ -57,6 +57,11 @@ playlist_configs = [
                 limit=69,
             )
         ],
+    ),
+    PlaylistConfig(
+        name="Monsters and Trains",
+        id="67azW1qgFpSn7MDYO2QTl1",
+        track_source=from_playlist("67azW1qgFpSn7MDYO2QTl1"),
     ),
     PlaylistConfig(
         name="ambient",
