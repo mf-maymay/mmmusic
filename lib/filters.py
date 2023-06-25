@@ -5,6 +5,7 @@ from lib.models.albums import Album, get_album
 from lib.models.artists import Artist, get_artist
 from lib.models.tracks import Track
 from lib.models.types import TrackListTransformer, Tracks
+from lib.playlists.ordering import by_similarity
 
 
 def by_album_attribute(
@@ -73,3 +74,10 @@ def by_release_year(
         )
 
     return by_album_attribute(release_date_filter)
+
+
+def by_similarity_to_track(track: Track, *, limit: int) -> TrackListTransformer:
+    def filter_tracks(tracks: Tracks) -> Tracks:
+        return by_similarity(seed=track, tracks=tracks)[:limit]
+
+    return filter_tracks
