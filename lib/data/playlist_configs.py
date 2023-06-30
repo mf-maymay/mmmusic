@@ -60,6 +60,16 @@ playlist_configs = [
         ],
     ),
     PlaylistConfig(
+        name="Battle in the Spirit Leech's Dream World",
+        id="1YlzmYdLyFFXwclJIWoZB5",
+        track_filters=[
+            by_similarity_to_track(
+                "4X2xFHqUSRmyH9sQmfwCP2",  # To Never Return
+                limit=200,
+            )
+        ],
+    ),
+    PlaylistConfig(
         name="Monsters and Trains",
         id="67azW1qgFpSn7MDYO2QTl1",
         track_source=from_playlist("67azW1qgFpSn7MDYO2QTl1"),
