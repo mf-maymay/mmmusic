@@ -1,6 +1,7 @@
 from lib.filters import (
     by_artist_attribute,
     by_genre_pattern,
+    by_number_of_tracks,
     by_release_year,
     by_similarity_to_track,
     by_track_attribute,
@@ -41,6 +42,11 @@ playlist_configs = [
     ),
     PlaylistConfig(name="ALL", id="6vgITEENg2J5mJhW9scpns"),
     PlaylistConfig(
+        name="ALL, sample",
+        id="2f8Lu0VER9CrwSqZndysMb",
+        track_filters=[by_number_of_tracks(500, randomly_sampled=True)],
+    ),
+    PlaylistConfig(
         name="ALL, ordered by popularity",
         id="7DpWFkySsh4Jb4RwhsM5HH",
         order_tracks_func=lambda tracks: sorted(
@@ -55,8 +61,8 @@ playlist_configs = [
         track_filters=[
             by_similarity_to_track(
                 "1ibHApXtb0pgplmNDRLHrJ",  # Achilles last stand
-                limit=69,
-            )
+            ),
+            by_number_of_tracks(69),
         ],
     ),
     PlaylistConfig(
@@ -65,8 +71,8 @@ playlist_configs = [
         track_filters=[
             by_similarity_to_track(
                 "4X2xFHqUSRmyH9sQmfwCP2",  # To Never Return
-                limit=200,
-            )
+            ),
+            by_number_of_tracks(200),
         ],
     ),
     PlaylistConfig(

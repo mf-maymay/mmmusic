@@ -1,3 +1,4 @@
+import random
 from typing import Callable
 
 from lib.genres import artists_of_genres_matching
@@ -49,6 +50,17 @@ def by_genre_pattern(pattern: str) -> TrackListTransformer:
     return filter_tracks
 
 
+def by_number_of_tracks(
+    n: int,
+    *,
+    randomly_sampled: bool = False,
+) -> TrackListTransformer:
+    def filter_tracks(tracks: Tracks) -> Tracks:
+        return random.sample(tracks, n) if randomly_sampled else tracks[:n]
+
+    return filter_tracks
+
+
 def by_track_attribute(
     track_filter_func: Callable[[Track], bool]
 ) -> TrackListTransformer:
@@ -76,10 +88,10 @@ def by_release_year(
     return by_album_attribute(release_date_filter)
 
 
-def by_similarity_to_track(track: Track | str, *, limit: int) -> TrackListTransformer:
+def by_similarity_to_track(track: Track | str) -> TrackListTransformer:
     track = get_track(track)
 
     def filter_tracks(tracks: Tracks) -> Tracks:
-        return by_similarity(seed=track, tracks=tracks)[:limit]
+        return by_similarity(seed=track, tracks=tracks)
 
     return filter_tracks
