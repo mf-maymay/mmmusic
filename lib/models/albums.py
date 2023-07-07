@@ -25,7 +25,7 @@ class Album(pydantic.BaseModel):
         fields = value.split("-")
 
         if (num_fields := len(fields)) in {1, 2}:
-            return "-".join(fields + ["1"] * (3 - num_fields))
+            return "-".join(fields + ["01"] * (3 - num_fields))
 
         return value
 
