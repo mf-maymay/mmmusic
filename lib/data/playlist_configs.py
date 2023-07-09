@@ -172,6 +172,18 @@ playlist_configs = [
         description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
+        name="incense",
+        id="61uEa4n0JSywxfjccpW1fk",
+        track_filters=[
+            by_track_attribute(lambda x: 60 <= x["tempo"] <= 80),
+            by_track_attribute(lambda x: x["acousticness"] >= 0.5),
+            by_track_attribute(lambda x: 0.3 <= x["energy"] <= 0.7),
+            by_track_attribute(lambda x: x["danceability"] <= 0.5),
+            by_track_attribute(lambda x: x["valence"] >= 0.5),
+            by_track_attribute(lambda x: x["liveness"] <= 0.5),
+        ],
+    ),
+    PlaylistConfig(
         name="indie",
         id="1gqcFVnh4TT8sHAOgdNm9u",
         track_filters=[by_genre_pattern(pattern := ".*indie.*")],
