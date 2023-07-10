@@ -14,6 +14,10 @@ class User:
     def __init__(self, username=None, *, redirect_uri=None):
         username_from_environ = os.environ.get("SPOTIPY_CLIENT_USERNAME")
 
+        open_browser_for_oauth = os.environ.get(
+            "SPOTIPY_OPEN_BROWSER_FOR_OAUTH", "true"
+        ).lower() in {"true", "1"}
+
         self.username = (
             username
             if username is not None
@@ -27,7 +31,10 @@ class User:
         self._tracks = None
 
         auth_manager = SpotifyOAuth(
-            username=self.username, redirect_uri=redirect_uri, scope=DEFAULT_SCOPE
+            username=self.username,
+            redirect_uri=redirect_uri,
+            scope=DEFAULT_SCOPE,
+            open_browser=open_browser_for_oauth,
         )
 
         self.sp = spotipy.Spotify(auth_manager=auth_manager, retries=None)
