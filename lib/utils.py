@@ -33,8 +33,7 @@ def take_x_at_a_time(items, x):
 
 
 @contextmanager
-def time_and_note_when_done(message: str):
-    print(message)
+def time_and_note_when_done():
     start = dt.now()
     yield
     total_secs = (dt.now() - start).total_seconds()

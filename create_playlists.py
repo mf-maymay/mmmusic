@@ -18,7 +18,8 @@ if __name__ == "__main__":
     for key in to_create:
         playlist = playlists[key]
 
-        with time_and_note_when_done(f"\nGetting '{playlist.name}' tracks..."):
+        print(f"\nGetting '{playlist.name}' tracks...")
+        with time_and_note_when_done():
             playlist.get_tracks()
 
         if playlist.id is not None and set(
@@ -30,12 +31,15 @@ if __name__ == "__main__":
             )
             continue
 
-        with time_and_note_when_done(f"Ordering '{playlist.name}' tracks..."):
+        print(f"Ordering '{playlist.name}' tracks...")
+        with time_and_note_when_done():
             playlist.order_tracks()
 
         if playlist.id is None:
-            with time_and_note_when_done(f"Creating '{playlist.name}'..."):
+            print(f"Creating '{playlist.name}'...")
+            with time_and_note_when_done():
                 playlist.create()
         else:
-            with time_and_note_when_done(f"Recreating '{playlist.name}'..."):
+            print(f"Recreating '{playlist.name}'...")
+            with time_and_note_when_done():
                 playlist.recreate()

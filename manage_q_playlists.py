@@ -33,7 +33,8 @@ Q_PLAYLISTS = {
 user = User()
 
 # Get playlist tracks
-with time_and_note_when_done("Getting tracks..."):
+print("Getting tracks...")
+with time_and_note_when_done():
     candidates = set(get_tracks_from_playlist(CANDIDATES_ID, user=user))
 
     q_all_tracks = set(get_tracks_from_playlist(Q_ALL_ID, user=user))
@@ -45,7 +46,8 @@ with time_and_note_when_done("Getting tracks..."):
 # Add candidates to 'q - all'
 candidates_to_add = candidates - q_all_tracks
 
-with time_and_note_when_done(f"Adding {len(candidates_to_add):,} candidates..."):
+print(f"Adding {len(candidates_to_add):,} candidates...")
+with time_and_note_when_done():
     add_tracks_to_playlist(Q_ALL_ID, tracks=candidates_to_add, user=user)
 
 q_all_tracks |= candidates_to_add
@@ -55,7 +57,8 @@ clear_playlist(CANDIDATES_ID, user=user)
 # Remove rejects from 'q - all'
 rejects_to_remove = rejects & q_all_tracks
 
-with time_and_note_when_done(f"Removing {len(rejects_to_remove):,} rejects..."):
+print(f"Removing {len(rejects_to_remove):,} rejects...")
+with time_and_note_when_done():
     remove_tracks_from_playlist(Q_ALL_ID, tracks=rejects_to_remove, user=user)
 
 q_all_tracks -= rejects_to_remove
@@ -65,20 +68,21 @@ clear_playlist(REJECTS_ID, user=user)
 # Remove already-saved from 'q - all'
 already_saved_to_remove = q_all_tracks & user_tracks
 
-with time_and_note_when_done(
-    f"Removing {len(already_saved_to_remove):,} already-saved tracks..."
-):
+print(f"Removing {len(already_saved_to_remove):,} already-saved tracks...")
+with time_and_note_when_done():
     remove_tracks_from_playlist(Q_ALL_ID, tracks=already_saved_to_remove, user=user)
 
 q_all_tracks -= already_saved_to_remove
 
 # Shuffle 'q - all'
-with time_and_note_when_done("Shuffing 'q - all'..."):
+print("Shuffing 'q - all'...")
+with time_and_note_when_done():
     shuffle_playlist(Q_ALL_ID, user=user)
 
 # Recreate Q playlists
 for playlist_name, details in Q_PLAYLISTS.items():
-    with time_and_note_when_done(f"Recreating '{playlist_name}'..."):
+    print(f"Recreating '{playlist_name}'...")
+    with time_and_note_when_done():
         playlist_config = PlaylistConfig(
             name=playlist_name,
             id=details["id"],
