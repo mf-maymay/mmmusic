@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     playlists = {
         playlist_config.name: GeneratedPlaylist(config=playlist_config, user=user)
-        for playlist_config in playlist_configs.regular
+        for playlist_config in playlist_configs.regular_playlists
     }
 
     to_create = sorted(playlists)

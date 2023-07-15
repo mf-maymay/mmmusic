@@ -1,3 +1,4 @@
+from lib.data import playlist_ids
 from lib.filters import (
     by_artist_attribute,
     by_genre_pattern,
@@ -9,7 +10,7 @@ from lib.filters import (
 from lib.models.playlist_configs import PlaylistConfig
 from lib.track_sources import from_playlist
 
-regular = [
+regular_playlists = [
     PlaylistConfig(
         name="1970s",
         id="42oUtzFrtsjwNrSpNPSK2e",
@@ -294,5 +295,40 @@ regular = [
         name="unpopular artists",
         id="5nF4jX1FpEsBC8r2ie1hPK",
         track_filters=[by_artist_attribute(lambda x: x.popularity <= 25)],
+    ),
+]
+
+q_playlists = [
+    PlaylistConfig(
+        name="q - harder",
+        id="5mRa71QUmE6EWavxTA22g6",
+        track_filters=[by_genre_pattern("^(?!.*?(hop|rap)).*(core|doom|metal|punk).*")],
+        track_source=from_playlist(playlist_ids.Q_ALL),
+    ),
+    PlaylistConfig(
+        name="q - hop",
+        id="0sFhYQaTiuZlG1vMDSiFMR",
+        track_filters=[by_genre_pattern(".*(hop|rap).*")],
+        track_source=from_playlist(playlist_ids.Q_ALL),
+    ),
+    PlaylistConfig(
+        name="q - jazz",
+        id="4HQnus8hcLfX5pYtG95pKY",
+        track_filters=[by_genre_pattern(".*jazz.*")],
+        track_source=from_playlist(playlist_ids.Q_ALL),
+    ),
+    PlaylistConfig(
+        name="q - misc",
+        id="7DOqATuWsl640ustK8lhhI",
+        track_filters=[
+            by_genre_pattern("^(?!.*?(core|doom|hop|jazz|metal|punk|rap|rock)).*")
+        ],
+        track_source=from_playlist(playlist_ids.Q_ALL),
+    ),
+    PlaylistConfig(
+        name="q - rock",
+        id="1tlzpLpRdQXUicLbhIJMcM",
+        track_filters=[by_genre_pattern(".*rock.*")],
+        track_source=from_playlist(playlist_ids.Q_ALL),
     ),
 ]
