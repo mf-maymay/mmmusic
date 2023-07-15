@@ -1,6 +1,5 @@
 from lib.data.playlist_configs import playlist_configs
 from lib.playlists.generated_playlists import GeneratedPlaylist
-from lib.playlists.management import get_tracks_from_playlist
 from lib.users import User
 from lib.utils import time_and_note_when_done
 
@@ -21,15 +20,6 @@ if __name__ == "__main__":
         print(f"\nGetting '{playlist.name}' tracks...")
         with time_and_note_when_done():
             playlist.get_tracks()
-
-        if playlist.id is not None and set(
-            get_tracks_from_playlist(playlist.id, user=user)
-        ) == set(playlist.tracks):
-            print(
-                f"Skipping processing for '{playlist.name}' "
-                f"because its tracks have not changed."
-            )
-            continue
 
         print(f"Ordering '{playlist.name}' tracks...")
         with time_and_note_when_done():
