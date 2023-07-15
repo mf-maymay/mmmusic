@@ -34,13 +34,13 @@ def take_x_at_a_time(items, x):
 
 @contextmanager
 def time_and_note_when_done(message: str):
-    print(message, end="", flush=True)
+    print(message)
     start = dt.now()
     yield
     total_secs = (dt.now() - start).total_seconds()
     total_mins, secs = divmod(int(total_secs), 60)
     hours, mins = divmod(total_mins, 60)
     print(
-        f" \x1b[1;32;20mDone.\033[0m"
+        f"\x1b[1;32;20mDone.\033[0m"
         f" (\x1b[33;20mTook {hours}h {mins}m {secs}s.\033[0m)"
     )
