@@ -9,7 +9,7 @@ from lib.filters import (
 from lib.models.playlist_configs import PlaylistConfig
 from lib.track_sources import from_playlist
 
-playlist_configs = [
+regular = [
     PlaylistConfig(
         name="1970s",
         id="42oUtzFrtsjwNrSpNPSK2e",

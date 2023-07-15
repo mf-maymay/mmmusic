@@ -1,4 +1,4 @@
-from lib.data.playlist_configs import playlist_configs
+from lib.data import playlist_configs
 from lib.playlists.generated_playlists import GeneratedPlaylist
 from lib.users import User
 from lib.utils import time_and_note_when_done
@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     playlists = {
         playlist_config.name: GeneratedPlaylist(config=playlist_config, user=user)
-        for playlist_config in playlist_configs
+        for playlist_config in playlist_configs.regular
     }
 
     to_create = sorted(playlists)
