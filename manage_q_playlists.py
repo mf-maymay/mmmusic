@@ -8,7 +8,7 @@ from lib.playlists.management import (
     remove_tracks_from_playlist,
     shuffle_playlist,
 )
-from lib.track_sources import from_tracks
+from lib.track_sources import from_playlist
 from lib.users import User
 from lib.utils import time_and_note_when_done
 
@@ -16,19 +16,40 @@ CANDIDATES_ID = "5AZxg3qZIC7cGnxWa7EuSd"
 Q_ALL_ID = "4Mr3AVGL2jGI4Jc2qr3PLf"
 REJECTS_ID = "2Cm0uu5nAGb1ISfXPluvks"
 
-Q_PLAYLISTS = {
-    "q - harder": {
-        "id": "5mRa71QUmE6EWavxTA22g6",
-        "pattern": "^(?!.*?(hop|rap)).*(core|doom|metal|punk).*",
-    },
-    "q - hop": {"id": "0sFhYQaTiuZlG1vMDSiFMR", "pattern": ".*(hop|rap).*"},
-    "q - jazz": {"id": "4HQnus8hcLfX5pYtG95pKY", "pattern": ".*jazz.*"},
-    "q - misc": {
-        "id": "7DOqATuWsl640ustK8lhhI",
-        "pattern": "^(?!.*?(core|doom|hop|jazz|metal|punk|rap|rock)).*",
-    },
-    "q - rock": {"id": "1tlzpLpRdQXUicLbhIJMcM", "pattern": ".*rock.*"},
-}
+q_playlists = [
+    PlaylistConfig(
+        name="q - harder",
+        id="5mRa71QUmE6EWavxTA22g6",
+        track_filters=[by_genre_pattern("^(?!.*?(hop|rap)).*(core|doom|metal|punk).*")],
+        track_source=from_playlist(Q_ALL_ID),
+    ),
+    PlaylistConfig(
+        name="q - hop",
+        id="0sFhYQaTiuZlG1vMDSiFMR",
+        track_filters=[by_genre_pattern(".*(hop|rap).*")],
+        track_source=from_playlist(Q_ALL_ID),
+    ),
+    PlaylistConfig(
+        name="q - jazz",
+        id="4HQnus8hcLfX5pYtG95pKY",
+        track_filters=[by_genre_pattern(".*jazz.*")],
+        track_source=from_playlist(Q_ALL_ID),
+    ),
+    PlaylistConfig(
+        name="q - misc",
+        id="7DOqATuWsl640ustK8lhhI",
+        track_filters=[
+            by_genre_pattern("^(?!.*?(core|doom|hop|jazz|metal|punk|rap|rock)).*")
+        ],
+        track_source=from_playlist(Q_ALL_ID),
+    ),
+    PlaylistConfig(
+        name="q - rock",
+        id="1tlzpLpRdQXUicLbhIJMcM",
+        track_filters=[by_genre_pattern(".*rock.*")],
+        track_source=from_playlist(Q_ALL_ID),
+    ),
+]
 
 user = User()
 
@@ -80,20 +101,10 @@ with time_and_note_when_done():
     shuffle_playlist(Q_ALL_ID, user=user)
 
 # Recreate Q playlists
-for playlist_name, details in Q_PLAYLISTS.items():
-    print(f"Recreating '{playlist_name}'...")
+for playlist_config in q_playlists:
+    print(f"Recreating '{playlist_config.name}'...")
     with time_and_note_when_done():
-        playlist_config = PlaylistConfig(
-            name=playlist_name,
-            id=details["id"],
-            track_filters=[by_genre_pattern(pattern := details["pattern"])],
-            track_source=from_tracks(q_all_tracks),
-        )
-
-        playlist = GeneratedPlaylist(
-            config=playlist_config,
-            user=user,
-        )
+        playlist = GeneratedPlaylist(config=playlist_config, user=user)
 
         playlist.get_tracks()
         playlist.order_tracks()
