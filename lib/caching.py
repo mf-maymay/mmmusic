@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 import shelve
 from typing import Any
 
@@ -12,8 +13,13 @@ def _get_key_for_shelve(key_for_cache: Any) -> str:
 class ShelveCache(cachetools.Cache):
     # TODO: Consider inheriting from a Cache subclass.
 
-    _path_to_shelf = "./.shelf"
+    _path_to_shelf = ".shelf/"
     _shelf_life = timedelta(days=30)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        os.makedirs(self._path_to_shelf, exist_ok=True)
 
     def __setitem__(self, key: Any, value: Any):
         shelve_key = _get_key_for_shelve(key)
