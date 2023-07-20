@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 import shelve
+import threading
 from typing import Any, Callable
 
 import cachetools
@@ -46,7 +47,7 @@ class ShelveCache(cachetools.Cache):
             # Check shelf, raising KeyError if it's not in the shelf.
             shelved_item = shelf[shelve_key]
 
-            # Delete item from shelf and raise KeyError if shelved item as expired.
+            # Delete item from shelf and raise KeyError if shelved item has expired.
             if datetime.fromisoformat(shelved_item["expires_at"]) <= datetime.now():
                 del shelf[shelve_key]
                 raise KeyError
@@ -57,12 +58,10 @@ class ShelveCache(cachetools.Cache):
 # XXX: shelve is not thread safe, but cachetools.cached can be made to use a lock.
 
 
-def cache_with_shelve(name: str):
+def cache_with_shelve(name: str, *, max_items=20_000):
     def decorator(func: Callable) -> Callable:
-        # Set up cache to hold up to 20k items.
-        shelve_cache = ShelveCache(name=name, maxsize=20_000)
+        shelve_cache = ShelveCache(name=name, maxsize=max_items)
 
-        # TODO: Use lock.
-        return cachetools.cached(cache=shelve_cache, lock=None)(func)
+        return cachetools.cached(cache=shelve_cache, lock=threading.Lock())(func)
 
     return decorator
