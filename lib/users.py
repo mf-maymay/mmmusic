@@ -3,11 +3,14 @@ import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
+from lib.logging import get_logger
 from lib.models.albums import get_album, get_tracks_from_albums
 from lib.models.artists import get_artist
 from lib.utils import no_timeout
 
 DEFAULT_SCOPE = "playlist-modify-private,playlist-modify-public,user-library-read"
+
+logger = get_logger()
 
 
 class User:
@@ -30,12 +33,19 @@ class User:
         self._artists = None
         self._tracks = None
 
+        logger.info(f"Getting OAuth manager for user {self.username!r}")
+
+        if open_browser_for_oauth:
+            logger.info("Opening browser for OAuth")
+
         auth_manager = SpotifyOAuth(
             username=self.username,
             redirect_uri=redirect_uri,
             scope=DEFAULT_SCOPE,
             open_browser=open_browser_for_oauth,
         )
+
+        logger.info("OAuth manager was successfully prepared")
 
         self.sp = spotipy.Spotify(auth_manager=auth_manager, retries=None)
 
