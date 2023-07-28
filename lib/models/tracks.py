@@ -51,9 +51,6 @@ class Track(pydantic.BaseModel):
     popularity: int
     _audio_features: AudioFeatures = None
 
-    class Config:
-        underscore_attrs_are_private = True
-
     @property
     def audio_features(self):
         if self._audio_features is None:
