@@ -77,6 +77,11 @@ regular_playlists = [
         ],
     ),
     PlaylistConfig(
+        name="Collecting Dust",
+        id="5WQsnHNLsZSdqXdM6S63Kr",
+        track_source=from_playlist("5WQsnHNLsZSdqXdM6S63Kr"),
+    ),
+    PlaylistConfig(
         name="Monsters and Trains",
         id="67azW1qgFpSn7MDYO2QTl1",
         track_source=from_playlist("67azW1qgFpSn7MDYO2QTl1"),
