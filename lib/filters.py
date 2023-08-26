@@ -6,6 +6,7 @@ from lib.models.albums import Album, get_album
 from lib.models.artists import Artist, get_artist
 from lib.models.tracks import Track, get_track
 from lib.models.types import TrackListTransformer, Tracks
+from lib.music_theory import get_spotify_friendly_key, get_spotify_friendly_mode
 from lib.playlists.ordering import by_similarity
 
 
@@ -50,6 +51,19 @@ def by_genre_pattern(pattern: str) -> TrackListTransformer:
     return filter_tracks
 
 
+def by_scale(*, key: str, mode: str) -> TrackListTransformer:
+    spotify_friendly_key = get_spotify_friendly_key(key)
+    spotify_friendly_mode = get_spotify_friendly_mode(mode)
+
+    def track_matches_scale(track: Track) -> bool:
+        return (
+            track["key"] == spotify_friendly_key
+            and track["mode"] == spotify_friendly_mode
+        )
+
+    return by_track_attribute(track_matches_scale)
+
+
 def by_number_of_tracks(
     n: int,
     *,
@@ -57,15 +71,6 @@ def by_number_of_tracks(
 ) -> TrackListTransformer:
     def filter_tracks(tracks: Tracks) -> Tracks:
         return random.sample(tracks, n) if randomly_sampled else tracks[:n]
-
-    return filter_tracks
-
-
-def by_track_attribute(
-    track_filter_func: Callable[[Track], bool]
-) -> TrackListTransformer:
-    def filter_tracks(tracks: Tracks) -> Tracks:
-        return [track for track in tracks if track_filter_func(track)]
 
     return filter_tracks
 
@@ -80,12 +85,12 @@ def by_release_year(
     if end_year is None:
         end_year = float("inf")
 
-    def release_date_filter(album: Album) -> bool:
+    def album_matches_release_date(album: Album) -> bool:
         return album.album_type != "compilation" and (
             start_year <= album.release_date.year <= end_year
         )
 
-    return by_album_attribute(release_date_filter)
+    return by_album_attribute(album_matches_release_date)
 
 
 def by_similarity_to_track(track: Track | str) -> TrackListTransformer:
@@ -93,5 +98,14 @@ def by_similarity_to_track(track: Track | str) -> TrackListTransformer:
 
     def filter_tracks(tracks: Tracks) -> Tracks:
         return by_similarity(seed=track, tracks=tracks)
+
+    return filter_tracks
+
+
+def by_track_attribute(
+    track_filter_func: Callable[[Track], bool]
+) -> TrackListTransformer:
+    def filter_tracks(tracks: Tracks) -> Tracks:
+        return [track for track in tracks if track_filter_func(track)]
 
     return filter_tracks
