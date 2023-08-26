@@ -6,7 +6,7 @@ from lib.track_sources import TrackSource, from_saved_albums
 
 
 class PlaylistConfig(pydantic.BaseModel):
-    id: str | None
+    id: str | None = None
     name: str
     description: str = ""
     track_source: TrackSource = from_saved_albums
