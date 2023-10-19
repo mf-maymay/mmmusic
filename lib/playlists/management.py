@@ -61,11 +61,18 @@ def replace_playlist(
     new_name: str | None = None,
     new_description: str | None = None,
 ):
+    if not new_description:
+        new_description = None
+
     clear_playlist(playlist_id, user=user)
 
     add_tracks_to_playlist(playlist_id, tracks=new_tracks, user=user)
 
-    if new_name is not None or new_description is not None:
+    # NOTE: The Spotify API does not accept null or empty descriptions.
+    if not new_description:
+        new_description = None
+
+    if new_name or new_description:
         no_timeout(user.sp.user_playlist_change_details)(
             user=user.username,
             playlist_id=playlist_id,
