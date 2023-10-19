@@ -44,7 +44,7 @@ class GeneratedPlaylist:
             raise ValueError("id is already set")
 
         self.id = create_playlist(
-            name=self.config.name,
+            name=self.name,
             description=self.config.description,
             user=self.user,
         )
@@ -55,4 +55,10 @@ class GeneratedPlaylist:
         if self.id is None:
             raise ValueError("id not set")
 
-        replace_playlist(self.id, new_tracks=self.tracks, user=self.user)
+        replace_playlist(
+            self.id,
+            new_tracks=self.tracks,
+            user=self.user,
+            new_name=self.name,
+            new_description=self.config.description,
+        )

@@ -53,10 +53,25 @@ def remove_tracks_from_playlist(playlist_id, *, tracks, user: User):
         )
 
 
-def replace_playlist(playlist_id, *, new_tracks, user: User):
+def replace_playlist(
+    playlist_id,
+    *,
+    new_tracks,
+    user: User,
+    new_name: str | None = None,
+    new_description: str | None = None,
+):
     clear_playlist(playlist_id, user=user)
 
     add_tracks_to_playlist(playlist_id, tracks=new_tracks, user=user)
+
+    if new_name is not None or new_description is not None:
+        no_timeout(user.sp.user_playlist_change_details)(
+            user=user.username,
+            playlist_id=playlist_id,
+            name=new_name,
+            description=new_description,
+        )
 
 
 def shuffle_playlist(playlist_id, *, user: User):
