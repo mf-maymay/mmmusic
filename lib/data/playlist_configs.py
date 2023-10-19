@@ -160,7 +160,9 @@ regular_playlists = [
     PlaylistConfig(
         name="goth, industrial",
         id="1jtOACTCsi2LQQ6qHjC1D3",
-        track_filters=[by_genre_pattern(pattern := ".*(goth|industrial).*")],
+        track_filters=[
+            by_genre_pattern(pattern := "^(?!.*?(gothenburg)).*(goth|industrial).*")
+        ],
         description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
