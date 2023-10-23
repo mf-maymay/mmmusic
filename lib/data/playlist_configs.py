@@ -8,7 +8,7 @@ from lib.filters import (
     by_track_attribute,
 )
 from lib.models.playlist_configs import PlaylistConfig
-from lib.track_sources import from_playlist
+from lib.track_sources import from_playlist, from_playlist_config
 
 regular_playlists = [
     PlaylistConfig(
@@ -205,19 +205,29 @@ regular_playlists = [
         ],
         description=f"genre matches '{pattern}'",
     ),
+    (
+        jazz_playlist_config := PlaylistConfig(
+            name="jazz",
+            id="4ZflB2p06iCWXRgU3yeDUb",
+            track_filters=[
+                by_genre_pattern(
+                    pattern := (
+                        "^(?!.*?(core|dark|fusion|nu|jazz metal|jazz rap|jazztronica))"
+                        ".*jazz.*"
+                    )
+                ),
+                by_artist_attribute(
+                    lambda x: x.id != "4aMeIY7MkJoZg7O91cmDDd"  # adrian younge
+                ),
+            ],
+            description=f"genre matches '{pattern}'",
+        )
+    ),
     PlaylistConfig(
-        name="jazz",
-        id="4ZflB2p06iCWXRgU3yeDUb",
-        track_filters=[
-            by_genre_pattern(
-                pattern := "^(?!.*?(core|dark|fusion|nu|jazz metal|jazz rap|jazztronica"
-                ")).*jazz.*"
-            ),
-            by_artist_attribute(
-                lambda x: x.id != "4aMeIY7MkJoZg7O91cmDDd"  # adrian younge
-            ),
-        ],
-        description=f"genre matches '{pattern}'",
+        name="bitter jazz",
+        id="6NFebq22RoaEuXPk5rwGXL",
+        track_source=from_playlist_config(jazz_playlist_config),
+        track_filters=[by_track_attribute(lambda x: x["valence"] <= 0.2)],
     ),
     PlaylistConfig(
         name="metal",
