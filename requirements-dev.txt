@@ -1,0 +1,5 @@
+# normal reqs
+-r requirements.txt
+
+# dev reqs
+black
