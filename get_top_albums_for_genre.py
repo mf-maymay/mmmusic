@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from tabulate import tabulate
 
-from lib.external.everynoise import get_artists_for_genre
-from lib.external.sputnik import get_artist_albums
+from mmmusic.external.everynoise import get_artists_for_genre
+from mmmusic.external.sputnik import get_artist_albums
 
 
 def get_score_confidence_levels(votes: np.ndarray) -> np.ndarray:

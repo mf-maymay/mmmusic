@@ -1,7 +1,7 @@
-from lib.models.tracks import get_track
-from lib.shuffling import smart_shuffle
-from lib.users import User
-from lib.utils import no_timeout, take_x_at_a_time
+from mmmusic.models.tracks import get_track
+from mmmusic.shuffling import smart_shuffle
+from mmmusic.users import User
+from mmmusic.utils import no_timeout, take_x_at_a_time
 
 MAX_TRACKS = 11_000
 

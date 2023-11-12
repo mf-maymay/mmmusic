@@ -3,10 +3,10 @@ from typing import Callable
 import numpy as np
 from scipy.stats import percentileofscore
 
-from lib.genres import get_track_genre_attributes
-from lib.models.albums import get_album
-from lib.models.tracks import Track
-from lib.models.types import Item, Items, Metrics, Tracks
+from mmmusic.genres import get_track_genre_attributes
+from mmmusic.models.albums import get_album
+from mmmusic.models.tracks import Track
+from mmmusic.models.types import Item, Items, Metrics, Tracks
 
 TRACK_FEATURES = (
     "danceability",

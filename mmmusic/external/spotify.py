@@ -3,7 +3,7 @@ from functools import cache
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
-from lib.utils import no_timeout
+from mmmusic.utils import no_timeout
 
 
 @cache

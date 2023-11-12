@@ -1,8 +1,8 @@
 import pydantic
 
-from lib.models.types import TrackListTransformer
-from lib.shuffling import smart_shuffle
-from lib.track_sources import TrackSource, from_saved_albums
+from mmmusic.models.types import TrackListTransformer
+from mmmusic.shuffling import smart_shuffle
+from mmmusic.track_sources import TrackSource, from_saved_albums
 
 
 class PlaylistConfig(pydantic.BaseModel):

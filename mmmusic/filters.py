@@ -1,13 +1,13 @@
 import random
 from typing import Callable
 
-from lib.genres import artists_of_genres_matching
-from lib.models.albums import Album, get_album
-from lib.models.artists import Artist, get_artist
-from lib.models.tracks import Track, get_track
-from lib.models.types import TrackListTransformer, Tracks
-from lib.music_theory import get_spotify_friendly_key, get_spotify_friendly_mode
-from lib.playlists.ordering import by_similarity
+from mmmusic.genres import artists_of_genres_matching
+from mmmusic.models.albums import Album, get_album
+from mmmusic.models.artists import Artist, get_artist
+from mmmusic.models.tracks import Track, get_track
+from mmmusic.models.types import TrackListTransformer, Tracks
+from mmmusic.music_theory import get_spotify_friendly_key, get_spotify_friendly_mode
+from mmmusic.playlists.ordering import by_similarity
 
 
 def by_album_attribute(

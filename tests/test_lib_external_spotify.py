@@ -1,10 +1,10 @@
 import unittest
 from unittest.mock import patch
 
-from lib.external.spotify import get_artist, get_track
+from mmmusic.external.spotify import get_artist, get_track
 
 
-@patch("lib.external.spotify.get_client_credentials_managed_client", autospec=True)
+@patch("mmmusic.external.spotify.get_client_credentials_managed_client", autospec=True)
 class TestSpotify(unittest.TestCase):
     def test_get_artist(self, mock_get_client_credentials_managed_client):
         get_artist("fake_artist_id")
