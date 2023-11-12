@@ -2,5 +2,6 @@
 -r requirements.txt
 
 # dev reqs
+autoflake
 black
 isort
