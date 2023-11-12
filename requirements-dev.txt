@@ -3,3 +3,4 @@
 
 # dev reqs
 black
+isort
