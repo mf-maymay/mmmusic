@@ -1,12 +1,9 @@
 from mmmusic.data import playlist_configs
-from mmmusic.logging import init_logging
 from mmmusic.playlists.generated_playlists import GeneratedPlaylist
 from mmmusic.users import User
 from mmmusic.utils import time_and_note_when_done
 
 if __name__ == "__main__":
-    # init_logging()
-
     user = User()
 
     playlists = {

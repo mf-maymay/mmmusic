@@ -21,11 +21,6 @@ def get_logger():
     return _logger
 
 
-def init_logging():
-    # TODO: Set based on env var.
-    logging.basicConfig(level=logging.DEBUG)
-
-
 if __name__ == "__main__":
     logger = get_logger()
 
