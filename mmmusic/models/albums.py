@@ -4,8 +4,8 @@ from functools import cache
 
 import pydantic
 
-from lib.external import spotify
-from lib.models.tracks import Track, get_track
+from mmmusic.external import spotify
+from mmmusic.models.tracks import Track, get_track
 
 AlbumID = str
 

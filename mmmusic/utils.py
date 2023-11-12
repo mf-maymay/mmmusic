@@ -4,7 +4,7 @@ from functools import wraps
 
 import requests
 
-from lib.logging import get_logger
+from mmmusic.logging import get_logger
 
 
 def no_timeout(func):

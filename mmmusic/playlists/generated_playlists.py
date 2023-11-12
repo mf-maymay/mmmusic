@@ -1,10 +1,10 @@
-from lib.models.playlist_configs import PlaylistConfig
-from lib.playlists.management import (
+from mmmusic.models.playlist_configs import PlaylistConfig
+from mmmusic.playlists.management import (
     add_tracks_to_playlist,
     create_playlist,
     replace_playlist,
 )
-from lib.users import User
+from mmmusic.users import User
 
 MAX_TRACKS = 11_000
 

@@ -1,5 +1,5 @@
-from lib.data import playlist_ids
-from lib.filters import (
+from mmmusic.data import playlist_ids
+from mmmusic.filters import (
     by_artist_attribute,
     by_genre_pattern,
     by_number_of_tracks,
@@ -7,8 +7,8 @@ from lib.filters import (
     by_similarity_to_track,
     by_track_attribute,
 )
-from lib.models.playlist_configs import PlaylistConfig
-from lib.track_sources import from_playlist, from_playlist_config
+from mmmusic.models.playlist_configs import PlaylistConfig
+from mmmusic.track_sources import from_playlist, from_playlist_config
 
 regular_playlists = [
     PlaylistConfig(

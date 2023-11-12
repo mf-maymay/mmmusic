@@ -2,7 +2,7 @@ from functools import cache
 
 import pydantic
 
-from lib.external import spotify
+from mmmusic.external import spotify
 
 TrackID = str
 

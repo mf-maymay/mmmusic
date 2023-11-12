@@ -2,14 +2,14 @@ from collections import defaultdict
 from itertools import permutations
 import re
 
-from lib.models.artists import get_artist
-from lib.models.genre_attributes import (
+from mmmusic.models.artists import get_artist
+from mmmusic.models.genre_attributes import (
     GenreAttributes,
     get_default_genre_attributes,
     get_genre_attribute_means,
     get_genre_attributes,
 )
-from lib.models.tracks import Track
+from mmmusic.models.tracks import Track
 
 
 def get_track_genre_attributes(track: Track) -> GenreAttributes:

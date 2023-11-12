@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from lib.genres import get_track_genre_attributes
-from lib.playlists.management import get_tracks_from_playlist
-from lib.users import User
+from mmmusic.genres import get_track_genre_attributes
+from mmmusic.playlists.management import get_tracks_from_playlist
+from mmmusic.users import User
 
 
 def plot(xs, ys):

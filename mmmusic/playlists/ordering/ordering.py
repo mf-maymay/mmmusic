@@ -1,6 +1,6 @@
-from lib.features import get_scores_for_tracks, similarity
-from lib.models.tracks import Track
-from lib.models.types import Tracks
+from mmmusic.features import get_scores_for_tracks, similarity
+from mmmusic.models.tracks import Track
+from mmmusic.models.types import Tracks
 
 Seed = Track
 

@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, Callable
 
-from lib.models.types import Tracks
-from lib.playlists.management import get_tracks_from_playlist
-from lib.users import User
+from mmmusic.models.types import Tracks
+from mmmusic.playlists.management import get_tracks_from_playlist
+from mmmusic.users import User
 
 if TYPE_CHECKING:
-    from lib.models.playlist_configs import PlaylistConfig
+    from mmmusic.models.playlist_configs import PlaylistConfig
 
 TrackSource = Callable[[User], Tracks]
 

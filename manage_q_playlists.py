@@ -1,14 +1,14 @@
-from lib.data import playlist_configs, playlist_ids
-from lib.playlists.generated_playlists import GeneratedPlaylist
-from lib.playlists.management import (
+from mmmusic.data import playlist_configs, playlist_ids
+from mmmusic.playlists.generated_playlists import GeneratedPlaylist
+from mmmusic.playlists.management import (
     add_tracks_to_playlist,
     clear_playlist,
     get_tracks_from_playlist,
     remove_tracks_from_playlist,
     shuffle_playlist,
 )
-from lib.users import User
-from lib.utils import time_and_note_when_done
+from mmmusic.users import User
+from mmmusic.utils import time_and_note_when_done
 
 user = User()
 
