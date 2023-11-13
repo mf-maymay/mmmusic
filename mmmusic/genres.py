@@ -2,7 +2,7 @@ from collections import defaultdict
 from itertools import permutations
 import re
 
-from mmmusic.models.artists import get_artist
+from mmmusic.models.artists import Artist, get_artist
 from mmmusic.models.genre_attributes import (
     GenreAttributes,
     get_default_genre_attributes,
@@ -27,7 +27,7 @@ def get_track_genre_attributes(track: Track) -> GenreAttributes:
     )
 
 
-def genres_and_members(artists):
+def genres_and_members(artists: list[Artist]) -> dict[str, set[Artist]]:
     """Returns a dictionary mapping genres to their artists."""
     genre_artists = defaultdict(set)  # genre: artists in genre
 
@@ -38,13 +38,18 @@ def genres_and_members(artists):
     return dict(genre_artists)
 
 
-def genres_matching(keyword, artists):
+def genres_matching(keyword: str, artists: list[Artist]) -> set[str]:
     """Returns the genres containing `keyword` in their names."""
     pattern = re.compile(keyword)
     return {genre for genre in genres_and_members(artists) if pattern.fullmatch(genre)}
 
 
-def artists_of_genres_matching(keyword, artists, regex=True, match_individual=True):
+def artists_of_genres_matching(
+    keyword: str,
+    artists: list[Artist],
+    regex: bool = True,  # TODO: Remove.
+    match_individual: bool = True,
+) -> set[Artist]:
     """
     Returns the artists of genres containing `keyword` in their names.
 
@@ -70,7 +75,7 @@ def artists_of_genres_matching(keyword, artists, regex=True, match_individual=Tr
     return members
 
 
-def genre_overlaps(artists):
+def genre_overlaps(artists: list[Artist]) -> dict[tuple[str, str], set[Artist]]:
     """Returns a dictionary mapping pairs of genres to their shared artists."""
     mutuals = defaultdict(set)
 
@@ -81,7 +86,7 @@ def genre_overlaps(artists):
     return dict(mutuals)
 
 
-def related_genres(genre, artists):
+def related_genres(genre: str, artists: list[Artist]) -> set[str]:
     """Returns the genres that share artists with `genre`."""
     related = set()
 
