@@ -12,7 +12,7 @@ from mmmusic.models.genre_attributes import (
 from mmmusic.models.tracks import Track
 
 
-def get_track_genre_attributes(track: Track) -> GenreAttributes:
+def get_genre_attributes_for_track(track: Track) -> GenreAttributes:
     genre_attributes = get_genre_attributes()
 
     track_genres = set()
