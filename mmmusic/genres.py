@@ -49,25 +49,8 @@ def artists_of_genres_matching_pattern(
     keyword: str,
     *,
     artists: list[Artist],
-    regex: bool = True,  # TODO: Remove.
-    match_individual: bool = True,
 ) -> set[Artist]:
-    """
-    Returns the artists of genres containing `keyword` in their names.
-
-    If match_individual is True, an artist matches whenever any of its genres
-        match the keyword pattern.
-    If match_individual is False, then the joined, comma-separated string of
-        genres (e.g., 'album rock,classic rock,hard rock,rock') must be matched
-        by the keyword pattern.
-    """
-    if not match_individual:
-        pattern = re.compile(keyword)
-        return {
-            artist for artist in artists if pattern.fullmatch(",".join(artist.genres))
-        }
-
-    members = set()
+    members: set[Artist] = set()
 
     genre_artists = get_genre_artists_map(artists)
 
