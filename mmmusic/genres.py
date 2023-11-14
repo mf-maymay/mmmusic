@@ -27,7 +27,7 @@ def get_genre_attributes_for_track(track: Track) -> GenreAttributes:
     )
 
 
-def genres_and_members(artists: list[Artist]) -> dict[str, set[Artist]]:
+def get_genre_artists_map(artists: list[Artist]) -> dict[str, set[Artist]]:
     """Returns a dictionary mapping genres to their artists."""
     genre_artists = defaultdict(set)  # genre: artists in genre
 
@@ -41,7 +41,9 @@ def genres_and_members(artists: list[Artist]) -> dict[str, set[Artist]]:
 def genres_matching(keyword: str, artists: list[Artist]) -> set[str]:
     """Returns the genres containing `keyword` in their names."""
     pattern = re.compile(keyword)
-    return {genre for genre in genres_and_members(artists) if pattern.fullmatch(genre)}
+    return {
+        genre for genre in get_genre_artists_map(artists) if pattern.fullmatch(genre)
+    }
 
 
 def artists_of_genres_matching(
@@ -67,7 +69,7 @@ def artists_of_genres_matching(
 
     members = set()
 
-    genre_artists = genres_and_members(artists)
+    genre_artists = get_genre_artists_map(artists)
 
     for genre in genres_matching(keyword, artists):
         members.update(genre_artists[genre])
