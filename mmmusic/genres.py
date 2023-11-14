@@ -69,14 +69,3 @@ def genre_overlaps(artists: list[Artist]) -> dict[tuple[str, str], set[Artist]]:
             mutuals[pair].add(artist)
 
     return dict(mutuals)
-
-
-def related_genres(genre: str, artists: list[Artist]) -> set[str]:
-    """Returns the genres that share artists with `genre`."""
-    related = set()
-
-    for pair in genre_overlaps(artists):
-        if genre in pair:
-            related.update(pair)
-
-    return related - {genre}
