@@ -38,16 +38,16 @@ def get_genre_artists_map(artists: list[Artist]) -> dict[str, set[Artist]]:
     return dict(genre_artists)
 
 
-def genres_matching(keyword: str, artists: list[Artist]) -> set[str]:
-    """Returns the genres containing `keyword` in their names."""
+def genres_matching_pattern(keyword: str, *, artists: list[Artist]) -> set[str]:
     pattern = re.compile(keyword)
     return {
         genre for genre in get_genre_artists_map(artists) if pattern.fullmatch(genre)
     }
 
 
-def artists_of_genres_matching(
+def artists_of_genres_matching_pattern(
     keyword: str,
+    *,
     artists: list[Artist],
     regex: bool = True,  # TODO: Remove.
     match_individual: bool = True,
@@ -71,7 +71,7 @@ def artists_of_genres_matching(
 
     genre_artists = get_genre_artists_map(artists)
 
-    for genre in genres_matching(keyword, artists):
+    for genre in genres_matching_pattern(keyword, artists=artists):
         members.update(genre_artists[genre])
 
     return members
