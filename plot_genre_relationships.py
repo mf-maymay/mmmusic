@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from mmmusic.genres import genre_overlaps, genres_and_members
+from mmmusic.genres import genre_overlaps, get_genre_artists_map
 
 
 def genre_map(artists, *, size_min=1, draw=False):
@@ -9,9 +9,9 @@ def genre_map(artists, *, size_min=1, draw=False):
     graph = nx.Graph()
     graph.add_edges_from(genre_overlaps(artists))
 
-    genre_artists = genres_and_members(artists)
+    genre_artists_map = get_genre_artists_map(artists)
 
-    sizes = {g: len(g_artists) for g, g_artists in genre_artists.items()}
+    sizes = {genre: len(artists) for genre, artists in genre_artists_map.items()}
 
     graph.remove_nodes_from(g for g, size in sizes.items() if size < size_min)
 

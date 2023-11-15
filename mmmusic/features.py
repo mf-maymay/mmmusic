@@ -3,7 +3,7 @@ from typing import Callable
 import numpy as np
 from scipy.stats import percentileofscore
 
-from mmmusic.genres import get_track_genre_attributes
+from mmmusic.genres import get_genre_attributes_for_track
 from mmmusic.models.albums import get_album
 from mmmusic.models.tracks import Track
 from mmmusic.models.types import Item, Items, Metrics, Tracks
@@ -30,7 +30,7 @@ def get_metrics_for_track(track: Track) -> Metrics:
     return [
         *(track[feature] for feature in TRACK_FEATURES),
         int(get_album(track.album_id).release_date.year),
-        *get_track_genre_attributes(track),
+        *get_genre_attributes_for_track(track),
     ]
 
 

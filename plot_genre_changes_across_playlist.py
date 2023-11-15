@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from mmmusic.genres import get_track_genre_attributes
+from mmmusic.genres import get_genre_attributes_for_track
 from mmmusic.playlists.management import get_tracks_from_playlist
 from mmmusic.users import User
 
@@ -41,7 +41,7 @@ user = User()
 
 tracks = get_tracks_from_playlist(PLAYLIST_ID, user=user)
 
-coordinate_pairs = np.array([get_track_genre_attributes(track) for track in tracks])
+coordinate_pairs = np.array([get_genre_attributes_for_track(track) for track in tracks])
 
 xs = coordinate_pairs[:, 0]
 ys = coordinate_pairs[:, 1]

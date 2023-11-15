@@ -2,7 +2,7 @@ from collections import defaultdict
 from itertools import permutations
 import re
 
-from mmmusic.models.artists import get_artist
+from mmmusic.models.artists import Artist, get_artist
 from mmmusic.models.genre_attributes import (
     GenreAttributes,
     get_default_genre_attributes,
@@ -12,7 +12,7 @@ from mmmusic.models.genre_attributes import (
 from mmmusic.models.tracks import Track
 
 
-def get_track_genre_attributes(track: Track) -> GenreAttributes:
+def get_genre_attributes_for_track(track: Track) -> GenreAttributes:
     genre_attributes = get_genre_attributes()
 
     track_genres = set()
@@ -27,7 +27,7 @@ def get_track_genre_attributes(track: Track) -> GenreAttributes:
     )
 
 
-def genres_and_members(artists):
+def get_genre_artists_map(artists: list[Artist]) -> dict[str, set[Artist]]:
     """Returns a dictionary mapping genres to their artists."""
     genre_artists = defaultdict(set)  # genre: artists in genre
 
@@ -38,39 +38,29 @@ def genres_and_members(artists):
     return dict(genre_artists)
 
 
-def genres_matching(keyword, artists):
-    """Returns the genres containing `keyword` in their names."""
+def genres_matching_pattern(keyword: str, *, artists: list[Artist]) -> set[str]:
     pattern = re.compile(keyword)
-    return {genre for genre in genres_and_members(artists) if pattern.fullmatch(genre)}
+    return {
+        genre for genre in get_genre_artists_map(artists) if pattern.fullmatch(genre)
+    }
 
 
-def artists_of_genres_matching(keyword, artists, regex=True, match_individual=True):
-    """
-    Returns the artists of genres containing `keyword` in their names.
+def artists_of_genres_matching_pattern(
+    keyword: str,
+    *,
+    artists: list[Artist],
+) -> set[Artist]:
+    members: set[Artist] = set()
 
-    If match_individual is True, an artist matches whenever any of its genres
-        match the keyword pattern.
-    If match_individual is False, then the joined, comma-separated string of
-        genres (e.g., 'album rock,classic rock,hard rock,rock') must be matched
-        by the keyword pattern.
-    """
-    if not match_individual:
-        pattern = re.compile(keyword)
-        return {
-            artist for artist in artists if pattern.fullmatch(",".join(artist.genres))
-        }
+    genre_artists = get_genre_artists_map(artists)
 
-    members = set()
-
-    genre_artists = genres_and_members(artists)
-
-    for genre in genres_matching(keyword, artists):
+    for genre in genres_matching_pattern(keyword, artists=artists):
         members.update(genre_artists[genre])
 
     return members
 
 
-def genre_overlaps(artists):
+def genre_overlaps(artists: list[Artist]) -> dict[tuple[str, str], set[Artist]]:
     """Returns a dictionary mapping pairs of genres to their shared artists."""
     mutuals = defaultdict(set)
 
@@ -79,14 +69,3 @@ def genre_overlaps(artists):
             mutuals[pair].add(artist)
 
     return dict(mutuals)
-
-
-def related_genres(genre, artists):
-    """Returns the genres that share artists with `genre`."""
-    related = set()
-
-    for pair in genre_overlaps(artists):
-        if genre in pair:
-            related.update(pair)
-
-    return related - {genre}

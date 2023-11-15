@@ -1,7 +1,7 @@
 import random
 from typing import Callable
 
-from mmmusic.genres import artists_of_genres_matching
+from mmmusic.genres import artists_of_genres_matching_pattern
 from mmmusic.models.albums import Album, get_album
 from mmmusic.models.artists import Artist, get_artist
 from mmmusic.models.tracks import Track, get_track
@@ -42,10 +42,10 @@ def by_genre_pattern(pattern: str) -> TrackListTransformer:
         return [
             track
             for track in tracks
-            if artists_of_genres_matching(
+            if artists_of_genres_matching_pattern(
                 pattern,
-                [get_artist(artist_id) for artist_id in track.artist_ids],
-            )  # TODO: switch to actual regex evaluation
+                artists=[get_artist(artist_id) for artist_id in track.artist_ids],
+            )
         ]
 
     return filter_tracks

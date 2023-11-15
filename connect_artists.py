@@ -1,7 +1,7 @@
 import argparse
 from itertools import combinations
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 import webbrowser
 
 from matplotlib.colors import LinearSegmentedColormap
@@ -9,13 +9,18 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 from mmmusic.models.artists import (
+    Artist,
     get_artist,
     get_artist_related_artists,
     search_for_artist,
 )
 
 
-def expand(artists, graph=None) -> nx.Graph:
+def expand(
+    artists: Iterable[Artist],
+    *,
+    graph: nx.Graph | None = None,
+) -> nx.Graph:
     """
     Adds each artists' related artists to graph.
 
@@ -41,7 +46,11 @@ def expand(artists, graph=None) -> nx.Graph:
     return graph
 
 
-def grow(seeds, graph=None) -> nx.Graph:
+def grow(
+    seeds: Iterable[Artist],
+    *,
+    graph: nx.Graph | None = None,
+) -> nx.Graph:
     """
     Expands graph until the seed artists are connected by related artists.
 
@@ -65,15 +74,17 @@ def grow(seeds, graph=None) -> nx.Graph:
     while not all(
         nx.has_path(graph, source, target) for source, target in combinations(seeds, 2)
     ):
-        new_graph = expand(new_artists, graph)
+        new_graph = expand(new_artists, graph=graph)
         new_artists = new_graph.nodes - graph.nodes
         graph = new_graph
         if not new_artists:
             raise RuntimeError("No new artists found.")
+
     for artist in new_artists:
         for related in get_artist_related_artists(artist):
             if related in graph.nodes:
                 graph.add_edge(artist, related)  # new interconnections
+
     return graph
 
 
@@ -245,7 +256,9 @@ def plot(
 
 
 def grow_and_plot(
-    *seeds, graph=None, **plot_kw
+    *seeds: Artist,
+    graph: nx.Graph | None = None,
+    **plot_kw,
 ) -> tuple[nx.Graph, tuple[plt.Figure, plt.Axes]]:
     """
     Grows and plots the graph grown from seeds.
