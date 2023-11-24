@@ -1,3 +1,17 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "mmmusic"
+version = "0.1.0"
+description = "Tools for music discovery and managment"
+authors = ["Mason Albright <14malbright@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
 [tool.autoflake]
 exclude = ".venv"
 ignore_init_module_imports = true
