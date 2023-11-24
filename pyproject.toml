@@ -12,6 +12,26 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 
+beautifulsoup4 = "*"
+cssutils = "*"
+matplotlib = "*"
+networkx = "*"
+numpy = "*"
+pandas = "*"
+pydantic = "*"
+requests = "*"
+scipy = "*"
+spotipy = "*"
+tabulate = "*"
+
+[tool.poetry.group.dev.dependencies]
+autoflake = "*"
+black = "*"
+isort = "*"
+
+types-requests = "*"
+types-tabulate = "*"
+
 [tool.autoflake]
 exclude = ".venv"
 ignore_init_module_imports = true
