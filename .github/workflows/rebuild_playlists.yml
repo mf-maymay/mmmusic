@@ -26,4 +26,4 @@ jobs:
         echo '${{ secrets.CACHED_TOKEN }}' > .cache-${{ secrets.SPOTIFY_USERNAME }}
     - name: Rebuild Playlists
       run: |
-        python create_playlists.py
+        poetry run python ./scripts/create_playlists.py

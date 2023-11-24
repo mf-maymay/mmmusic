@@ -36,7 +36,7 @@ jobs:
         echo '${{ secrets.CACHED_TOKEN }}' > .cache-${{ secrets.SPOTIFY_USERNAME }}
     - name: Connect Artists
       run: |
-        python connect_artists.py '${{ inputs.artist_1 }}'  '${{ inputs.artist_2 }}'
+        poetry run python ./scripts/connect_artists.py '${{ inputs.artist_1 }}'  '${{ inputs.artist_2 }}'
     - name: Save Output
       uses: actions/upload-artifact@v3
       with:

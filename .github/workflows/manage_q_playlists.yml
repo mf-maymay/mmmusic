@@ -27,4 +27,4 @@ jobs:
         echo '${{ secrets.CACHED_TOKEN }}' > .cache-${{ secrets.SPOTIFY_USERNAME }}
     - name: Manage Q Playlists
       run: |
-        python manage_q_playlists.py
+        poetry run python ./scripts/manage_q_playlists.py
