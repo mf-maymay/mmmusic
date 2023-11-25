@@ -10,6 +10,4 @@ SeedPicker = Callable[[Items, Optional[Item]], tuple[Item, Item]]
 
 Metrics = list[float]
 
-Tracks = list[Track]
-
-TrackListTransformer = Callable[[Tracks], Tracks]
+TrackListTransformer = Callable[[list[Track]], list[Track]]

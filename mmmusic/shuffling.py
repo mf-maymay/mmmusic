@@ -5,7 +5,7 @@ import numpy as np
 
 from mmmusic.features import get_scores_for_tracks, similarity
 from mmmusic.models.tracks import Track, get_track
-from mmmusic.models.types import Item, ItemPicker, Items, SeedPicker, Tracks
+from mmmusic.models.types import Item, ItemPicker, Items, SeedPicker
 
 _shuffle = np.random.default_rng().shuffle
 
@@ -48,10 +48,12 @@ def quick_pick(  # TODO: separate
     return new_left + new_right
 
 
-def _story_picker(tracks: Tracks) -> ItemPicker:
+def _story_picker(tracks: list[Track]) -> ItemPicker:
     values = get_scores_for_tracks(tracks)
 
-    def picker(left: Tracks, right: Tracks, to_add: Track, items: Tracks) -> bool:
+    def picker(
+        left: list[Track], right: list[Track], to_add: Track, items: list[Track]
+    ) -> bool:
         # maximize polarity
         left_values = [values[x] for x in left]
         right_values = [values[x] for x in right]
@@ -66,7 +68,7 @@ def _story_picker(tracks: Tracks) -> ItemPicker:
     return picker
 
 
-def _artists_of_tracks(tracks: Tracks) -> dict[Track, int]:
+def _artists_of_tracks(tracks: list[Track]) -> dict[Track, int]:
     """Identifies artists of tracks and counts each artist's appearances."""
     artists: Counter[Track] = Counter()
     for track in tracks:
@@ -74,10 +76,12 @@ def _artists_of_tracks(tracks: Tracks) -> dict[Track, int]:
     return artists
 
 
-def _radio_picker(tracks: Tracks) -> ItemPicker:
+def _radio_picker(tracks: list[Track]) -> ItemPicker:
     story_picker = _story_picker(tracks)
 
-    def picker(left: Tracks, right: Tracks, to_add: Track, items: Tracks) -> bool:
+    def picker(
+        left: list[Track], right: list[Track], to_add: Track, items: list[Track]
+    ) -> bool:
         num_mutual_artists_in_left = sum(
             counts
             for artist, counts in _artists_of_tracks(left).items()
@@ -99,10 +103,12 @@ def _radio_picker(tracks: Tracks) -> ItemPicker:
     return picker
 
 
-def _smart_seed_picker(tracks: Tracks) -> SeedPicker:
+def _smart_seed_picker(tracks: list[Track]) -> SeedPicker:
     values = get_scores_for_tracks(tracks)
 
-    def picker(items: Tracks, left_neighbor: Optional[Track]) -> tuple[Track, Track]:
+    def picker(
+        items: list[Track], left_neighbor: Optional[Track]
+    ) -> tuple[Track, Track]:
         if left_neighbor is None:
             left_seed = items[0]
         else:
@@ -121,7 +127,7 @@ def _smart_seed_picker(tracks: Tracks) -> SeedPicker:
     return picker
 
 
-def smart_shuffle(tracks: Tracks, *, picker_factory=None) -> Tracks:
+def smart_shuffle(tracks: list[Track], *, picker_factory=None) -> list[Track]:
     tracks = list(tracks)
 
     picker_factory = _radio_picker if picker_factory is None else picker_factory
