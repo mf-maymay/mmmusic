@@ -15,7 +15,11 @@ class TestCombinableOperation(unittest.TestCase):
 
         squared_odds = is_odd & squared
 
+        self.assertEqual(str(squared_odds), "is_odd & squared")
+
         sorted_squared_odds = squared_odds & combinable(sorted)
+
+        self.assertEqual(str(sorted_squared_odds), "is_odd & squared & sorted")
 
         sample = [5, 4, 6, 3, 7, 2, 8, 1, 9, 0]
 
@@ -34,8 +38,14 @@ class TestCombinableOperation(unittest.TestCase):
 
         uppercase_or_lowercase_words = uppercase | lowercase
 
+        self.assertEqual(str(uppercase_or_lowercase_words), "(uppercase | lowercase)")
+
         sorted_uppercase_or_lowercase_words = uppercase_or_lowercase_words & combinable(
             sorted
+        )
+
+        self.assertEqual(
+            str(sorted_uppercase_or_lowercase_words), "(uppercase | lowercase) & sorted"
         )
 
         sample = ["words", "woRDS", "WORDS", "puNCH", "LINE"]
