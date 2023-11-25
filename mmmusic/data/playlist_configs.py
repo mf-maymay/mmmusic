@@ -62,8 +62,8 @@ regular_playlists = [
         track_filters=[
             by_similarity_to_track(
                 "1ibHApXtb0pgplmNDRLHrJ",  # Achilles last stand
-            ),
-            by_number_of_tracks(69),
+            )
+            & by_number_of_tracks(69)
         ],
     ),
     PlaylistConfig(
@@ -72,8 +72,8 @@ regular_playlists = [
         track_filters=[
             by_similarity_to_track(
                 "4X2xFHqUSRmyH9sQmfwCP2",  # To Never Return
-            ),
-            by_number_of_tracks(200),
+            )
+            & by_number_of_tracks(200)
         ],
     ),
     PlaylistConfig(
@@ -104,10 +104,10 @@ regular_playlists = [
         name="classical",
         id="3m6lx4N48ixWU0iyd2kTu6",
         track_filters=[
-            by_genre_pattern(pattern := ".*(classical|compositional).*"),
-            by_artist_attribute(
+            by_genre_pattern(pattern := ".*(classical|compositional).*")
+            & by_artist_attribute(
                 lambda x: x.id != "4aMeIY7MkJoZg7O91cmDDd"  # adrian younge
-            ),
+            )
         ],
         description=f"genre matches '{pattern}'",
     ),
@@ -169,8 +169,8 @@ regular_playlists = [
         name="happy minor",
         id="1WbpDe3WzdzW8q2i3KyHxp",
         track_filters=[
-            by_track_attribute(lambda x: x["mode"] == 0),
-            by_track_attribute(lambda x: x["valence"] >= 0.6),
+            by_track_attribute(lambda x: x["mode"] == 0)
+            & by_track_attribute(lambda x: x["valence"] >= 0.6)
         ],
     ),
     PlaylistConfig(
@@ -189,8 +189,8 @@ regular_playlists = [
         name="japan",
         id="69y36IhqWaZHAtuPP8Dda3",
         track_filters=[
-            by_genre_pattern(pattern := ".*(japan|j-).*"),
-            by_artist_attribute(
+            by_genre_pattern(pattern := ".*(japan|j-).*")
+            & by_artist_attribute(
                 lambda x: x.id
                 not in {
                     "7C2DSqaNkh0w77O5Jz1FKh",  # archie shepp
@@ -201,7 +201,7 @@ regular_playlists = [
                     "1EpLpC0tbCla8knfhET78p",  # mccoy tyner trio
                     "47odibUtrN3lnWx0p0pk2P",  # ornette coleman
                 }
-            ),
+            )
         ],
         description=f"genre matches '{pattern}'",
     ),
@@ -215,10 +215,10 @@ regular_playlists = [
                         "^(?!.*?(core|dark|fusion|nu|jazz metal|jazz rap|jazztronica))"
                         ".*jazz.*"
                     )
-                ),
-                by_artist_attribute(
+                )
+                & by_artist_attribute(
                     lambda x: x.id != "4aMeIY7MkJoZg7O91cmDDd"  # adrian younge
-                ),
+                )
             ],
             description=f"genre matches '{pattern}'",
         )
@@ -292,8 +292,8 @@ regular_playlists = [
         name="unhappy major",
         id="5gHVGnAhUpkxMCpHm4FK2m",
         track_filters=[
-            by_track_attribute(lambda x: x["mode"] == 1),
-            by_track_attribute(lambda x: x["valence"] <= 0.2),
+            by_track_attribute(lambda x: x["mode"] == 1)
+            & by_track_attribute(lambda x: x["valence"] <= 0.2)
         ],
     ),
     PlaylistConfig(
