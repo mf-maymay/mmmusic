@@ -24,8 +24,8 @@ def from_playlist_config(playlist_config: "PlaylistConfig") -> TrackSource:
     def track_source(user: User) -> list[Track]:
         tracks = playlist_config.track_source(user)
 
-        for track_filter in playlist_config.track_filters:
-            tracks = track_filter(tracks)
+        if playlist_config.track_list_processor is not None:
+            tracks = playlist_config.track_list_processor(tracks)
 
         return tracks
 
