@@ -4,6 +4,7 @@ from typing import Optional
 import numpy as np
 
 from mmmusic.features import get_scores_for_tracks, similarity
+from mmmusic.models.operations import combinable
 from mmmusic.models.tracks import Track, get_track
 from mmmusic.models.types import Item, ItemPicker, Items, SeedPicker
 
@@ -127,6 +128,7 @@ def _smart_seed_picker(tracks: list[Track]) -> SeedPicker:
     return picker
 
 
+@combinable
 def smart_shuffle(tracks: list[Track], *, picker_factory=None) -> list[Track]:
     tracks = list(tracks)
 
