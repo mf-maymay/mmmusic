@@ -1,13 +1,15 @@
-from typing import Callable, Generic, TypeVar
+from typing import Callable, Generic, TypeVar, overload
 
 T = TypeVar("T")
+
+ListOperation = Callable[[list[T]], list[T]]
 
 
 class CombinableListOperation(Generic[T]):
     def __init__(
         self,
         *,
-        operation: Callable[[list[T]], list[T]],
+        operation: ListOperation[T],
         display_name: str | None = None,
     ):
         self._operation = operation
@@ -41,5 +43,32 @@ class CombinableListOperation(Generic[T]):
         return self.display_name
 
 
-def combinable(func: Callable[[list[T]], list[T]]) -> CombinableListOperation[T]:
-    return CombinableListOperation(operation=func)
+@overload
+def combinable(
+    func: ListOperation[T], *, display_name: str | None = None
+) -> CombinableListOperation[T]:
+    ...
+
+
+@overload
+def combinable(
+    func: None, *, display_name: str | None = None
+) -> Callable[[ListOperation[T]], CombinableListOperation[T]]:
+    ...
+
+
+def combinable(
+    func: ListOperation[T] | None = None,
+    *,
+    display_name: str | None = None,
+) -> (
+    CombinableListOperation[T]
+    | Callable[[ListOperation[T]], CombinableListOperation[T]]
+):
+    if func is not None:
+        return CombinableListOperation(operation=func, display_name=display_name)
+
+    def decorator(func: ListOperation) -> CombinableListOperation[T]:
+        return CombinableListOperation(operation=func, display_name=display_name)
+
+    return decorator

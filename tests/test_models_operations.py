@@ -57,3 +57,22 @@ class TestCombinableOperation(unittest.TestCase):
         self.assertEqual(
             sorted_uppercase_or_lowercase_words(sample), ["LINE", "WORDS", "words"]
         )
+
+    def test_naming(self):
+        @combinable
+        def identity(items):
+            return items
+
+        self.assertEqual(str(identity), "identity")
+
+        @combinable()
+        def in_reverse(items):
+            return items[::-1]
+
+        self.assertEqual(str(in_reverse), "in_reverse")
+
+        @combinable(display_name="valence > 0.5")
+        def happy(tracks):
+            return [track for track in tracks if track["valence"] > 0.5]
+
+        self.assertEqual(str(happy), "valence > 0.5")
