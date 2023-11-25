@@ -1,3 +1,4 @@
+from functools import update_wrapper
 from typing import Callable, Generic, TypeVar, overload
 
 T = TypeVar("T")
@@ -13,6 +14,8 @@ class CombinableListOperation(Generic[T]):
         display_name: str | None = None,
     ):
         self._operation = operation
+
+        update_wrapper(self, self._operation)
 
         self.display_name = (
             display_name if display_name is not None else operation.__name__

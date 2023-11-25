@@ -73,6 +73,10 @@ class TestCombinableOperation(unittest.TestCase):
 
         @combinable(display_name="valence > 0.5")
         def happy(tracks):
+            """Returns the tracks that are happy."""
             return [track for track in tracks if track["valence"] > 0.5]
 
         self.assertEqual(str(happy), "valence > 0.5")
+
+        # Also check wrap job.
+        self.assertEqual(happy.__doc__, "Returns the tracks that are happy.")
