@@ -41,7 +41,7 @@ def by_artist_attribute(
 
 
 def by_genre_pattern(pattern: str) -> TrackListTransformer:
-    @combinable
+    @combinable(display_name=f"genre matches {pattern!r}")
     def filter_tracks(tracks: list[Track]) -> list[Track]:
         return [
             track

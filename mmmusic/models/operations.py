@@ -50,14 +50,14 @@ class CombinableListOperation(Generic[T]):
 def combinable(
     func: ListOperation[T], *, display_name: str | None = None
 ) -> CombinableListOperation[T]:
-    ...
+    pass
 
 
 @overload
 def combinable(
-    func: None, *, display_name: str | None = None
+    func: None = None, *, display_name: str | None = None
 ) -> Callable[[ListOperation[T]], CombinableListOperation[T]]:
-    ...
+    pass
 
 
 def combinable(

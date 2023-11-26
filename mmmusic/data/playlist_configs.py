@@ -94,7 +94,6 @@ regular_playlists = [
         name="ambient",
         id="1YV73mm0afshcS0dRnUGnA",
         track_list_processor=by_genre_pattern(pattern := ".*ambient.*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="bad vibes",
@@ -113,43 +112,36 @@ regular_playlists = [
         & by_artist_attribute(
             lambda x: x.id != "4aMeIY7MkJoZg7O91cmDDd"  # adrian younge
         ),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="cool jazz",
         id="5jC4kOjPOUeK9XVh4KoKrQ",
         track_list_processor=by_genre_pattern(pattern := ".*cool.*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="countryish",
         id="4wcgUKYWHab9mXYA2FFIKR",
         track_list_processor=by_genre_pattern(pattern := ".*(americana|country|cow).*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="electronic",
         id="7GMLyaUHYpikBPXA43E0qE",
         track_list_processor=by_genre_pattern(pattern := ".*electronic.*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="emo/math",
         id="5Oue7ZbZPNZVqShDBP0WL5",
         track_list_processor=by_genre_pattern(pattern := ".*(emo|math).*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="escape room",
         id="2mRBO6zOBSRLrUUExsxzHj",
         track_list_processor=by_genre_pattern(pattern := ".*escape room.*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="folk",
         id="0IIasIfYBu5sKpyiQFcijU",
         track_list_processor=by_genre_pattern(pattern := "^(?!.*?(freak)).*folk.*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="good vibes",
@@ -165,7 +157,6 @@ regular_playlists = [
         track_list_processor=by_genre_pattern(
             pattern := "^(?!.*?(gothenburg)).*(goth|industrial).*"
         ),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="happy minor",
@@ -177,13 +168,11 @@ regular_playlists = [
         name="hip hop",
         id="4dXcWkz1kfG5Vk5EaJTx1Z",
         track_list_processor=by_genre_pattern(pattern := ".*hip hop.*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="indie",
         id="1gqcFVnh4TT8sHAOgdNm9u",
         track_list_processor=by_genre_pattern(pattern := ".*indie.*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="japan",
@@ -201,7 +190,6 @@ regular_playlists = [
                 "47odibUtrN3lnWx0p0pk2P",  # ornette coleman
             }
         ),
-        description=f"genre matches '{pattern}'",
     ),
     (
         jazz_playlist_config := PlaylistConfig(
@@ -216,7 +204,6 @@ regular_playlists = [
             & by_artist_attribute(
                 lambda x: x.id != "4aMeIY7MkJoZg7O91cmDDd"  # adrian younge
             ),
-            description=f"genre matches '{pattern}'",
         )
     ),
     PlaylistConfig(
@@ -231,7 +218,6 @@ regular_playlists = [
         track_list_processor=by_genre_pattern(
             pattern := "^(?!.*?(proto-metal)).*(doom|metal|zeuhl).*"
         ),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="popular artists",
@@ -247,7 +233,6 @@ regular_playlists = [
         name="post-rock",
         id="3lWRWrH8k7dYevVqURwCaO",
         track_list_processor=by_genre_pattern(pattern := ".*post-rock.*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="pre-1970",
@@ -258,7 +243,6 @@ regular_playlists = [
         name="punkish",
         id="6EQJo56pBOtFULTOWDBWpr",
         track_list_processor=by_genre_pattern(pattern := ".*punk.*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="studying",
@@ -274,7 +258,6 @@ regular_playlists = [
         name="trip hop",
         id="6bIR1k355xeROBieHFTaMA",
         track_list_processor=by_genre_pattern(pattern := ".*trip.*"),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="tropical",
@@ -282,7 +265,6 @@ regular_playlists = [
         track_list_processor=by_genre_pattern(
             pattern := ".*(brazil|latin|mpb|reggae).*"
         ),
-        description=f"genre matches '{pattern}'",
     ),
     PlaylistConfig(
         name="unhappy major",
