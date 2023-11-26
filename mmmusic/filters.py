@@ -59,13 +59,14 @@ def by_scale(*, key: str, mode: str) -> TrackListTransformer:
     spotify_friendly_key = get_spotify_friendly_key(key)
     spotify_friendly_mode = get_spotify_friendly_mode(mode)
 
-    def track_matches_scale(track: Track) -> bool:
-        return (
-            track["key"] == spotify_friendly_key
-            and track["mode"] == spotify_friendly_mode
+    return combinable(display_name=f"{key} {mode}")(
+        by_audio_feature(
+            "key", lower_bound=spotify_friendly_key, upper_bound=spotify_friendly_key
         )
-
-    return by_track_attribute(track_matches_scale)
+        & by_audio_feature(
+            "mode", lower_bound=spotify_friendly_mode, upper_bound=spotify_friendly_mode
+        )
+    )
 
 
 def by_number_of_tracks(
@@ -137,6 +138,42 @@ def by_track_attribute(
 
     def attr_in_range_exclusive(track: Track) -> bool:
         return lower_bound < getattr(track, attr) < upper_bound
+
+    attr_in_range = attr_in_range_inclusive if inclusive else attr_in_range_exclusive
+
+    @combinable(display_name=f"({operator.join(operands)})")
+    def filter_tracks(tracks: list[Track]) -> list[Track]:
+        return [track for track in tracks if attr_in_range(track)]
+
+    return filter_tracks
+
+
+def by_audio_feature(
+    feature: str,
+    *,
+    lower_bound: int | float | None = None,
+    upper_bound: int | float | None = None,
+    inclusive: bool = True,
+) -> TrackListTransformer:
+    operands = (
+        ([str(lower_bound)] if lower_bound is not None else [])
+        + [feature]
+        + ([str(upper_bound)] if upper_bound is not None else [])
+    )
+
+    operator = " <= " if inclusive else " < "
+
+    if lower_bound is None:
+        lower_bound = float("-inf")
+
+    if upper_bound is None:
+        upper_bound = float("inf")
+
+    def attr_in_range_inclusive(track: Track) -> bool:
+        return lower_bound <= track[feature] <= upper_bound
+
+    def attr_in_range_exclusive(track: Track) -> bool:
+        return lower_bound < track[feature] < upper_bound
 
     attr_in_range = attr_in_range_inclusive if inclusive else attr_in_range_exclusive
 

@@ -1,6 +1,7 @@
 from mmmusic.data import playlist_ids
 from mmmusic.filters import (
     by_artist_attribute,
+    by_audio_feature,
     by_genre_pattern,
     by_number_of_tracks,
     by_release_year,
@@ -98,8 +99,8 @@ regular_playlists = [
     PlaylistConfig(
         name="bad vibes",
         id="0MkeR6pcbxxHeQAzyftU13",
-        track_list_processor=by_track_attribute("valence", upper_bound=0.10)
-        & by_track_attribute("energy", lower_bound=0.6),
+        track_list_processor=by_audio_feature("valence", upper_bound=0.10)
+        & by_audio_feature("energy", lower_bound=0.6),
     ),
     PlaylistConfig(
         name="classical",
@@ -144,8 +145,8 @@ regular_playlists = [
     PlaylistConfig(
         name="good vibes",
         id="38d8bRBySsaf6KxMMUhY7d",
-        track_list_processor=by_track_attribute("danceability", lower_bound=0.5)
-        & by_track_attribute("valence", lower_bound=0.9),
+        track_list_processor=by_audio_feature("danceability", lower_bound=0.5)
+        & by_audio_feature("valence", lower_bound=0.9),
     ),
     PlaylistConfig(
         name="goth, industrial",
@@ -157,8 +158,8 @@ regular_playlists = [
     PlaylistConfig(
         name="happy minor",
         id="1WbpDe3WzdzW8q2i3KyHxp",
-        track_list_processor=by_track_attribute("mode", lower_bound=0, upper_bound=0)
-        & by_track_attribute("valence", lower_bound=0.6),
+        track_list_processor=by_audio_feature("mode", lower_bound=0, upper_bound=0)
+        & by_audio_feature("valence", lower_bound=0.6),
     ),
     PlaylistConfig(
         name="hip hop",
@@ -206,7 +207,7 @@ regular_playlists = [
         name="bitter jazz",
         id="6NFebq22RoaEuXPk5rwGXL",
         track_source=from_playlist_config(jazz_playlist_config),
-        track_list_processor=by_track_attribute("valence", upper_bound=0.2),
+        track_list_processor=by_audio_feature("valence", upper_bound=0.2),
     ),
     PlaylistConfig(
         name="metal",
@@ -243,9 +244,9 @@ regular_playlists = [
     PlaylistConfig(
         name="studying",
         id="1MNmGQFLADsXyGkjq0Qrj7",
-        track_list_processor=by_track_attribute("instrumentalness", lower_bound=0.8)
-        & by_track_attribute("energy", upper_bound=0.5)
-        & by_track_attribute("tempo", upper_bound=120),
+        track_list_processor=by_audio_feature("instrumentalness", lower_bound=0.8)
+        & by_audio_feature("energy", upper_bound=0.5)
+        & by_audio_feature("tempo", upper_bound=120),
     ),
     PlaylistConfig(
         name="trip hop",
@@ -262,8 +263,8 @@ regular_playlists = [
     PlaylistConfig(
         name="unhappy major",
         id="5gHVGnAhUpkxMCpHm4FK2m",
-        track_list_processor=by_track_attribute("mode", lower_bound=1, upper_bound=1)
-        & by_track_attribute("valence", upper_bound=0.2),
+        track_list_processor=by_audio_feature("mode", lower_bound=1, upper_bound=1)
+        & by_audio_feature("valence", upper_bound=0.2),
     ),
     PlaylistConfig(
         name="unpopular artists",
