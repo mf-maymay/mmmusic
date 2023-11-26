@@ -73,7 +73,7 @@ def by_number_of_tracks(
     *,
     randomly_sampled: bool = False,
 ) -> TrackListTransformer:
-    @combinable
+    @combinable(display_name=f"no. tracks = {n}")
     def filter_tracks(tracks: list[Track]) -> list[Track]:
         return random.sample(tracks, n) if randomly_sampled else tracks[:n]
 
@@ -95,7 +95,10 @@ def by_release_year(
             start_year <= album.release_date.year <= end_year
         )
 
-    return by_album_attribute(album_matches_release_date)
+    return combinable(
+        by_album_attribute(album_matches_release_date),
+        display_name=f"release year between {start_year} and {end_year}",
+    )
 
 
 def by_similarity_to_track(track: Track | str) -> TrackListTransformer:
