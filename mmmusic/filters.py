@@ -11,7 +11,7 @@ from mmmusic.music_theory import get_spotify_friendly_key, get_spotify_friendly_
 from mmmusic.playlists.ordering import by_similarity
 
 
-def by_album_attribute(
+def filter_by_album_attribute(
     album_filter_func: Callable[[Album], bool]
 ) -> TrackListTransformer:
     @combinable
@@ -23,7 +23,7 @@ def by_album_attribute(
     return filter_tracks
 
 
-def by_artist_attribute(
+def filter_by_artist_attribute(
     artist_filter_func: Callable[[Artist], bool]
 ) -> TrackListTransformer:
     @combinable
@@ -40,7 +40,7 @@ def by_artist_attribute(
     return filter_tracks
 
 
-def by_genre_pattern(pattern: str) -> TrackListTransformer:
+def filter_by_genre_pattern(pattern: str) -> TrackListTransformer:
     @combinable(display_name=f"genre matches {pattern!r}")
     def filter_tracks(tracks: list[Track]) -> list[Track]:
         return [
@@ -55,21 +55,21 @@ def by_genre_pattern(pattern: str) -> TrackListTransformer:
     return filter_tracks
 
 
-def by_scale(*, key: str, mode: str) -> TrackListTransformer:
+def filter_by_scale(*, key: str, mode: str) -> TrackListTransformer:
     spotify_friendly_key = get_spotify_friendly_key(key)
     spotify_friendly_mode = get_spotify_friendly_mode(mode)
 
     return combinable(display_name=f"{key} {mode}")(
-        by_audio_feature(
+        filter_by_audio_feature(
             "key", lower_bound=spotify_friendly_key, upper_bound=spotify_friendly_key
         )
-        & by_audio_feature(
+        & filter_by_audio_feature(
             "mode", lower_bound=spotify_friendly_mode, upper_bound=spotify_friendly_mode
         )
     )
 
 
-def by_number_of_tracks(
+def filter_by_number_of_tracks(
     n: int,
     *,
     randomly_sampled: bool = False,
@@ -81,7 +81,7 @@ def by_number_of_tracks(
     return filter_tracks
 
 
-def by_release_year(
+def filter_by_release_year(
     start_year: int | None,
     end_year: int | None,
 ) -> TrackListTransformer:
@@ -97,12 +97,12 @@ def by_release_year(
         )
 
     return combinable(
-        by_album_attribute(album_matches_release_date),
+        filter_by_album_attribute(album_matches_release_date),
         display_name=f"release year between {start_year} and {end_year}",
     )
 
 
-def by_similarity_to_track(track: Track | str) -> TrackListTransformer:
+def filter_by_similarity_to_track(track: Track | str) -> TrackListTransformer:
     track = get_track(track)
 
     @combinable
@@ -112,7 +112,7 @@ def by_similarity_to_track(track: Track | str) -> TrackListTransformer:
     return filter_tracks
 
 
-def by_track_attribute(
+def filter_by_track_attribute(
     attr: str,
     *,
     lower_bound: int | float | None = None,
@@ -148,7 +148,7 @@ def by_track_attribute(
     return filter_tracks
 
 
-def by_audio_feature(
+def filter_by_audio_feature(
     feature: str,
     *,
     lower_bound: int | float | None = None,
