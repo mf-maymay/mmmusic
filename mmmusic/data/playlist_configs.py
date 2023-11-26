@@ -98,10 +98,8 @@ regular_playlists = [
     PlaylistConfig(
         name="bad vibes",
         id="0MkeR6pcbxxHeQAzyftU13",
-        description="high energy, low valence",
-        track_list_processor=by_track_attribute(
-            lambda x: x["valence"] <= 0.10 and x["energy"] > 0.6
-        ),
+        track_list_processor=by_track_attribute("valence", upper_bound=0.10)
+        & by_track_attribute("energy", lower_bound=0.6),
     ),
     PlaylistConfig(
         name="classical",
@@ -146,10 +144,8 @@ regular_playlists = [
     PlaylistConfig(
         name="good vibes",
         id="38d8bRBySsaf6KxMMUhY7d",
-        description="high danceability, high valence",
-        track_list_processor=by_track_attribute(
-            lambda x: x["danceability"] >= 0.5 and x["valence"] >= 0.9
-        ),
+        track_list_processor=by_track_attribute("danceability", lower_bound=0.5)
+        & by_track_attribute("valence", lower_bound=0.9),
     ),
     PlaylistConfig(
         name="goth, industrial",
@@ -161,8 +157,8 @@ regular_playlists = [
     PlaylistConfig(
         name="happy minor",
         id="1WbpDe3WzdzW8q2i3KyHxp",
-        track_list_processor=by_track_attribute(lambda x: x["mode"] == 0)
-        & by_track_attribute(lambda x: x["valence"] >= 0.6),
+        track_list_processor=by_track_attribute("mode", lower_bound=0, upper_bound=0)
+        & by_track_attribute("valence", lower_bound=0.6),
     ),
     PlaylistConfig(
         name="hip hop",
@@ -210,7 +206,7 @@ regular_playlists = [
         name="bitter jazz",
         id="6NFebq22RoaEuXPk5rwGXL",
         track_source=from_playlist_config(jazz_playlist_config),
-        track_list_processor=by_track_attribute(lambda x: x["valence"] <= 0.2),
+        track_list_processor=by_track_attribute("valence", upper_bound=0.2),
     ),
     PlaylistConfig(
         name="metal",
@@ -227,7 +223,7 @@ regular_playlists = [
     PlaylistConfig(
         name="popular tracks",
         id="60BlxvTBWRivesoeC2YEWI",
-        track_list_processor=by_track_attribute(lambda x: x.popularity >= 65),
+        track_list_processor=by_track_attribute("popularity", lower_bound=65),
     ),
     PlaylistConfig(
         name="post-rock",
@@ -247,12 +243,9 @@ regular_playlists = [
     PlaylistConfig(
         name="studying",
         id="1MNmGQFLADsXyGkjq0Qrj7",
-        description="instrumental, low energy, tempo <= 120 bpm",
-        track_list_processor=by_track_attribute(
-            lambda x: x["instrumentalness"] >= 0.8
-            and x["energy"] <= 0.5
-            and x["tempo"] <= 120
-        ),
+        track_list_processor=by_track_attribute("instrumentalness", lower_bound=0.8)
+        & by_track_attribute("energy", upper_bound=0.5)
+        & by_track_attribute("tempo", upper_bound=120),
     ),
     PlaylistConfig(
         name="trip hop",
@@ -269,8 +262,8 @@ regular_playlists = [
     PlaylistConfig(
         name="unhappy major",
         id="5gHVGnAhUpkxMCpHm4FK2m",
-        track_list_processor=by_track_attribute(lambda x: x["mode"] == 1)
-        & by_track_attribute(lambda x: x["valence"] <= 0.2),
+        track_list_processor=by_track_attribute("mode", lower_bound=1, upper_bound=1)
+        & by_track_attribute("valence", upper_bound=0.2),
     ),
     PlaylistConfig(
         name="unpopular artists",

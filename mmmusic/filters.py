@@ -112,10 +112,36 @@ def by_similarity_to_track(track: Track | str) -> TrackListTransformer:
 
 
 def by_track_attribute(
-    track_filter_func: Callable[[Track], bool]
+    attr: str,
+    *,
+    lower_bound: int | float | None = None,
+    upper_bound: int | float | None = None,
+    inclusive: bool = True,
 ) -> TrackListTransformer:
-    @combinable
+    operands = (
+        ([str(lower_bound)] if lower_bound is not None else [])
+        + [attr]
+        + ([str(upper_bound)] if upper_bound is not None else [])
+    )
+
+    operator = " <= " if inclusive else " < "
+
+    if lower_bound is None:
+        lower_bound = float("-inf")
+
+    if upper_bound is None:
+        upper_bound = float("inf")
+
+    def attr_in_range_inclusive(track: Track) -> bool:
+        return lower_bound <= getattr(track, attr) <= upper_bound
+
+    def attr_in_range_exclusive(track: Track) -> bool:
+        return lower_bound < getattr(track, attr) < upper_bound
+
+    attr_in_range = attr_in_range_inclusive if inclusive else attr_in_range_exclusive
+
+    @combinable(display_name=f"({operator.join(operands)})")
     def filter_tracks(tracks: list[Track]) -> list[Track]:
-        return [track for track in tracks if track_filter_func(track)]
+        return [track for track in tracks if attr_in_range(track)]
 
     return filter_tracks
