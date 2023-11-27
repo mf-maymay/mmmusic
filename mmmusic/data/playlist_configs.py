@@ -3,6 +3,7 @@ from mmmusic.filters import (
     filter_by_artist_attribute,
     filter_by_audio_feature,
     filter_by_genre_pattern,
+    filter_by_mode,
     filter_by_number_of_tracks,
     filter_by_release_year,
     filter_by_similarity_to_track,
@@ -162,9 +163,7 @@ regular_playlists = [
     PlaylistConfig(
         name="happy minor",
         id="1WbpDe3WzdzW8q2i3KyHxp",
-        track_list_processor=filter_by_audio_feature(
-            "mode", lower_bound=0, upper_bound=0
-        )
+        track_list_processor=filter_by_mode("minor")
         & filter_by_audio_feature("valence", lower_bound=0.6),
     ),
     PlaylistConfig(
@@ -271,9 +270,7 @@ regular_playlists = [
     PlaylistConfig(
         name="unhappy major",
         id="5gHVGnAhUpkxMCpHm4FK2m",
-        track_list_processor=filter_by_audio_feature(
-            "mode", lower_bound=1, upper_bound=1
-        )
+        track_list_processor=filter_by_mode("major")
         & filter_by_audio_feature("valence", upper_bound=0.2),
     ),
     PlaylistConfig(

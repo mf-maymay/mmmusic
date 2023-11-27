@@ -168,3 +168,23 @@ def filter_by_audio_feature(
         return [track for track in tracks if attr_in_range(track)]
 
     return filter_tracks
+
+
+def filter_by_key(key: str) -> TrackListTransformer:
+    spotify_friendly_key = get_spotify_friendly_key(key)
+
+    @combinable(display_name=f"key is {key}")
+    def filter_tracks(tracks: list[Track]) -> list[Track]:
+        return [track for track in tracks if track["key"] == spotify_friendly_key]
+
+    return filter_tracks
+
+
+def filter_by_mode(mode: str) -> TrackListTransformer:
+    spotify_friendly_mode = get_spotify_friendly_mode(mode)
+
+    @combinable(display_name=f"mode is {mode}")
+    def filter_tracks(tracks: list[Track]) -> list[Track]:
+        return [track for track in tracks if track["mode"] == spotify_friendly_mode]
+
+    return filter_tracks
