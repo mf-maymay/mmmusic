@@ -68,13 +68,21 @@ def filter_by_number_of_tracks(
 
 
 def filter_by_release_year(
-    start_year: int | None,
-    end_year: int | None,
+    start_year: int | float | None,
+    end_year: int | float | None,
 ) -> TrackListTransformer:
+    if start_year is None and end_year is None:
+        raise ValueError
+
+    if start_year is not None and end_year is not None:
+        display_name = f"released between {start_year} and {end_year}"
+
     if start_year is None:
+        display_name = f"released before {end_year}"
         start_year = float("-inf")
 
     if end_year is None:
+        display_name = f"released after {start_year}"
         end_year = float("inf")
 
     def album_matches_release_date(album: Album) -> bool:
@@ -84,7 +92,7 @@ def filter_by_release_year(
 
     return combinable(
         filter_by_album_attribute(album_matches_release_date),
-        display_name=f"release year between {start_year} and {end_year}",
+        display_name=display_name,
     )
 
 
