@@ -99,7 +99,7 @@ def filter_by_release_year(
 def filter_by_similarity_to_track(track: Track | str) -> TrackListTransformer:
     track = get_track(track)
 
-    @combinable
+    @combinable(display_name=f"similar to '{track.name}'")
     def filter_tracks(tracks: list[Track]) -> list[Track]:
         return by_similarity(seed=track, tracks=tracks)
 
