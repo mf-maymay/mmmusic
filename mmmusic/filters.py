@@ -55,20 +55,6 @@ def filter_by_genre_pattern(pattern: str) -> TrackListTransformer:
     return filter_tracks
 
 
-def filter_by_scale(*, key: str, mode: str) -> TrackListTransformer:
-    spotify_friendly_key = get_spotify_friendly_key(key)
-    spotify_friendly_mode = get_spotify_friendly_mode(mode)
-
-    return combinable(display_name=f"{key} {mode}")(
-        filter_by_audio_feature(
-            "key", lower_bound=spotify_friendly_key, upper_bound=spotify_friendly_key
-        )
-        & filter_by_audio_feature(
-            "mode", lower_bound=spotify_friendly_mode, upper_bound=spotify_friendly_mode
-        )
-    )
-
-
 def filter_by_number_of_tracks(
     n: int,
     *,
