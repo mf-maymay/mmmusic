@@ -113,18 +113,26 @@ def filter_by_track_attribute(
     upper_bound: int | float | None = None,
     inclusive: bool = True,
 ) -> TrackListTransformer:
-    operands = (
-        ([str(lower_bound)] if lower_bound is not None else [])
-        + [attr]
-        + ([str(upper_bound)] if upper_bound is not None else [])
-    )
+    if lower_bound is None and upper_bound is None:
+        raise ValueError
 
-    operator = " <= " if inclusive else " < "
+    if lower_bound is not None and upper_bound is not None:
+        display_name = (
+            f"{lower_bound} <= {attr} <= {upper_bound}"
+            if inclusive
+            else f"{lower_bound} < {attr} < {upper_bound}"
+        )
 
     if lower_bound is None:
+        display_name = (
+            f"{attr} <= {upper_bound}" if inclusive else f"{attr} < {upper_bound}"
+        )
         lower_bound = float("-inf")
 
     if upper_bound is None:
+        display_name = (
+            f"{attr} >= {lower_bound}" if inclusive else f"{attr} > {lower_bound}"
+        )
         upper_bound = float("inf")
 
     def attr_in_range_inclusive(track: Track) -> bool:
@@ -135,7 +143,7 @@ def filter_by_track_attribute(
 
     attr_in_range = attr_in_range_inclusive if inclusive else attr_in_range_exclusive
 
-    @combinable(display_name=operator.join(operands))
+    @combinable(display_name=display_name)
     def filter_tracks(tracks: list[Track]) -> list[Track]:
         return [track for track in tracks if attr_in_range(track)]
 
@@ -149,18 +157,26 @@ def filter_by_audio_feature(
     upper_bound: int | float | None = None,
     inclusive: bool = True,
 ) -> TrackListTransformer:
-    operands = (
-        ([str(lower_bound)] if lower_bound is not None else [])
-        + [feature]
-        + ([str(upper_bound)] if upper_bound is not None else [])
-    )
+    if lower_bound is None and upper_bound is None:
+        raise ValueError
 
-    operator = " <= " if inclusive else " < "
+    if lower_bound is not None and upper_bound is not None:
+        display_name = (
+            f"{lower_bound} <= {feature} <= {upper_bound}"
+            if inclusive
+            else f"{lower_bound} < {feature} < {upper_bound}"
+        )
 
     if lower_bound is None:
+        display_name = (
+            f"{feature} <= {upper_bound}" if inclusive else f"{feature} < {upper_bound}"
+        )
         lower_bound = float("-inf")
 
     if upper_bound is None:
+        display_name = (
+            f"{feature} >= {lower_bound}" if inclusive else f"{feature} > {lower_bound}"
+        )
         upper_bound = float("inf")
 
     def attr_in_range_inclusive(track: Track) -> bool:
@@ -171,7 +187,7 @@ def filter_by_audio_feature(
 
     attr_in_range = attr_in_range_inclusive if inclusive else attr_in_range_exclusive
 
-    @combinable(display_name=operator.join(operands))
+    @combinable(display_name=display_name)
     def filter_tracks(tracks: list[Track]) -> list[Track]:
         return [track for track in tracks if attr_in_range(track)]
 
