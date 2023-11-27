@@ -135,7 +135,7 @@ def filter_by_track_attribute(
 
     attr_in_range = attr_in_range_inclusive if inclusive else attr_in_range_exclusive
 
-    @combinable(display_name=f"({operator.join(operands)})")
+    @combinable(display_name=operator.join(operands))
     def filter_tracks(tracks: list[Track]) -> list[Track]:
         return [track for track in tracks if attr_in_range(track)]
 
@@ -171,7 +171,7 @@ def filter_by_audio_feature(
 
     attr_in_range = attr_in_range_inclusive if inclusive else attr_in_range_exclusive
 
-    @combinable(display_name=f"({operator.join(operands)})")
+    @combinable(display_name=operator.join(operands))
     def filter_tracks(tracks: list[Track]) -> list[Track]:
         return [track for track in tracks if attr_in_range(track)]
 
