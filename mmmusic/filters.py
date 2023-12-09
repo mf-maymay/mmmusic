@@ -139,23 +139,17 @@ def filter_by_track_attribute(
     if lower_bound is None and upper_bound is None:
         raise ValueError
 
-    if lower_bound is not None and upper_bound is not None:
-        display_name = (
-            f"{lower_bound} <= {attr} <= {upper_bound}"
-            if inclusive
-            else f"{lower_bound} < {attr} < {upper_bound}"
-        )
+    display_name = _construct_display_name_for_bounded_feature(
+        attr,
+        lower_bound=lower_bound,
+        upper_bound=upper_bound,
+        inclusive=inclusive,
+    )
 
     if lower_bound is None:
-        display_name = (
-            f"{attr} <= {upper_bound}" if inclusive else f"{attr} < {upper_bound}"
-        )
         lower_bound = float("-inf")
 
     if upper_bound is None:
-        display_name = (
-            f"{attr} >= {lower_bound}" if inclusive else f"{attr} > {lower_bound}"
-        )
         upper_bound = float("inf")
 
     def attr_in_range_inclusive(track: Track) -> bool:
@@ -183,23 +177,17 @@ def filter_by_audio_feature(
     if lower_bound is None and upper_bound is None:
         raise ValueError
 
-    if lower_bound is not None and upper_bound is not None:
-        display_name = (
-            f"{lower_bound} <= {feature} <= {upper_bound}"
-            if inclusive
-            else f"{lower_bound} < {feature} < {upper_bound}"
-        )
+    display_name = _construct_display_name_for_bounded_feature(
+        feature,
+        lower_bound=lower_bound,
+        upper_bound=upper_bound,
+        inclusive=inclusive,
+    )
 
     if lower_bound is None:
-        display_name = (
-            f"{feature} <= {upper_bound}" if inclusive else f"{feature} < {upper_bound}"
-        )
         lower_bound = float("-inf")
 
     if upper_bound is None:
-        display_name = (
-            f"{feature} >= {lower_bound}" if inclusive else f"{feature} > {lower_bound}"
-        )
         upper_bound = float("inf")
 
     def attr_in_range_inclusive(track: Track) -> bool:
@@ -235,3 +223,24 @@ def filter_by_mode(mode: str) -> TrackListTransformer:
         return [track for track in tracks if track["mode"] == spotify_friendly_mode]
 
     return filter_tracks
+
+
+def _construct_display_name_for_bounded_feature(
+    feature_name: str,
+    *,
+    lower_bound: int | float | None = None,
+    upper_bound: int | float | None = None,
+    inclusive: bool = True,
+) -> str:
+    if lower_bound is None and upper_bound is None:
+        raise ValueError
+
+    eq = "=" if inclusive else ""
+
+    if lower_bound is None:
+        return f"{feature_name} <{eq} {upper_bound}"
+
+    if upper_bound is None:
+        return f"{feature_name} >{eq} {lower_bound}"
+
+    return f"{lower_bound} <{eq} {feature_name} <{eq} {upper_bound}"
