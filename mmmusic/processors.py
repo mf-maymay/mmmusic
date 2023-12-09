@@ -239,6 +239,15 @@ def filter_by_mode(mode: str) -> TrackListTransformer:
     return filter_tracks
 
 
+@combinable(display_name="ordered by popularity")
+def order_by_popularity(tracks: list[Track]) -> list[Track]:
+    return sorted(
+        tracks,
+        key=lambda track: track.popularity,
+        reverse=True,
+    )
+
+
 def _construct_display_name_for_bounded_feature(
     feature_name: str,
     *,

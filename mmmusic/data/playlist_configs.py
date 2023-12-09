@@ -1,7 +1,5 @@
 from mmmusic.data import playlist_ids
-from mmmusic.models.operations import combinable
 from mmmusic.models.playlist_configs import PlaylistConfig
-from mmmusic.models.tracks import Track
 from mmmusic.processors import (
     exclude_artists,
     filter_by_artist_attribute,
@@ -12,18 +10,9 @@ from mmmusic.processors import (
     filter_by_release_year,
     filter_by_similarity_to_track,
     filter_by_track_attribute,
+    order_by_popularity,
 )
 from mmmusic.track_sources import from_playlist, from_playlist_config
-
-
-@combinable
-def by_popularity(tracks: list[Track]) -> list[Track]:
-    return sorted(
-        tracks,
-        key=lambda track: track.popularity,
-        reverse=True,
-    )
-
 
 regular_playlists = [
     PlaylistConfig(
@@ -65,7 +54,7 @@ regular_playlists = [
     PlaylistConfig(
         name="ALL, ordered by popularity",
         id="7DpWFkySsh4Jb4RwhsM5HH",
-        order_tracks_func=by_popularity,
+        order_tracks_func=order_by_popularity,
     ),
     PlaylistConfig(
         name="Ankou's Last Stand",
