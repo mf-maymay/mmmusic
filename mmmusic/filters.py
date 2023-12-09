@@ -3,12 +3,35 @@ from typing import Callable
 
 from mmmusic.genres import artists_of_genres_matching_pattern
 from mmmusic.models.albums import Album, get_album
-from mmmusic.models.artists import Artist, get_artist
+from mmmusic.models.artists import Artist, ArtistID, get_artist
 from mmmusic.models.operations import combinable
 from mmmusic.models.tracks import Track, get_track
 from mmmusic.models.types import TrackListTransformer
 from mmmusic.music_theory import get_spotify_friendly_key, get_spotify_friendly_mode
 from mmmusic.playlists.ordering import by_similarity
+
+
+def exclude_artists(*artists: Artist | ArtistID) -> TrackListTransformer:
+    if not artists:
+        raise ValueError
+
+    artists_to_exclude = {get_artist(artist) for artist in artists}
+
+    artist_names = sorted(artist.name for artist in artists_to_exclude)
+
+    display_name = "not by " + (
+        " or ".join(artist_names)
+        if len(artist_names) < 3
+        else ", ".join([*artist_names[:-1], f"or {artist_names[-1]}"])
+    )
+
+    @combinable(display_name=display_name)
+    def filter_tracks(tracks: list[Track]) -> list[Track]:
+        return [
+            track for track in tracks if not set(track.artist_ids) & artists_to_exclude
+        ]
+
+    return filter_tracks
 
 
 def filter_by_album_attribute(

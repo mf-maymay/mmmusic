@@ -1,5 +1,6 @@
 from mmmusic.data import playlist_ids
 from mmmusic.filters import (
+    exclude_artists,
     filter_by_artist_attribute,
     filter_by_audio_feature,
     filter_by_genre_pattern,
@@ -109,9 +110,7 @@ regular_playlists = [
         track_list_processor=filter_by_genre_pattern(
             pattern := ".*(classical|compositional).*"
         )
-        & filter_by_artist_attribute(
-            lambda x: x.id != "4aMeIY7MkJoZg7O91cmDDd"  # adrian younge
-        ),
+        & exclude_artists("4aMeIY7MkJoZg7O91cmDDd"),  # adrian younge
     ),
     PlaylistConfig(
         name="cool jazz",
@@ -180,17 +179,14 @@ regular_playlists = [
         name="japan",
         id="69y36IhqWaZHAtuPP8Dda3",
         track_list_processor=filter_by_genre_pattern(pattern := ".*(japan|j-).*")
-        & filter_by_artist_attribute(
-            lambda x: x.id
-            not in {
-                "7C2DSqaNkh0w77O5Jz1FKh",  # archie shepp
-                "5jtGuhEEDh07yaFfm8qHg7",  # cecil taylor
-                "3uPWecBPNXAChysw1uOJwI",  # don cherry
-                "6rxxu32JCGDpKKMPHxnSJp",  # eric dolphy
-                "3BG0nwVh3Gc7cuT4XdsLtt",  # joe henderson
-                "1EpLpC0tbCla8knfhET78p",  # mccoy tyner trio
-                "47odibUtrN3lnWx0p0pk2P",  # ornette coleman
-            }
+        & exclude_artists(
+            "7C2DSqaNkh0w77O5Jz1FKh",  # archie shepp
+            "5jtGuhEEDh07yaFfm8qHg7",  # cecil taylor
+            "3uPWecBPNXAChysw1uOJwI",  # don cherry
+            "6rxxu32JCGDpKKMPHxnSJp",  # eric dolphy
+            "3BG0nwVh3Gc7cuT4XdsLtt",  # joe henderson
+            "1EpLpC0tbCla8knfhET78p",  # mccoy tyner trio
+            "47odibUtrN3lnWx0p0pk2P",  # ornette coleman
         ),
     ),
     (
@@ -203,9 +199,7 @@ regular_playlists = [
                     ".*jazz.*"
                 )
             )
-            & filter_by_artist_attribute(
-                lambda x: x.id != "4aMeIY7MkJoZg7O91cmDDd"  # adrian younge
-            ),
+            & exclude_artists("4aMeIY7MkJoZg7O91cmDDd"),  # adrian younge
         )
     ),
     PlaylistConfig(
