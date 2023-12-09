@@ -1,8 +1,7 @@
 import random
-from typing import Callable
 
 from mmmusic.genres import artists_of_genres_matching_pattern
-from mmmusic.models.albums import Album, get_album
+from mmmusic.models.albums import get_album
 from mmmusic.models.artists import Artist, ArtistID, get_artist
 from mmmusic.models.operations import combinable
 from mmmusic.models.tracks import Track, get_track
@@ -29,18 +28,6 @@ def exclude_artists(*artists: Artist | ArtistID) -> TrackListTransformer:
     def filter_tracks(tracks: list[Track]) -> list[Track]:
         return [
             track for track in tracks if not set(track.artist_ids) & artists_to_exclude
-        ]
-
-    return filter_tracks
-
-
-def filter_by_album_attribute(
-    album_filter_func: Callable[[Album], bool]
-) -> TrackListTransformer:
-    @combinable
-    def filter_tracks(tracks: list[Track]) -> list[Track]:
-        return [
-            track for track in tracks if album_filter_func(get_album(track.album_id))
         ]
 
     return filter_tracks
@@ -135,13 +122,15 @@ def filter_by_release_year(
         display_name = f"released after {start_year}"
         end_year = float("inf")
 
-    def album_matches_release_date(album: Album) -> bool:
-        return start_year <= album.release_date.year <= end_year
+    @combinable(display_name=display_name)
+    def filter_tracks(tracks: list[Track]) -> list[Track]:
+        return [
+            track
+            for track in tracks
+            if start_year <= get_album(track.album_id).release_date.year <= end_year
+        ]
 
-    return combinable(
-        filter_by_album_attribute(album_matches_release_date),
-        display_name=display_name,
-    )
+    return filter_tracks
 
 
 def filter_by_similarity_to_track(track: Track | str) -> TrackListTransformer:
