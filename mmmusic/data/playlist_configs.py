@@ -1,5 +1,8 @@
 from mmmusic.data import playlist_ids
-from mmmusic.filters import (
+from mmmusic.models.operations import combinable
+from mmmusic.models.playlist_configs import PlaylistConfig
+from mmmusic.models.tracks import Track
+from mmmusic.processors import (
     exclude_artists,
     filter_by_artist_attribute,
     filter_by_audio_feature,
@@ -10,9 +13,6 @@ from mmmusic.filters import (
     filter_by_similarity_to_track,
     filter_by_track_attribute,
 )
-from mmmusic.models.operations import combinable
-from mmmusic.models.playlist_configs import PlaylistConfig
-from mmmusic.models.tracks import Track
 from mmmusic.track_sources import from_playlist, from_playlist_config
 
 
