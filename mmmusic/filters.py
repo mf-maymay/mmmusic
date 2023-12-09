@@ -105,8 +105,8 @@ def filter_by_number_of_tracks(
 
 
 def filter_by_release_year(
-    start_year: int | float | None,
-    end_year: int | float | None,
+    start_year: int | float | None = None,
+    end_year: int | float | None = None,
 ) -> TrackListTransformer:
     if start_year is None and end_year is None:
         raise ValueError
@@ -127,7 +127,7 @@ def filter_by_release_year(
         return [
             track
             for track in tracks
-            if start_year <= get_album(track.album_id).release_date.year <= end_year
+            if start_year <= get_album(track.album_id).release_date.year < end_year
         ]
 
     return filter_tracks

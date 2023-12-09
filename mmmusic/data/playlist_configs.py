@@ -29,32 +29,32 @@ regular_playlists = [
     PlaylistConfig(
         name="1970s",
         id="42oUtzFrtsjwNrSpNPSK2e",
-        track_list_processor=filter_by_release_year(1970, 1979),
+        track_list_processor=filter_by_release_year(1970, 1980),
     ),
     PlaylistConfig(
         name="1980s",
         id="5mvhdxD9cxTbtkSo6GLUBn",
-        track_list_processor=filter_by_release_year(1980, 1989),
+        track_list_processor=filter_by_release_year(1980, 1990),
     ),
     PlaylistConfig(
         name="1990s",
         id="5rAX8oIt6bReD50bff1ZoM",
-        track_list_processor=filter_by_release_year(1990, 1999),
+        track_list_processor=filter_by_release_year(1990, 2000),
     ),
     PlaylistConfig(
         name="2000s",
         id="3QeKjWyXm7CQmxbI5pLSR6",
-        track_list_processor=filter_by_release_year(2000, 2009),
+        track_list_processor=filter_by_release_year(2000, 2010),
     ),
     PlaylistConfig(
         name="2010s",
         id="5LDEewHtIdy3gg4lPReIQW",
-        track_list_processor=filter_by_release_year(2010, 2019),
+        track_list_processor=filter_by_release_year(2010, 2020),
     ),
     PlaylistConfig(
         name="2020s",
         id="2mTcMKBO5WZf7OuBGTL9v1",
-        track_list_processor=filter_by_release_year(2020, 2029),
+        track_list_processor=filter_by_release_year(2020, 2030),
     ),
     PlaylistConfig(name="ALL", id="6vgITEENg2J5mJhW9scpns"),
     PlaylistConfig(
@@ -233,7 +233,7 @@ regular_playlists = [
     PlaylistConfig(
         name="pre-1970",
         id="0YgMbK1uwJrTpbUXQclxE4",
-        track_list_processor=filter_by_release_year(None, 1969),
+        track_list_processor=filter_by_release_year(end_year=1970),
     ),
     PlaylistConfig(
         name="punkish",
