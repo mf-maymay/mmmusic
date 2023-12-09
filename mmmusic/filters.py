@@ -136,9 +136,7 @@ def filter_by_release_year(
         end_year = float("inf")
 
     def album_matches_release_date(album: Album) -> bool:
-        return album.album_type != "compilation" and (
-            start_year <= album.release_date.year <= end_year
-        )
+        return start_year <= album.release_date.year <= end_year
 
     return combinable(
         filter_by_album_attribute(album_matches_release_date),
