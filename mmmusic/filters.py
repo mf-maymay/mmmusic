@@ -44,7 +44,7 @@ def filter_by_artist_attribute(
         raise ValueError
 
     display_name = _construct_display_name_for_bounded_feature(
-        f"artist.{attr}",
+        f"artist {attr}",
         lower_bound=lower_bound,
         upper_bound=upper_bound,
         inclusive=inclusive,
