@@ -47,16 +47,43 @@ def filter_by_album_attribute(
 
 
 def filter_by_artist_attribute(
-    artist_filter_func: Callable[[Artist], bool]
+    attr: str,
+    *,
+    lower_bound: int | float | None = None,
+    upper_bound: int | float | None = None,
+    inclusive: bool = True,
 ) -> TrackListTransformer:
-    @combinable
+    if lower_bound is None and upper_bound is None:
+        raise ValueError
+
+    display_name = _construct_display_name_for_bounded_feature(
+        f"artist.{attr}",
+        lower_bound=lower_bound,
+        upper_bound=upper_bound,
+        inclusive=inclusive,
+    )
+
+    if lower_bound is None:
+        lower_bound = float("-inf")
+
+    if upper_bound is None:
+        upper_bound = float("inf")
+
+    def attr_in_range_inclusive(artist: Artist) -> bool:
+        return lower_bound <= getattr(artist, attr) <= upper_bound
+
+    def attr_in_range_exclusive(artist: Artist) -> bool:
+        return lower_bound < getattr(artist, attr) < upper_bound
+
+    attr_in_range = attr_in_range_inclusive if inclusive else attr_in_range_exclusive
+
+    @combinable(display_name=display_name)
     def filter_tracks(tracks: list[Track]) -> list[Track]:
         return [
             track
             for track in tracks
             if all(
-                artist_filter_func(get_artist(artist_id))
-                for artist_id in track.artist_ids
+                attr_in_range(get_artist(artist_id)) for artist_id in track.artist_ids
             )
         ]  # XXX: any or all?
 

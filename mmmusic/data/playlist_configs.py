@@ -218,7 +218,7 @@ regular_playlists = [
     PlaylistConfig(
         name="popular artists",
         id="08pLTWx8LB58syQ8c7lXuW",
-        track_list_processor=filter_by_artist_attribute(lambda x: x.popularity >= 70),
+        track_list_processor=filter_by_artist_attribute("popularity", lower_bound=70),
     ),
     PlaylistConfig(
         name="popular tracks",
@@ -270,7 +270,7 @@ regular_playlists = [
     PlaylistConfig(
         name="unpopular artists",
         id="5nF4jX1FpEsBC8r2ie1hPK",
-        track_list_processor=filter_by_artist_attribute(lambda x: x.popularity <= 25),
+        track_list_processor=filter_by_artist_attribute("popularity", upper_bound=25),
     ),
 ]
 
