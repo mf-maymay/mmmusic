@@ -12,14 +12,14 @@ class PlaylistConfig(pydantic.BaseModel, arbitrary_types_allowed=True, extra="fo
     name: str
     description: str | None = None
     track_source: TrackSource = from_saved_albums
-    track_list_processors: list[TrackListTransformer] = []
+    processors: list[TrackListTransformer] = []
 
     _combined_processor: TrackListTransformer | None = None
 
     @property
     def combined_processor(self) -> TrackListTransformer | None:
-        if self._combined_processor is None and self.track_list_processors:
-            self._combined_processor = reduce(and_, self.track_list_processors)
+        if self._combined_processor is None and self.processors:
+            self._combined_processor = reduce(and_, self.processors)
 
         return self._combined_processor
 
