@@ -1,6 +1,6 @@
-from functools import cache
+from functools import cache, cached_property
 
-import pydantic
+from pydantic import BaseModel, computed_field
 
 from mmmusic.external import spotify
 
@@ -23,7 +23,7 @@ AUDIO_FEATURE_FIELDS = (
 )
 
 
-class AudioFeatures(pydantic.BaseModel):
+class AudioFeatures(BaseModel):
     id: str
     acousticness: float
     danceability: float
@@ -43,19 +43,17 @@ class AudioFeatures(pydantic.BaseModel):
         return getattr(self, key)
 
 
-class Track(pydantic.BaseModel):
+class Track(BaseModel):
     name: str
     id: str
     album_id: str
     artist_ids: tuple[str, ...]
     popularity: int
-    _audio_features: AudioFeatures = None
 
-    @property
-    def audio_features(self):
-        if self._audio_features is None:
-            self._audio_features = get_track_audio_features(self)
-        return self._audio_features
+    @computed_field
+    @cached_property
+    def audio_features(self) -> AudioFeatures:
+        return get_track_audio_features(self)
 
     def __getitem__(self, key):
         return self.audio_features[key]
