@@ -128,7 +128,7 @@ def _smart_seed_picker(tracks: list[Track]) -> SeedPicker:
     return picker
 
 
-@combinable
+@combinable(display_name="smart shuffled")
 def smart_shuffle(tracks: list[Track], *, picker_factory=None) -> list[Track]:
     tracks = list(tracks)
 
