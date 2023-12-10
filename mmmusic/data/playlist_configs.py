@@ -54,7 +54,8 @@ regular_playlists = [
     PlaylistConfig(
         name="ALL, ordered by popularity",
         id="7DpWFkySsh4Jb4RwhsM5HH",
-        order_tracks_func=order_by_popularity,
+        track_list_processors=[order_by_popularity],
+        smart_shuffle=False,
     ),
     PlaylistConfig(
         name="Ankou's Last Stand",

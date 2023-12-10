@@ -33,12 +33,6 @@ class GeneratedPlaylist:
         if self.config.combined_processor is not None:
             self.tracks = self.config.combined_processor(self.tracks)
 
-    def order_tracks(self):
-        if self.tracks is None:
-            raise ValueError("tracks not set")
-
-        self.tracks = self.config.order_tracks_func(self.tracks)
-
     def create(self):
         if self.id is not None:
             raise ValueError("id is already set")

@@ -13,19 +13,24 @@ class PlaylistConfig(pydantic.BaseModel, arbitrary_types_allowed=True, extra="fo
     name: str
     description: str | None = None
     track_source: TrackSource = from_saved_albums
-    order_tracks_func: TrackListTransformer = smart_shuffle
     track_list_processors: list[TrackListTransformer] = []
+    smart_shuffle: bool = True
+
     _combined_processor: TrackListTransformer | None = None
 
     @property
-    def combined_processor(self) -> TrackListTransformer:
-        if self._combined_processor is None:
-            self._combined_processor = reduce(
-                and_,
-                (*self.track_list_processors, self.order_tracks_func),
-            )
+    def combined_processor(self) -> TrackListTransformer | None:
+        if self._combined_processor is None and self.track_list_processors:
+            self._combined_processor = reduce(and_, self.track_list_processors)
 
         return self._combined_processor
+
+    @pydantic.model_validator(mode="after")
+    def add_smart_shuffle(self):
+        if self.smart_shuffle:
+            self.track_list_processors.append(smart_shuffle)
+
+        return self
 
     @pydantic.model_validator(mode="after")
     def fill_in_description(self):
