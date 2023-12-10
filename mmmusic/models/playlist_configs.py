@@ -4,7 +4,6 @@ from operator import and_
 import pydantic
 
 from mmmusic.models.types import TrackListTransformer
-from mmmusic.shuffling import smart_shuffle
 from mmmusic.track_sources import TrackSource, from_saved_albums
 
 
@@ -14,7 +13,6 @@ class PlaylistConfig(pydantic.BaseModel, arbitrary_types_allowed=True, extra="fo
     description: str | None = None
     track_source: TrackSource = from_saved_albums
     track_list_processors: list[TrackListTransformer] = []
-    smart_shuffle: bool = True
 
     _combined_processor: TrackListTransformer | None = None
 
@@ -24,13 +22,6 @@ class PlaylistConfig(pydantic.BaseModel, arbitrary_types_allowed=True, extra="fo
             self._combined_processor = reduce(and_, self.track_list_processors)
 
         return self._combined_processor
-
-    @pydantic.model_validator(mode="after")
-    def add_smart_shuffle(self):
-        if self.smart_shuffle:
-            self.track_list_processors.append(smart_shuffle)
-
-        return self
 
     @pydantic.model_validator(mode="after")
     def fill_in_description(self):

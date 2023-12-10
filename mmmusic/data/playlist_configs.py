@@ -12,50 +12,57 @@ from mmmusic.processors import (
     filter_by_track_attribute,
     order_by_popularity,
 )
+from mmmusic.shuffling import smart_shuffle
 from mmmusic.track_sources import from_playlist, from_playlist_config
 
 regular_playlists = [
     PlaylistConfig(
         name="1970s",
         id="42oUtzFrtsjwNrSpNPSK2e",
-        track_list_processors=[filter_by_release_year(1970, 1980)],
+        track_list_processors=[filter_by_release_year(1970, 1980), smart_shuffle],
     ),
     PlaylistConfig(
         name="1980s",
         id="5mvhdxD9cxTbtkSo6GLUBn",
-        track_list_processors=[filter_by_release_year(1980, 1990)],
+        track_list_processors=[filter_by_release_year(1980, 1990), smart_shuffle],
     ),
     PlaylistConfig(
         name="1990s",
         id="5rAX8oIt6bReD50bff1ZoM",
-        track_list_processors=[filter_by_release_year(1990, 2000)],
+        track_list_processors=[filter_by_release_year(1990, 2000), smart_shuffle],
     ),
     PlaylistConfig(
         name="2000s",
         id="3QeKjWyXm7CQmxbI5pLSR6",
-        track_list_processors=[filter_by_release_year(2000, 2010)],
+        track_list_processors=[filter_by_release_year(2000, 2010), smart_shuffle],
     ),
     PlaylistConfig(
         name="2010s",
         id="5LDEewHtIdy3gg4lPReIQW",
-        track_list_processors=[filter_by_release_year(2010, 2020)],
+        track_list_processors=[filter_by_release_year(2010, 2020), smart_shuffle],
     ),
     PlaylistConfig(
         name="2020s",
         id="2mTcMKBO5WZf7OuBGTL9v1",
-        track_list_processors=[filter_by_release_year(2020, 2030)],
+        track_list_processors=[filter_by_release_year(2020, 2030), smart_shuffle],
     ),
-    PlaylistConfig(name="ALL", id="6vgITEENg2J5mJhW9scpns"),
+    PlaylistConfig(
+        name="ALL",
+        id="6vgITEENg2J5mJhW9scpns",
+        track_list_processors=[smart_shuffle],
+    ),
     PlaylistConfig(
         name="ALL, sample",
         id="2f8Lu0VER9CrwSqZndysMb",
-        track_list_processors=[filter_by_number_of_tracks(500, randomly_sampled=True)],
+        track_list_processors=[
+            filter_by_number_of_tracks(500, randomly_sampled=True),
+            smart_shuffle,
+        ],
     ),
     PlaylistConfig(
         name="ALL, ordered by popularity",
         id="7DpWFkySsh4Jb4RwhsM5HH",
         track_list_processors=[order_by_popularity],
-        smart_shuffle=False,
     ),
     PlaylistConfig(
         name="Ankou's Last Stand",
@@ -65,6 +72,7 @@ regular_playlists = [
                 "1ibHApXtb0pgplmNDRLHrJ",  # Achilles last stand
             ),
             filter_by_number_of_tracks(69),
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
@@ -75,6 +83,7 @@ regular_playlists = [
                 "4X2xFHqUSRmyH9sQmfwCP2",  # To Never Return
             ),
             filter_by_number_of_tracks(200),
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
@@ -90,7 +99,7 @@ regular_playlists = [
     PlaylistConfig(
         name="ambient",
         id="1YV73mm0afshcS0dRnUGnA",
-        track_list_processors=[filter_by_genre_pattern(".*ambient.*")],
+        track_list_processors=[filter_by_genre_pattern(".*ambient.*"), smart_shuffle],
     ),
     PlaylistConfig(
         name="bad vibes",
@@ -98,6 +107,7 @@ regular_playlists = [
         track_list_processors=[
             filter_by_audio_feature("valence", upper_bound=0.10),
             filter_by_audio_feature("energy", lower_bound=0.6),
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
@@ -106,37 +116,53 @@ regular_playlists = [
         track_list_processors=[
             filter_by_genre_pattern(".*(classical|compositional).*"),
             exclude_artists("4aMeIY7MkJoZg7O91cmDDd"),  # adrian younge
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
         name="cool jazz",
         id="5jC4kOjPOUeK9XVh4KoKrQ",
-        track_list_processors=[filter_by_genre_pattern(".*cool.*")],
+        track_list_processors=[filter_by_genre_pattern(".*cool.*"), smart_shuffle],
     ),
     PlaylistConfig(
         name="countryish",
         id="4wcgUKYWHab9mXYA2FFIKR",
-        track_list_processors=[filter_by_genre_pattern(".*(americana|country|cow).*")],
+        track_list_processors=[
+            filter_by_genre_pattern(".*(americana|country|cow).*"),
+            smart_shuffle,
+        ],
     ),
     PlaylistConfig(
         name="electronic",
         id="7GMLyaUHYpikBPXA43E0qE",
-        track_list_processors=[filter_by_genre_pattern(".*electronic.*")],
+        track_list_processors=[
+            filter_by_genre_pattern(".*electronic.*"),
+            smart_shuffle,
+        ],
     ),
     PlaylistConfig(
         name="emo/math",
         id="5Oue7ZbZPNZVqShDBP0WL5",
-        track_list_processors=[filter_by_genre_pattern(".*(emo|math).*")],
+        track_list_processors=[
+            filter_by_genre_pattern(".*(emo|math).*"),
+            smart_shuffle,
+        ],
     ),
     PlaylistConfig(
         name="escape room",
         id="2mRBO6zOBSRLrUUExsxzHj",
-        track_list_processors=[filter_by_genre_pattern(".*escape room.*")],
+        track_list_processors=[
+            filter_by_genre_pattern(".*escape room.*"),
+            smart_shuffle,
+        ],
     ),
     PlaylistConfig(
         name="folk",
         id="0IIasIfYBu5sKpyiQFcijU",
-        track_list_processors=[filter_by_genre_pattern("^(?!.*?(freak)).*folk.*")],
+        track_list_processors=[
+            filter_by_genre_pattern("^(?!.*?(freak)).*folk.*"),
+            smart_shuffle,
+        ],
     ),
     PlaylistConfig(
         name="good vibes",
@@ -144,13 +170,15 @@ regular_playlists = [
         track_list_processors=[
             filter_by_audio_feature("danceability", lower_bound=0.5),
             filter_by_audio_feature("valence", lower_bound=0.9),
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
         name="goth, industrial",
         id="1jtOACTCsi2LQQ6qHjC1D3",
         track_list_processors=[
-            filter_by_genre_pattern("^(?!.*?(gothenburg)).*(goth|industrial).*")
+            filter_by_genre_pattern("^(?!.*?(gothenburg)).*(goth|industrial).*"),
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
@@ -159,17 +187,18 @@ regular_playlists = [
         track_list_processors=[
             filter_by_mode("minor"),
             filter_by_audio_feature("valence", lower_bound=0.6),
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
         name="hip hop",
         id="4dXcWkz1kfG5Vk5EaJTx1Z",
-        track_list_processors=[filter_by_genre_pattern(".*hip hop.*")],
+        track_list_processors=[filter_by_genre_pattern(".*hip hop.*"), smart_shuffle],
     ),
     PlaylistConfig(
         name="indie",
         id="1gqcFVnh4TT8sHAOgdNm9u",
-        track_list_processors=[filter_by_genre_pattern(".*indie.*")],
+        track_list_processors=[filter_by_genre_pattern(".*indie.*"), smart_shuffle],
     ),
     PlaylistConfig(
         name="japan",
@@ -185,6 +214,7 @@ regular_playlists = [
                 "1EpLpC0tbCla8knfhET78p",  # mccoy tyner trio
                 "47odibUtrN3lnWx0p0pk2P",  # ornette coleman
             ),
+            smart_shuffle,
         ],
     ),
     (
@@ -199,6 +229,7 @@ regular_playlists = [
                     )
                 ),
                 exclude_artists("4aMeIY7MkJoZg7O91cmDDd"),  # adrian younge
+                smart_shuffle,
             ],
         )
     ),
@@ -206,41 +237,49 @@ regular_playlists = [
         name="bitter jazz",
         id="6NFebq22RoaEuXPk5rwGXL",
         track_source=from_playlist_config(jazz_playlist_config),
-        track_list_processors=[filter_by_audio_feature("valence", upper_bound=0.2)],
+        track_list_processors=[
+            filter_by_audio_feature("valence", upper_bound=0.2),
+            smart_shuffle,
+        ],
     ),
     PlaylistConfig(
         name="metal",
         id="61nupgqsP4SpRPeMOlMfwR",
         track_list_processors=[
-            filter_by_genre_pattern("^(?!.*?(proto-metal)).*(doom|metal|zeuhl).*")
+            filter_by_genre_pattern("^(?!.*?(proto-metal)).*(doom|metal|zeuhl).*"),
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
         name="popular artists",
         id="08pLTWx8LB58syQ8c7lXuW",
         track_list_processors=[
-            filter_by_artist_attribute("popularity", lower_bound=70)
+            filter_by_artist_attribute("popularity", lower_bound=70),
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
         name="popular tracks",
         id="60BlxvTBWRivesoeC2YEWI",
-        track_list_processors=[filter_by_track_attribute("popularity", lower_bound=65)],
+        track_list_processors=[
+            filter_by_track_attribute("popularity", lower_bound=65),
+            smart_shuffle,
+        ],
     ),
     PlaylistConfig(
         name="post-rock",
         id="3lWRWrH8k7dYevVqURwCaO",
-        track_list_processors=[filter_by_genre_pattern(".*post-rock.*")],
+        track_list_processors=[filter_by_genre_pattern(".*post-rock.*"), smart_shuffle],
     ),
     PlaylistConfig(
         name="pre-1970",
         id="0YgMbK1uwJrTpbUXQclxE4",
-        track_list_processors=[filter_by_release_year(end_year=1970)],
+        track_list_processors=[filter_by_release_year(end_year=1970), smart_shuffle],
     ),
     PlaylistConfig(
         name="punkish",
         id="6EQJo56pBOtFULTOWDBWpr",
-        track_list_processors=[filter_by_genre_pattern(".*punk.*")],
+        track_list_processors=[filter_by_genre_pattern(".*punk.*"), smart_shuffle],
     ),
     PlaylistConfig(
         name="studying",
@@ -249,18 +288,20 @@ regular_playlists = [
             filter_by_audio_feature("instrumentalness", lower_bound=0.8),
             filter_by_audio_feature("energy", upper_bound=0.5),
             filter_by_audio_feature("tempo", upper_bound=120),
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
         name="trip hop",
         id="6bIR1k355xeROBieHFTaMA",
-        track_list_processors=[filter_by_genre_pattern(".*trip.*")],
+        track_list_processors=[filter_by_genre_pattern(".*trip.*"), smart_shuffle],
     ),
     PlaylistConfig(
         name="tropical",
         id="0k4erYUPCaR0HEf722oW0v",
         track_list_processors=[
-            filter_by_genre_pattern(".*(brazil|latin|mpb|reggae).*")
+            filter_by_genre_pattern(".*(brazil|latin|mpb|reggae).*"),
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
@@ -269,13 +310,15 @@ regular_playlists = [
         track_list_processors=[
             filter_by_mode("major"),
             filter_by_audio_feature("valence", upper_bound=0.2),
+            smart_shuffle,
         ],
     ),
     PlaylistConfig(
         name="unpopular artists",
         id="5nF4jX1FpEsBC8r2ie1hPK",
         track_list_processors=[
-            filter_by_artist_attribute("popularity", upper_bound=25)
+            filter_by_artist_attribute("popularity", upper_bound=25),
+            smart_shuffle,
         ],
     ),
 ]
@@ -285,20 +328,21 @@ q_playlists = [
         name="q - harder",
         id="5mRa71QUmE6EWavxTA22g6",
         track_list_processors=[
-            filter_by_genre_pattern("^(?!.*?(hop|rap)).*(core|doom|metal|punk).*")
+            filter_by_genre_pattern("^(?!.*?(hop|rap)).*(core|doom|metal|punk).*"),
+            smart_shuffle,
         ],
         track_source=from_playlist(playlist_ids.Q_ALL),
     ),
     PlaylistConfig(
         name="q - hop",
         id="0sFhYQaTiuZlG1vMDSiFMR",
-        track_list_processors=[filter_by_genre_pattern(".*(hop|rap).*")],
+        track_list_processors=[filter_by_genre_pattern(".*(hop|rap).*"), smart_shuffle],
         track_source=from_playlist(playlist_ids.Q_ALL),
     ),
     PlaylistConfig(
         name="q - jazz",
         id="4HQnus8hcLfX5pYtG95pKY",
-        track_list_processors=[filter_by_genre_pattern(".*jazz.*")],
+        track_list_processors=[filter_by_genre_pattern(".*jazz.*"), smart_shuffle],
         track_source=from_playlist(playlist_ids.Q_ALL),
     ),
     PlaylistConfig(
@@ -307,14 +351,15 @@ q_playlists = [
         track_list_processors=[
             filter_by_genre_pattern(
                 "^(?!.*?(core|doom|hop|jazz|metal|punk|rap|rock)).*"
-            )
+            ),
+            smart_shuffle,
         ],
         track_source=from_playlist(playlist_ids.Q_ALL),
     ),
     PlaylistConfig(
         name="q - rock",
         id="1tlzpLpRdQXUicLbhIJMcM",
-        track_list_processors=[filter_by_genre_pattern(".*rock.*")],
+        track_list_processors=[filter_by_genre_pattern(".*rock.*"), smart_shuffle],
         track_source=from_playlist(playlist_ids.Q_ALL),
     ),
 ]
