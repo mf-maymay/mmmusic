@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from functools import cache
 
-import pydantic
+from pydantic import BaseModel, validator
 
 from mmmusic.external import spotify
 from mmmusic.models.tracks import Track, get_track
@@ -10,14 +10,14 @@ from mmmusic.models.tracks import Track, get_track
 AlbumID = str
 
 
-class Album(pydantic.BaseModel):
+class Album(BaseModel):
     name: str
     id: str
     album_type: str
     release_date: date
     artist_ids: tuple[str, ...]
 
-    @pydantic.validator("release_date", pre=True)
+    @validator("release_date", pre=True)
     def coerce_to_full_date(cls, value):
         if not isinstance(value, str):
             return value
