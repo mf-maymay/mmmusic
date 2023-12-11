@@ -6,7 +6,7 @@ from scipy.stats import percentileofscore
 from mmmusic.genres import get_genre_attributes_for_track
 from mmmusic.models.albums import get_album
 from mmmusic.models.tracks import Track
-from mmmusic.models.types import Item, Items, Metrics, Tracks
+from mmmusic.models.types import Item, Items, Metrics
 
 TRACK_FEATURES = (
     "danceability",
@@ -46,7 +46,7 @@ def get_percentile_scores_for_attributes_of_items(
     return dict(zip(items, scores))
 
 
-def get_scores_for_tracks(tracks: Tracks) -> dict[Track, Metrics]:
+def get_scores_for_tracks(tracks: list[Track]) -> dict[Track, Metrics]:
     return get_percentile_scores_for_attributes_of_items(
         tracks, item_attributes_func=get_metrics_for_track
     )

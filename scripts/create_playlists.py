@@ -20,10 +20,6 @@ if __name__ == "__main__":
         with time_and_note_when_done():
             playlist.get_tracks()
 
-        print(f"Ordering '{playlist.name}' tracks...")
-        with time_and_note_when_done():
-            playlist.order_tracks()
-
         if playlist.id is None:
             print(f"Creating '{playlist.name}'...")
             with time_and_note_when_done():

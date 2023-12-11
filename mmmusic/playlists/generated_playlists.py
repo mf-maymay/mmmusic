@@ -30,14 +30,8 @@ class GeneratedPlaylist:
     def get_tracks(self):
         self.tracks = self.config.track_source(self.user)
 
-        for track_filter in self.config.track_filters:
-            self.tracks = track_filter(self.tracks)
-
-    def order_tracks(self):
-        if self.tracks is None:
-            raise ValueError("tracks not set")
-
-        self.tracks = self.config.order_tracks_func(self.tracks)
+        if self.config.combined_processor is not None:
+            self.tracks = self.config.combined_processor(self.tracks)
 
     def create(self):
         if self.id is not None:

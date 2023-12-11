@@ -1,5 +1,6 @@
 from typing import Any, Callable, Optional
 
+from mmmusic.models.operations import CombinableListOperation
 from mmmusic.models.tracks import Track
 
 Item = Any
@@ -10,6 +11,4 @@ SeedPicker = Callable[[Items, Optional[Item]], tuple[Item, Item]]
 
 Metrics = list[float]
 
-Tracks = list[Track]
-
-TrackListTransformer = Callable[[Tracks], Tracks]
+TrackListTransformer = CombinableListOperation[Track]
