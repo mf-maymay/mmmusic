@@ -8,12 +8,15 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.pyplot as plt
 import networkx as nx
 
+from mmmusic.logging import get_logger
 from mmmusic.models.artists import (
     Artist,
     get_artist,
     get_artist_related_artists,
     search_for_artist,
 )
+
+logger = get_logger()
 
 
 def expand(
@@ -302,7 +305,7 @@ if __name__ == "__main__":
 
     seeds = [search_for_artist(artist) for artist in inputs]
 
-    print("Connecting {} ...".format(" and ".join(f"'{seed}'" for seed in seeds)))
+    logger.info("Connecting {} ...".format(" and ".join(f"'{seed}'" for seed in seeds)))
 
     graph, (fig, ax) = grow_and_plot(*seeds)
 

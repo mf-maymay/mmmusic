@@ -1,7 +1,10 @@
+from mmmusic.logging import get_logger
 from mmmusic.models.tracks import get_track
 from mmmusic.shuffling import smart_shuffle
 from mmmusic.users import User
 from mmmusic.utils import no_timeout, take_x_at_a_time
+
+logger = get_logger()
 
 MAX_TRACKS = 11_000
 
@@ -10,7 +13,7 @@ def add_tracks_to_playlist(playlist_id, *, tracks, user: User):
     tracks = [track if isinstance(track, str) else track.id for track in tracks]
 
     if len(tracks) > MAX_TRACKS:
-        print(
+        logger.warning(
             f"Playlist has {len(tracks):,} tracks. Only adding first {MAX_TRACKS:,} ..."
         )
 

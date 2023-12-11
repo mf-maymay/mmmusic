@@ -8,9 +8,9 @@ from mmmusic.models.albums import get_album, get_tracks_from_albums
 from mmmusic.models.artists import get_artist
 from mmmusic.utils import no_timeout
 
-DEFAULT_SCOPE = "playlist-modify-private,playlist-modify-public,user-library-read"
-
 logger = get_logger()
+
+DEFAULT_SCOPE = "playlist-modify-private,playlist-modify-public,user-library-read"
 
 
 class User:
