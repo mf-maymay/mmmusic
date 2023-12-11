@@ -69,6 +69,4 @@ for playlist_config in playlist_configs.q_playlists:
 
     playlist = GeneratedPlaylist(config=playlist_config, user=user)
 
-    playlist.get_tracks()
-
     playlist.build()

@@ -15,6 +15,4 @@ if __name__ == "__main__":
     for key in to_create:
         playlist = playlists[key]
 
-        playlist.get_tracks()
-
         playlist.build()

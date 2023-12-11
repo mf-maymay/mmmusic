@@ -40,6 +40,9 @@ class GeneratedPlaylist:
             self.tracks = self.config.combined_processor(self.tracks)
 
     def build(self):
+        if self.tracks is None:
+            self.get_tracks()
+
         if self.id is None:
             self._create()
         else:
