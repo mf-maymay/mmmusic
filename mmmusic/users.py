@@ -33,10 +33,10 @@ class User:
         self._artists = None
         self._tracks = None
 
-        logger.info(f"Getting OAuth manager for user {self.username!r}")
+        logger.debug(f"Getting OAuth manager for user {self.username!r}")
 
         if open_browser_for_oauth:
-            logger.info("Opening browser for OAuth")
+            logger.debug("Opening browser for OAuth")
 
         auth_manager = SpotifyOAuth(
             username=self.username,
@@ -45,7 +45,7 @@ class User:
             open_browser=open_browser_for_oauth,
         )
 
-        logger.info("OAuth manager was successfully prepared")
+        logger.debug("OAuth manager was successfully prepared")
 
         self.sp = spotipy.Spotify(auth_manager=auth_manager, retries=None)
 
