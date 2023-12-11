@@ -305,7 +305,7 @@ if __name__ == "__main__":
 
     seeds = [search_for_artist(artist) for artist in inputs]
 
-    logger.info("Connecting {} ...".format(" and ".join(f"'{seed}'" for seed in seeds)))
+    logger.info("Connecting {}".format(" and ".join(f"'{seed}'" for seed in seeds)))
 
     graph, (fig, ax) = grow_and_plot(*seeds)
 

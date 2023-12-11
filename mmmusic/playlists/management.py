@@ -14,7 +14,8 @@ def add_tracks_to_playlist(playlist_id, *, tracks, user: User):
 
     if len(tracks) > MAX_TRACKS:
         logger.warning(
-            f"Playlist has {len(tracks):,} tracks. Only adding first {MAX_TRACKS:,} ..."
+            f"Playlist has {len(tracks):,} tracks. "
+            f"Only the first {MAX_TRACKS:,} will be included."
         )
 
     for to_add in take_x_at_a_time(tracks[:MAX_TRACKS], 100):
