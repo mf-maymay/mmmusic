@@ -39,11 +39,14 @@ class GeneratedPlaylist:
             logger.info(f"Ordering {self.name!r} tracks")
             self.tracks = self.config.combined_processor(self.tracks)
 
-    def create(self):
-        logger.info(f"Creating {self.name!r}")
+    def build(self):
+        if self.id is None:
+            self._create()
+        else:
+            self._recreate()
 
-        if self.id is not None:
-            raise ValueError("id is already set")
+    def _create(self):
+        logger.info(f"Creating {self.name!r}")
 
         self.id = create_playlist(
             name=self.name,
@@ -53,11 +56,8 @@ class GeneratedPlaylist:
 
         add_tracks_to_playlist(self.id, tracks=self.tracks, user=self.user)
 
-    def recreate(self):
+    def _recreate(self):
         logger.info(f"Recreating {self.name!r}")
-
-        if self.id is None:
-            raise ValueError("id not set")
 
         replace_playlist(
             self.id,

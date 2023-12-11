@@ -17,7 +17,4 @@ if __name__ == "__main__":
 
         playlist.get_tracks()
 
-        if playlist.id is None:
-            playlist.create()
-        else:
-            playlist.recreate()
+        playlist.build()

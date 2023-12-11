@@ -71,4 +71,4 @@ for playlist_config in playlist_configs.q_playlists:
 
     playlist.get_tracks()
 
-    playlist.recreate()
+    playlist.build()
