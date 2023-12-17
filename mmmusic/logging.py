@@ -1,24 +1,21 @@
+from functools import cache
 import logging
 
-_logger = None
 
-
+@cache
 def get_logger():
-    global _logger
+    logger = logging.getLogger(__name__)
 
-    if _logger is None:
-        _logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
 
-        _logger.setLevel(logging.DEBUG)
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(
+        logging.Formatter("[%(asctime)-18s] [%(levelname)s] %(message)s")
+    )
 
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(
-            logging.Formatter("[%(asctime)-18s] [%(levelname)s] %(message)s")
-        )
+    logger.addHandler(stream_handler)
 
-        _logger.addHandler(stream_handler)
-
-    return _logger
+    return logger
 
 
 if __name__ == "__main__":
