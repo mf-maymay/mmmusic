@@ -1,3 +1,4 @@
+from mmmusic.logging import get_logger
 from mmmusic.models.playlist_configs import PlaylistConfig
 from mmmusic.playlists.management import (
     add_tracks_to_playlist,
@@ -5,6 +6,8 @@ from mmmusic.playlists.management import (
     replace_playlist,
 )
 from mmmusic.users import User
+
+logger = get_logger()
 
 MAX_TRACKS = 11_000
 
@@ -28,14 +31,25 @@ class GeneratedPlaylist:
         return self.config.name
 
     def get_tracks(self):
+        logger.info("Getting %r tracks", self.name)
+
         self.tracks = self.config.track_source(self.user)
 
         if self.config.combined_processor is not None:
+            logger.info("Ordering %r tracks", self.name)
             self.tracks = self.config.combined_processor(self.tracks)
 
-    def create(self):
-        if self.id is not None:
-            raise ValueError("id is already set")
+    def build(self):
+        if self.tracks is None:
+            self.get_tracks()
+
+        if self.id is None:
+            self._create()
+        else:
+            self._recreate()
+
+    def _create(self):
+        logger.info("Creating %r", self.name)
 
         self.id = create_playlist(
             name=self.name,
@@ -45,9 +59,8 @@ class GeneratedPlaylist:
 
         add_tracks_to_playlist(self.id, tracks=self.tracks, user=self.user)
 
-    def recreate(self):
-        if self.id is None:
-            raise ValueError("id not set")
+    def _recreate(self):
+        logger.info("Recreating %r", self.name)
 
         replace_playlist(
             self.id,

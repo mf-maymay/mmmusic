@@ -8,9 +8,9 @@ from mmmusic.models.albums import get_album, get_tracks_from_albums
 from mmmusic.models.artists import get_artist
 from mmmusic.utils import no_timeout
 
-DEFAULT_SCOPE = "playlist-modify-private,playlist-modify-public,user-library-read"
-
 logger = get_logger()
+
+DEFAULT_SCOPE = "playlist-modify-private,playlist-modify-public,user-library-read"
 
 
 class User:
@@ -33,10 +33,10 @@ class User:
         self._artists = None
         self._tracks = None
 
-        logger.info(f"Getting OAuth manager for user {self.username!r}")
+        logger.debug("Getting OAuth manager for user %r", self.username)
 
         if open_browser_for_oauth:
-            logger.info("Opening browser for OAuth")
+            logger.debug("Opening browser for OAuth")
 
         auth_manager = SpotifyOAuth(
             username=self.username,
@@ -45,7 +45,7 @@ class User:
             open_browser=open_browser_for_oauth,
         )
 
-        logger.info("OAuth manager was successfully prepared")
+        logger.debug("OAuth manager was successfully prepared")
 
         self.sp = spotipy.Spotify(auth_manager=auth_manager, retries=None)
 
