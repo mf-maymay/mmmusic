@@ -31,12 +31,12 @@ class GeneratedPlaylist:
         return self.config.name
 
     def get_tracks(self):
-        logger.info(f"Getting {self.name!r} tracks")
+        logger.info("Getting %r tracks", self.name)
 
         self.tracks = self.config.track_source(self.user)
 
         if self.config.combined_processor is not None:
-            logger.info(f"Ordering {self.name!r} tracks")
+            logger.info("Ordering %r tracks", self.name)
             self.tracks = self.config.combined_processor(self.tracks)
 
     def build(self):
@@ -49,7 +49,7 @@ class GeneratedPlaylist:
             self._recreate()
 
     def _create(self):
-        logger.info(f"Creating {self.name!r}")
+        logger.info("Creating %r", self.name)
 
         self.id = create_playlist(
             name=self.name,
@@ -60,7 +60,7 @@ class GeneratedPlaylist:
         add_tracks_to_playlist(self.id, tracks=self.tracks, user=self.user)
 
     def _recreate(self):
-        logger.info(f"Recreating {self.name!r}")
+        logger.info("Recreating %r", self.name)
 
         replace_playlist(
             self.id,

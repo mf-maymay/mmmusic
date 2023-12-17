@@ -33,7 +33,7 @@ class User:
         self._artists = None
         self._tracks = None
 
-        logger.debug(f"Getting OAuth manager for user {self.username!r}")
+        logger.debug("Getting OAuth manager for user %r", self.username)
 
         if open_browser_for_oauth:
             logger.debug("Opening browser for OAuth")
