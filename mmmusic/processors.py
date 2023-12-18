@@ -1,5 +1,6 @@
 import random
 
+from mmmusic.features import get_scores_for_tracks, similarity
 from mmmusic.genres import artists_of_genres_matching_pattern
 from mmmusic.models.albums import get_album
 from mmmusic.models.artists import Artist, ArtistID, get_artist
@@ -7,7 +8,6 @@ from mmmusic.models.operations import combinable
 from mmmusic.models.tracks import Track, get_track
 from mmmusic.models.types import TrackListTransformer
 from mmmusic.music_theory import get_spotify_friendly_key, get_spotify_friendly_mode
-from mmmusic.playlists.ordering import by_similarity
 
 
 def exclude_artists(*artists: Artist | ArtistID) -> TrackListTransformer:
@@ -133,16 +133,6 @@ def filter_by_release_year(
     return filter_tracks
 
 
-def filter_by_similarity_to_track(track: Track | str) -> TrackListTransformer:
-    track = get_track(track)
-
-    @combinable(display_name=f"similar to '{track.name}'")
-    def filter_tracks(tracks: list[Track]) -> list[Track]:
-        return by_similarity(seed=track, tracks=tracks)
-
-    return filter_tracks
-
-
 def filter_by_track_attribute(
     attr: str,
     *,
@@ -246,6 +236,22 @@ def order_by_popularity(tracks: list[Track]) -> list[Track]:
         key=lambda track: track.popularity,
         reverse=True,
     )
+
+
+def order_by_similarity_to_track(track: Track | str) -> TrackListTransformer:
+    seed = get_track(track)
+
+    @combinable(display_name=f"ordered by similarity to '{seed.name}'")
+    def filter_tracks(tracks: list[Track]) -> list[Track]:
+        scores = get_scores_for_tracks([*tracks, seed])
+
+        similarities: dict[Track, float] = {
+            track: similarity(scores[track], scores[seed]) for track in tracks
+        }
+
+        return sorted(tracks, key=similarities.get, reverse=True)
+
+    return filter_tracks
 
 
 def _construct_display_name_for_bounded_feature(
