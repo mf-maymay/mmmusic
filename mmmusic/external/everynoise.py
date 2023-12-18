@@ -54,5 +54,10 @@ def get_genre_positions() -> dict:
 def refresh_genre_positions():
     genre_positions = get_genre_positions()
 
-    with open("genre_positions.json", "w") as f:
+    with open("mmmusic/data/genre_positions.json", "w") as f:
         json.dump(genre_positions, f)
+
+
+if __name__ == "__main__":
+    if input("Do you want to refresh the genre positions? (y/n): ") == "y":
+        refresh_genre_positions()
