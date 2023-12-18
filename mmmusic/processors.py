@@ -133,6 +133,18 @@ def filter_by_release_year(
     return filter_tracks
 
 
+def filter_by_similarity_to_track(
+    track: Track | str, *, number_of_tracks: int
+) -> TrackListTransformer:
+    seed = get_track(track)
+
+    return combinable(
+        order_by_similarity_to_track(seed)
+        & filter_by_number_of_tracks(number_of_tracks),
+        display_name=f"{number_of_tracks} tracks most similar to '{seed.name}'",
+    )
+
+
 def filter_by_track_attribute(
     attr: str,
     *,

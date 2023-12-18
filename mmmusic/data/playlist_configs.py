@@ -8,9 +8,9 @@ from mmmusic.processors import (
     filter_by_mode,
     filter_by_number_of_tracks,
     filter_by_release_year,
+    filter_by_similarity_to_track,
     filter_by_track_attribute,
     order_by_popularity,
-    order_by_similarity_to_track,
 )
 from mmmusic.shuffling import smart_shuffle
 from mmmusic.track_sources import from_playlist, from_playlist_config
@@ -68,10 +68,10 @@ regular_playlists = [
         name="Ankou's Last Stand",
         id="4lyNSFxJIpJBDTP9wUq4C1",
         processors=[
-            order_by_similarity_to_track(
+            filter_by_similarity_to_track(
                 "1ibHApXtb0pgplmNDRLHrJ",  # Achilles last stand
+                number_of_tracks=69,
             ),
-            filter_by_number_of_tracks(69),
             smart_shuffle,
         ],
     ),
@@ -79,10 +79,10 @@ regular_playlists = [
         name="Battle in the Spirit Leech's Dream World",
         id="1YlzmYdLyFFXwclJIWoZB5",
         processors=[
-            order_by_similarity_to_track(
+            filter_by_similarity_to_track(
                 "4X2xFHqUSRmyH9sQmfwCP2",  # To Never Return
+                number_of_tracks=200,
             ),
-            filter_by_number_of_tracks(200),
             smart_shuffle,
         ],
     ),
