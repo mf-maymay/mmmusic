@@ -28,6 +28,7 @@ tabulate = "*"
 autoflake = "*"
 black = "*"
 isort = "*"
+ruff = "^0.1.8"
 
 types-requests = "*"
 types-tabulate = "*"
