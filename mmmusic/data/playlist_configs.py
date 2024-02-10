@@ -111,6 +111,11 @@ regular_playlists = [
         ],
     ),
     PlaylistConfig(
+        name="blues",
+        id="1PoISoAlzhps4yjoZkL3ma",
+        processors=[filter_by_genre_pattern(".*blues.*"), smart_shuffle],
+    ),
+    PlaylistConfig(
         name="classical",
         id="3m6lx4N48ixWU0iyd2kTu6",
         processors=[
