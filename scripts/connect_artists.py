@@ -46,6 +46,7 @@ def expand(
         graph.add_edges_from(
             (artist, related) for related in get_artist_related_artists(artist)
         )
+
     return graph
 
 
@@ -80,6 +81,7 @@ def grow(
         new_graph = expand(new_artists, graph=graph)
         new_artists = new_graph.nodes - graph.nodes
         graph = new_graph
+
         if not new_artists:
             raise RuntimeError("No new artists found.")
 
@@ -144,15 +146,20 @@ def paths_subgraph(graph, seeds, max_len=None) -> tuple[nx.Graph, dict]:
     for pair in combinations(seeds, 2):
         paths_per_pair[pair] = []
         pair_max_len = max_len  # Specifically for when max_len is None.
+
         for path in nx.shortest_simple_paths(graph, *pair):
             if pair_max_len is None:
                 paths_per_pair[pair].append(path)
+
                 # Set pair_max_len to shortest length between paired nodes.
                 pair_max_len = len(paths_per_pair[pair][-1])
+
             elif len(path) <= pair_max_len:
                 paths_per_pair[pair].append(path)
+
             else:  # nx.shortest_simple_paths yields paths of increasing length
                 break
+
     keepers = set()
 
     for paths in paths_per_pair.values():
@@ -207,7 +214,8 @@ def plot(
 
     if seeds - graph.nodes:
         raise ValueError("Not all seeds are in graph.")
-    dist = {seed: 0 for seed in seeds}
+
+    dist = {seed: 0 for seed in seeds}  # TODO: Use clearer names.
 
     if seeds and all(
         nx.has_path(graph, source, target) for source, target in combinations(seeds, 2)
@@ -218,14 +226,18 @@ def plot(
         for artist_id in seeds:
             pres.append(nx.bfs_predecessors(graph, artist_id))
             dists.append({artist_id: 0})
-        for i, artist_id in enumerate(seeds):
+
+        for i, _artist_id in enumerate(seeds):
             for artist, pre in pres[i]:
                 dists[i][artist] = dists[i][pre] + 1
+
         for artist_id in graph.nodes:
-            dist[artist_id] = min(map(lambda d: d.get(artist_id, 1), dists))
+            dist[artist_id] = min(dist.get(artist_id, 1) for dist in dists)
+
     for artist_id in graph.nodes:
         if artist_id not in dist:
             dist[artist_id] = 1
+
     max_dist = max(max(dist.values()), 1)
 
     color = {k: dist[k] / max_dist for k in graph.nodes}

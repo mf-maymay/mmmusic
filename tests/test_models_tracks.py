@@ -44,6 +44,6 @@ class TestArtist(unittest.TestCase):
 
         track = get_track(fake_track)
 
-        mock_spotify.get_track.assert_not_called
+        mock_spotify.get_track.assert_not_called()
 
         self.assertIs(track, fake_track)

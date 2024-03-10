@@ -239,10 +239,7 @@ regular_playlists = [
             id="4ZflB2p06iCWXRgU3yeDUb",
             processors=[
                 filter_by_genre_pattern(
-                    (
-                        "^(?!.*?(core|dark|fusion|nu|jazz metal|jazz rap|jazztronica))"
-                        ".*jazz.*"
-                    )
+                    "^(?!.*?(core|dark|fusion|nu|jazz metal|jazz rap|jazztronica)).*jazz.*"
                 ),
                 exclude_artists("4aMeIY7MkJoZg7O91cmDDd"),  # adrian younge
                 smart_shuffle,

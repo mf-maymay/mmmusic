@@ -94,6 +94,8 @@ if __name__ == "__main__":
     for artist, albums in sorted(
         artist_albums.items(), key=lambda k: (len(k[1]), k[0])
     ):
-        print(f"{artist} ({len(albums)} albums)")
+        print(f"{artist} ({len(albums)} albums)")  # noqa: T201
         for album in albums:
-            print(f"* {album} [{album.release_date.year}]")
+            print(f"* {album} [{album.release_date.year}]")  # noqa: T201
+
+    # TODO: Move this functionality to a separate script.

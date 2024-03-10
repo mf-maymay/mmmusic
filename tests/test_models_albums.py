@@ -45,6 +45,6 @@ class TestArtist(unittest.TestCase):
 
         album = get_album(fake_album)
 
-        mock_spotify.get_album.assert_not_called
+        mock_spotify.get_album.assert_not_called()
 
         self.assertIs(album, fake_album)
