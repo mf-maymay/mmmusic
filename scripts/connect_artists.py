@@ -214,7 +214,8 @@ def plot(
 
     if seeds - graph.nodes:
         raise ValueError("Not all seeds are in graph.")
-    dist = {seed: 0 for seed in seeds}
+
+    dist = {seed: 0 for seed in seeds}  # TODO: Use clearer names.
 
     if seeds and all(
         nx.has_path(graph, source, target) for source, target in combinations(seeds, 2)
@@ -231,7 +232,7 @@ def plot(
                 dists[i][artist] = dists[i][pre] + 1
 
         for artist_id in graph.nodes:
-            dist[artist_id] = min(map(lambda d: d.get(artist_id, 1), dists))
+            dist[artist_id] = min(dist.get(artist_id, 1) for dist in dists)
 
     for artist_id in graph.nodes:
         if artist_id not in dist:
