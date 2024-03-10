@@ -65,6 +65,17 @@ regular_playlists = [
         processors=[order_by_popularity],
     ),
     PlaylistConfig(
+        name="Above, From Within",
+        id="3OjqZQOnQ35w8ePyelTxA1",
+        processors=[
+            filter_by_similarity_to_track(
+                "0PFUMcpS4oeobzD3Tqre7w",  # Andromeda's Suffering
+                number_of_tracks=200,
+            ),
+            smart_shuffle,
+        ],
+    ),
+    PlaylistConfig(
         name="Ankou's Last Stand",
         id="4lyNSFxJIpJBDTP9wUq4C1",
         processors=[
