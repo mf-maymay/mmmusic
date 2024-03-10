@@ -18,7 +18,7 @@ class Album(BaseModel):
     artist_ids: tuple[str, ...]
 
     @validator("release_date", pre=True)
-    def coerce_to_full_date(cls, value):
+    def coerce_to_full_date(cls, value):  # noqa: N805
         if not isinstance(value, str):
             return value
 
