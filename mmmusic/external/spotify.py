@@ -3,7 +3,10 @@ from functools import cache
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
+from mmmusic.logging import get_logger
 from mmmusic.utils import no_timeout
+
+logger = get_logger()
 
 
 @cache
@@ -59,7 +62,12 @@ def get_track_audio_features(track_id: str) -> dict:
     _get_track_audio_features = no_timeout(
         get_client_credentials_managed_client().audio_features
     )
-    return _get_track_audio_features(track_id)[0]
+
+    try:
+        return _get_track_audio_features(track_id)[0]
+    except Exception:
+        logger.error(f"Failed to get audio feature for track {track_id!r}")
+        raise
 
 
 def search_for_artist(search_text: str) -> dict:
