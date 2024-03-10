@@ -25,8 +25,8 @@ spotipy = "*"
 tabulate = "*"
 
 [tool.poetry.group.dev.dependencies]
+pydeps = "^1.12.19"
 ruff = "^0.1.8"
-
 types-requests = "*"
 types-tabulate = "*"
 

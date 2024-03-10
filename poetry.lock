@@ -826,6 +826,20 @@ files = [
 typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 
 [[package]]
+name = "pydeps"
+version = "1.12.19"
+description = "Display module dependencies"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pydeps-1.12.19-py3-none-any.whl", hash = "sha256:5626bf05c06ec9c1e2221c7c861f6e0ea3be89b864a67afef76988eebf32b386"},
+    {file = "pydeps-1.12.19.tar.gz", hash = "sha256:5131629a91571c71416cd8577dddc9628904980b715d8653740d688a3b92312d"},
+]
+
+[package.dependencies]
+stdlib-list = "*"
+
+[[package]]
 name = "pyparsing"
 version = "3.1.2"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
@@ -1016,6 +1030,24 @@ doc = ["Sphinx (>=1.5.2)"]
 test = ["mock (==2.0.0)"]
 
 [[package]]
+name = "stdlib-list"
+version = "0.10.0"
+description = "A list of Python Standard Libraries (2.7 through 3.12)."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "stdlib_list-0.10.0-py3-none-any.whl", hash = "sha256:b3a911bc441d03e0332dd1a9e7d0870ba3bb0a542a74d7524f54fb431256e214"},
+    {file = "stdlib_list-0.10.0.tar.gz", hash = "sha256:6519c50d645513ed287657bfe856d527f277331540691ddeaf77b25459964a14"},
+]
+
+[package.extras]
+dev = ["build", "stdlib-list[doc,lint,test]"]
+doc = ["furo", "sphinx"]
+lint = ["black", "mypy", "ruff"]
+support = ["sphobjinv"]
+test = ["coverage[toml]", "pytest", "pytest-cov"]
+
+[[package]]
 name = "tabulate"
 version = "0.9.0"
 description = "Pretty-print tabular data"
@@ -1096,4 +1128,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "49f80bb505508f83ae210c6f74bb67450b2afd41f4d2855d05b47e3d6ff0022d"
+content-hash = "8b4a144ebe8dd8f912a16574b9d556cfd71b4033ce0fcdaaf3d0914f379a90ab"
