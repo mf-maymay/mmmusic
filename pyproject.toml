@@ -53,3 +53,10 @@ select = [
 
 [tool.ruff.lint.isort]
 force-sort-within-sections = true
+
+[tool.pydeps]
+cluster = true
+max_bacon = 2
+max_cluster_size = 1000
+rankdir = "BT"
+reverse = true
