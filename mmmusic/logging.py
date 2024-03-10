@@ -1,10 +1,5 @@
 from functools import cache
 import logging
-import os
-
-# Set the log level to DEBUG for all loggers if running in debug mode.
-if os.getenv("DEBUG") == "true":
-    logging.basicConfig(level="DEBUG")
 
 
 @cache
