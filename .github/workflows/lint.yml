@@ -11,27 +11,28 @@ on:
       - master
 
 jobs:
-  autoflake:
+  ruff:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up latest Python
         uses: actions/setup-python@v4
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install autoflake
-      - name: Run autoflake
-        run: autoflake  .
-  black:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run black
-        uses: psf/black@stable
-  isort:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Run isort
-        uses: isort/isort-action@v1.1.0
+          python -m pip install ruff
+      - id: check-formatting
+        name: Check formatting
+        run: |
+          ruff format --check
+      - name: Formatting check failed
+        if: ${{ failure() && steps.check-formatting.conclusion == 'failure' }}
+        run: echo 'Formatting check failed. Run `ruff format` to format the code.'
+      - id: check-linting
+        name: Check linting
+        if: ${{ success() || failure() && steps.check-formatting.conclusion == 'failure' }}
+        run: |
+          ruff check
+      - name: Linting check failed
+        if: ${{ failure() && steps.check-linting.conclusion == 'failure' }}
+        run: echo 'Linting check failed. Run `ruff check --fix` to automatically fix errors.'
