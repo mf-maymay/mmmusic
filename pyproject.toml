@@ -25,8 +25,8 @@ spotipy = "*"
 tabulate = "*"
 
 [tool.poetry.group.dev.dependencies]
+pydeps = "^1.12.19"
 ruff = "^0.1.8"
-
 types-requests = "*"
 types-tabulate = "*"
 
@@ -53,3 +53,10 @@ select = [
 
 [tool.ruff.lint.isort]
 force-sort-within-sections = true
+
+[tool.pydeps]
+cluster = true
+max_bacon = 2
+max_cluster_size = 1000
+rankdir = "BT"
+reverse = true
