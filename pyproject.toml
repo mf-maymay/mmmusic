@@ -29,3 +29,17 @@ ruff = "^0.1.8"
 
 types-requests = "*"
 types-tabulate = "*"
+
+[tool.ruff.lint]
+select = [
+    # defaults
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    # isort
+    "I",
+]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
