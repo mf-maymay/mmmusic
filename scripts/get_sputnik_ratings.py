@@ -36,4 +36,4 @@ if __name__ == "__main__":
 
     ratings = get_user_album_ratings(user)
 
-    print(ratings)
+    print(ratings)  # noqa: T201

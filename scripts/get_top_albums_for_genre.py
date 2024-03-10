@@ -46,5 +46,5 @@ if __name__ == "__main__":
         (df["confidence level"] > 0) & (df["rating"] >= min_rating)
     ].reset_index(drop=True)
 
-    print("\nTop albums:")
-    print(tabulate(filtered_df, headers="keys", tablefmt="outline"))
+    print("\nTop albums:")  # noqa: T201
+    print(tabulate(filtered_df, headers="keys", tablefmt="outline"))  # noqa: T201
