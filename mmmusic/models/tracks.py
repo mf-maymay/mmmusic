@@ -52,7 +52,7 @@ class Track(BaseModel):
 
     @computed_field
     @cached_property
-    def audio_features(self) -> AudioFeatures:
+    def audio_features(self) -> AudioFeatures | None:
         return get_track_audio_features(self)
 
     def __getitem__(self, key):
@@ -85,7 +85,9 @@ def get_track(track_id: TrackID | Track) -> Track:
 
 
 @cache
-def get_track_audio_features(track: TrackID | Track | AudioFeatures) -> AudioFeatures:
+def get_track_audio_features(
+    track: TrackID | Track | AudioFeatures,
+) -> AudioFeatures | None:
     if isinstance(track, AudioFeatures):
         return track
 
@@ -93,6 +95,9 @@ def get_track_audio_features(track: TrackID | Track | AudioFeatures) -> AudioFea
         track = track.id
 
     audio_features_json = spotify.get_track_audio_features(track)
+
+    if audio_features_json is None:
+        return None
 
     return AudioFeatures.parse_obj(audio_features_json)
 

@@ -58,7 +58,7 @@ def get_track(track_id: str) -> dict:
 
 
 @cache
-def get_track_audio_features(track_id: str) -> dict:
+def get_track_audio_features(track_id: str) -> dict | None:
     _get_track_audio_features = no_timeout(
         get_client_credentials_managed_client().audio_features
     )

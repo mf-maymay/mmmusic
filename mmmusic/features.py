@@ -4,9 +4,12 @@ import numpy as np
 from scipy.stats import percentileofscore
 
 from mmmusic.genres import get_genre_attributes_for_track
+from mmmusic.logging import get_logger
 from mmmusic.models.albums import get_album
 from mmmusic.models.tracks import Track
 from mmmusic.models.types import Item, Items, Metrics
+
+logger = get_logger()
 
 TRACK_FEATURES = (
     "danceability",
@@ -27,11 +30,15 @@ def similarity(u: Metrics, v: Metrics) -> float:
 
 
 def get_metrics_for_track(track: Track) -> Metrics:
-    return [
-        *(track[feature] for feature in TRACK_FEATURES),
-        int(get_album(track.album_id).release_date.year),
-        *get_genre_attributes_for_track(track),
-    ]
+    try:
+        return [
+            *(track[feature] for feature in TRACK_FEATURES),
+            int(get_album(track.album_id).release_date.year),
+            *get_genre_attributes_for_track(track),
+        ]
+    except Exception:
+        logger.exception(f"Failed to get metrics for track {track!r}")
+        raise
 
 
 def get_percentile_scores_for_attributes_of_items(
