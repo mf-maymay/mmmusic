@@ -1,6 +1,9 @@
 from mmmusic.data import playlist_configs
+from mmmusic.logging import get_logger
 from mmmusic.playlists.generated_playlists import GeneratedPlaylist
 from mmmusic.users import User
+
+logger = get_logger()
 
 if __name__ == "__main__":
     user = User()
@@ -15,4 +18,7 @@ if __name__ == "__main__":
     for key in to_create:
         playlist = playlists[key]
 
-        playlist.build()
+        try:
+            playlist.build()
+        except Exception:
+            logger.exception(f"Failed to build playlist {playlist.name!r}. Skipping...")
