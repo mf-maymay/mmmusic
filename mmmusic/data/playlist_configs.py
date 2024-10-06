@@ -149,6 +149,17 @@ regular_playlists = [
         ],
     ),
     PlaylistConfig(
+        name="dvigrad",
+        id="21x4fFQdybGUWnKIBNbTTK",
+        processors=[
+            filter_by_similarity_to_track(
+                "2QflZ6CHNhegVZcOXLAlPw",  # The sunken cathedral
+                number_of_tracks=137,
+            ),
+            smart_shuffle,
+        ],
+    ),
+    PlaylistConfig(
         name="electronic",
         id="7GMLyaUHYpikBPXA43E0qE",
         processors=[
