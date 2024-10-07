@@ -101,11 +101,13 @@ regular_playlists = [
         name="Collecting Dust",
         id="5WQsnHNLsZSdqXdM6S63Kr",
         track_source=from_playlist("5WQsnHNLsZSdqXdM6S63Kr"),
+        processors=[smart_shuffle],
     ),
     PlaylistConfig(
         name="Monsters and Trains",
         id="67azW1qgFpSn7MDYO2QTl1",
         track_source=from_playlist("67azW1qgFpSn7MDYO2QTl1"),
+        processors=[smart_shuffle],
     ),
     PlaylistConfig(
         name="ambient",
