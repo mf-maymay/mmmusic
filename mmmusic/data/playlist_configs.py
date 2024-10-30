@@ -269,6 +269,26 @@ regular_playlists = [
         ],
     ),
     PlaylistConfig(
+        name="mellow jazz",
+        id="5IBNfuBxDwooguDs7aEKE4",
+        track_source=from_playlist_config(jazz_playlist_config),
+        processors=[
+            filter_by_audio_feature("energy", upper_bound=0.5),
+            filter_by_audio_feature("tempo", upper_bound=120),
+            smart_shuffle,
+        ],
+    ),
+    PlaylistConfig(
+        name="mellow",
+        id="6V0lJn7z2G0aepFFKb1Rvj",
+        processors=[
+            filter_by_audio_feature("energy", upper_bound=0.4),
+            filter_by_audio_feature("tempo", upper_bound=110),
+            filter_by_audio_feature("valence", upper_bound=0.6),
+            smart_shuffle,
+        ],
+    ),
+    PlaylistConfig(
         name="metal",
         id="61nupgqsP4SpRPeMOlMfwR",
         processors=[
