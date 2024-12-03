@@ -6,7 +6,6 @@ from spotipy.oauth2 import SpotifyOAuth
 from mmmusic.logging import get_logger
 from mmmusic.models.albums import get_album, get_tracks_from_albums
 from mmmusic.models.artists import get_artist
-from mmmusic.utils import no_timeout
 
 logger = get_logger()
 
@@ -47,9 +46,8 @@ class User:
 
         logger.debug("OAuth manager was successfully prepared")
 
-        self.sp = spotipy.Spotify(auth_manager=auth_manager, retries=None)
+        self.sp = spotipy.Spotify(auth_manager=auth_manager)
 
-    @no_timeout
     def get_saved_albums(self):
         if self._albums is None:
             albums = []
@@ -61,20 +59,26 @@ class User:
                     get_album(item["album"]["id"]) for item in albums_on_page["items"]
                 )
                 albums_on_page = self.sp.next(albums_on_page)
+
             self._albums = tuple(sorted(albums))
+
         return self._albums
 
     def get_artists_of_saved_albums(self):
         if self._artists is None:
             artists = set()
+
             for album in self.get_saved_albums():
                 artists.update(get_artist(artist_id) for artist_id in album.artist_ids)
+
             self._artists = tuple(sorted(artists))
+
         return self._artists
 
     def get_tracks_from_saved_albums(self):
         if self._tracks is None:
             self._tracks = get_tracks_from_albums(self.get_saved_albums())
+
         return self._tracks
 
     def __hash__(self):
@@ -87,6 +91,7 @@ if __name__ == "__main__":
     user = User()
 
     artist_albums = defaultdict(list)
+
     for album in sorted(user.get_saved_albums(), key=lambda a: a.release_date):
         for artist_id in album.artist_ids:
             artist_albums[get_artist(artist_id)].append(album)
@@ -95,6 +100,7 @@ if __name__ == "__main__":
         artist_albums.items(), key=lambda k: (len(k[1]), k[0])
     ):
         print(f"{artist} ({len(albums)} albums)")  # noqa: T201
+
         for album in albums:
             print(f"* {album} [{album.release_date.year}]")  # noqa: T201
 
