@@ -1,8 +1,8 @@
 from collections import namedtuple
+from collections.abc import Iterable
 from functools import cache
 import json
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 
