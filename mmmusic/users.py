@@ -15,10 +15,6 @@ DEFAULT_SCOPE = "playlist-modify-private,playlist-modify-public,user-library-rea
 
 class User:
     def __init__(self, username=None):
-        open_browser_for_oauth = os.environ.get(
-            "SPOTIPY_OPEN_BROWSER_FOR_OAUTH", "true"
-        ).lower() in {"true", "1"}
-
         self.username = (
             username
             if username is not None
@@ -31,13 +27,9 @@ class User:
 
         logger.debug("Getting OAuth manager for user %r", self.username)
 
-        if open_browser_for_oauth:
-            logger.debug("Opening browser for OAuth")
-
         auth_manager = SpotifyOAuth(
             username=self.username,
             scope=DEFAULT_SCOPE,
-            open_browser=open_browser_for_oauth,
         )
 
         logger.debug("OAuth manager was successfully prepared")
