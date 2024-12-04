@@ -15,8 +15,6 @@ DEFAULT_SCOPE = "playlist-modify-private,playlist-modify-public,user-library-rea
 
 class User:
     def __init__(self, username=None):
-        username_from_environ = os.environ.get("SPOTIPY_CLIENT_USERNAME")
-
         open_browser_for_oauth = os.environ.get(
             "SPOTIPY_OPEN_BROWSER_FOR_OAUTH", "true"
         ).lower() in {"true", "1"}
@@ -24,9 +22,7 @@ class User:
         self.username = (
             username
             if username is not None
-            else username_from_environ
-            if username_from_environ is not None
-            else input("username: ")
+            else os.environ.get("SPOTIPY_CLIENT_USERNAME")
         )
 
         self._albums = None
