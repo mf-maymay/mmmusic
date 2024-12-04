@@ -13,11 +13,11 @@ logger = get_logger()
 
 def create_requests_session_for_spotify() -> requests.Session:
     retry = urllib3.Retry(
-        total=3,
-        connect=None,  # TODO: Adjust.
-        read=False,  # TODO: Adjust.
+        total=10,
+        connect=5,
+        read=5,
         allowed_methods=frozenset(["GET", "POST", "PUT", "DELETE"]),
-        status=3,
+        status=5,
         backoff_factor=0.3,
         status_forcelist=(429, 500, 502, 503, 504),
     )
