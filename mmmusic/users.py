@@ -14,7 +14,7 @@ DEFAULT_SCOPE = "playlist-modify-private,playlist-modify-public,user-library-rea
 
 
 class User:
-    def __init__(self, username=None, *, redirect_uri=None):
+    def __init__(self, username=None):
         username_from_environ = os.environ.get("SPOTIPY_CLIENT_USERNAME")
 
         open_browser_for_oauth = os.environ.get(
@@ -40,7 +40,6 @@ class User:
 
         auth_manager = SpotifyOAuth(
             username=self.username,
-            redirect_uri=redirect_uri,
             scope=DEFAULT_SCOPE,
             open_browser=open_browser_for_oauth,
         )
