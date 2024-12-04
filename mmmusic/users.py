@@ -21,6 +21,9 @@ class User:
             else os.environ.get("SPOTIPY_CLIENT_USERNAME")
         )
 
+        if self.username is None:
+            raise ValueError("Username not provided")
+
         self._albums = None
         self._artists = None
         self._tracks = None
