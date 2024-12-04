@@ -1,4 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from functools import cache
 
@@ -58,9 +57,7 @@ def get_album_tracks(album: Album | AlbumID) -> tuple[Track, ...]:
 
 
 def get_tracks_from_albums(albums: list[Album | AlbumID]) -> tuple[Track, ...]:
-    max_workers = 4  # (temp fix) Limit workers to avoid 429s.
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        return sum(executor.map(get_album_tracks, albums), start=())
+    return tuple(track for album in albums for track in get_album_tracks(album))
 
 
 if __name__ == "__main__":
