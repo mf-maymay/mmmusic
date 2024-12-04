@@ -3,6 +3,7 @@ import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
+from mmmusic.external.spotify import create_requests_session_for_spotify
 from mmmusic.logging import get_logger
 from mmmusic.models.albums import get_album, get_tracks_from_albums
 from mmmusic.models.artists import get_artist
@@ -46,7 +47,10 @@ class User:
 
         logger.debug("OAuth manager was successfully prepared")
 
-        self.sp = spotipy.Spotify(auth_manager=auth_manager)
+        self.sp = spotipy.Spotify(
+            auth_manager=auth_manager,
+            requests_session=create_requests_session_for_spotify(),
+        )
 
     def get_saved_albums(self):
         if self._albums is None:

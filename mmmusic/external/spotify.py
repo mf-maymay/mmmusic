@@ -1,16 +1,44 @@
 from functools import cache
 
+import requests
+import requests.adapters
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+import urllib3
 
 from mmmusic.logging import get_logger
 
 logger = get_logger()
 
 
+def create_requests_session_for_spotify() -> requests.Session:
+    retry = urllib3.Retry(
+        total=3,
+        connect=None,  # TODO: Adjust.
+        read=False,  # TODO: Adjust.
+        allowed_methods=frozenset(["GET", "POST", "PUT", "DELETE"]),
+        status=3,
+        backoff_factor=0.3,
+        status_forcelist=(429, 500, 502, 503, 504),
+    )
+
+    adapter = requests.adapters.HTTPAdapter(max_retries=retry)
+
+    session = requests.Session()
+
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+
+    return session
+
+
 @cache
 def get_client_credentials_managed_client() -> spotipy.Spotify:
-    return spotipy.Spotify(auth_manager=SpotifyClientCredentials())
+    # NOTE: This is not thread safe.
+    return spotipy.Spotify(
+        auth_manager=SpotifyClientCredentials(),
+        requests_session=create_requests_session_for_spotify(),
+    )
 
 
 @cache
