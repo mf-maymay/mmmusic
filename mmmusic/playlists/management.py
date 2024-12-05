@@ -39,11 +39,16 @@ def create_playlist(*, public=False, name, description, user: User) -> str:
 def get_tracks_from_playlist(playlist_id, *, user: User):
     tracks = []
 
+    logger.debug("Getting tracks from playlist %r", playlist_id)
+
     items = user.sp.playlist_items(playlist_id)
 
     while items:
         tracks.extend(get_track(item["track"]["id"]) for item in items["items"])
         items = user.sp.next(items)
+
+        if items:
+            logger.debug("Getting more tracks from playlist %r", playlist_id)
 
     return tracks
 
