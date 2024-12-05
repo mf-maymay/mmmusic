@@ -30,6 +30,8 @@ class User:
 
         logger.debug("Getting OAuth manager for user %r", self.username)
 
+        # TODO: Prepare auth manager in a separate method.
+
         auth_manager = SpotifyOAuth(
             username=self.username,
             scope=DEFAULT_SCOPE,
@@ -43,7 +45,14 @@ class User:
 
         logger.debug("Refreshing access token")
 
-        auth_manager.refresh_access_token(refresh_token)
+        token_info = auth_manager.refresh_access_token(refresh_token)
+
+        logger.debug("Access token expires in %r", token_info["expires_in"])
+
+        if "refresh_token" not in token_info:
+            logger.debug("'refresh_token' missing from token info")
+        elif refresh_token != token_info["refresh_token"]:
+            logger.warning("Returned refresh token differs from provided refresh token")
 
         logger.debug("OAuth manager was successfully prepared")
 
