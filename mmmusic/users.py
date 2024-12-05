@@ -28,9 +28,15 @@ class User:
         self._artists = None
         self._tracks = None
 
-        logger.debug("Getting OAuth manager for user %r", self.username)
+        auth_manager = self._prepare_auth_manager()
 
-        # TODO: Prepare auth manager in a separate method.
+        self.sp = spotipy.Spotify(
+            auth_manager=auth_manager,
+            requests_session=create_requests_session_for_spotify(),
+        )
+
+    def _prepare_auth_manager(self) -> SpotifyOAuth:
+        logger.debug("Preparing OAuth manager for user %r", self.username)
 
         auth_manager = SpotifyOAuth(
             username=self.username,
@@ -56,10 +62,7 @@ class User:
 
         logger.debug("OAuth manager was successfully prepared")
 
-        self.sp = spotipy.Spotify(
-            auth_manager=auth_manager,
-            requests_session=create_requests_session_for_spotify(),
-        )
+        return auth_manager
 
     def get_saved_albums(self):
         if self._albums is None:
