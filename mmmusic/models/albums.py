@@ -4,7 +4,10 @@ from functools import cache
 from pydantic import BaseModel, validator
 
 from mmmusic.external import spotify
+from mmmusic.logging import get_logger
 from mmmusic.models.tracks import Track, get_track
+
+logger = get_logger()
 
 AlbumID = str
 
@@ -51,6 +54,8 @@ def get_album(album_id: AlbumID | Album) -> Album:
 
 @cache
 def get_album_tracks(album: Album | AlbumID) -> tuple[Track, ...]:
+    logger.debug("Getting tracks from album %r", album)
+
     album = get_album(album)
 
     return tuple(get_track(track["id"]) for track in spotify.get_album_tracks(album.id))
