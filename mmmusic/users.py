@@ -35,6 +35,15 @@ class User:
             scope=DEFAULT_SCOPE,
         )
 
+        refresh_token = os.getenv("SPOTIFY_REFRESH_TOKEN")
+
+        if refresh_token is None:
+            raise RuntimeError("Refresh token not provided")
+
+        logger.debug("Refreshing access token")
+
+        auth_manager.refresh_access_token(refresh_token)
+
         logger.debug("OAuth manager was successfully prepared")
 
         self.sp = spotipy.Spotify(
