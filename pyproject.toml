@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "mmmusic"
-version = "0.1.1"
+version = "0.1.2"
 description = "Tools for music discovery and managment"
 authors = ["Mason Albright <14malbright@gmail.com>"]
 readme = "README.md"
