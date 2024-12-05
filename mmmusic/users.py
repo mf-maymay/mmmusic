@@ -33,6 +33,7 @@ class User:
         auth_manager = SpotifyOAuth(
             username=self.username,
             scope=DEFAULT_SCOPE,
+            open_browser=False,
         )
 
         refresh_token = os.getenv("SPOTIFY_REFRESH_TOKEN")
