@@ -1,7 +1,7 @@
 import os
 
 import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+from spotipy.oauth2 import SpotifyAuthBase, SpotifyPKCE
 
 from mmmusic.external.spotify import create_requests_session_for_spotify
 from mmmusic.logging import get_logger
@@ -35,10 +35,10 @@ class User:
             requests_session=create_requests_session_for_spotify(),
         )
 
-    def _prepare_auth_manager(self) -> SpotifyOAuth:
-        logger.debug("Preparing OAuth manager for user %r", self.username)
+    def _prepare_auth_manager(self) -> SpotifyAuthBase:
+        logger.debug("Preparing auth manager for user %r", self.username)
 
-        auth_manager = SpotifyOAuth(
+        auth_manager = SpotifyPKCE(
             username=self.username,
             scope=DEFAULT_SCOPE,
             open_browser=False,
