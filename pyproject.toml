@@ -29,6 +29,7 @@ pydeps = "^1.12.19"
 ruff = "*"
 types-requests = "*"
 types-tabulate = "*"
+ipython = "^8.30.0"
 
 [tool.ruff.lint]
 select = [
