@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import spotipy
 from spotipy.oauth2 import SpotifyAuthBase, SpotifyPKCE
@@ -38,27 +39,31 @@ class User:
     def _prepare_auth_manager(self) -> SpotifyAuthBase:
         logger.debug("Preparing auth manager for user %r", self.username)
 
+        refresh_token = os.getenv("SPOTIFY_REFRESH_TOKEN")
+
         auth_manager = SpotifyPKCE(
             username=self.username,
             scope=DEFAULT_SCOPE,
-            open_browser=False,
         )
 
-        refresh_token = os.getenv("SPOTIFY_REFRESH_TOKEN")
-
         if refresh_token is None:
-            raise RuntimeError("Refresh token not provided")
+            logger.debug("Refresh token not provided")
+        elif (cache_path := Path(auth_manager.cache_handler.cache_path)).exists():
+            logger.debug("Using cached token info at %s", cache_path)
+        else:
+            logger.debug("Cached token info not found at %s", cache_path)
 
-        logger.debug("Refreshing access token")
+            logger.debug("Refreshing access token using refresh token")
 
-        token_info = auth_manager.refresh_access_token(refresh_token)
+            token_info = auth_manager.refresh_access_token(refresh_token)
+            logger.debug("Access token expires in %r", token_info["expires_in"])
 
-        logger.debug("Access token expires in %r", token_info["expires_in"])
-
-        if "refresh_token" not in token_info:
-            logger.debug("'refresh_token' missing from token info")
-        elif refresh_token != token_info["refresh_token"]:
-            logger.warning("Returned refresh token differs from provided refresh token")
+            if "refresh_token" not in token_info:
+                logger.debug("'refresh_token' missing from token info")
+            elif refresh_token != token_info["refresh_token"]:
+                logger.warning(
+                    "Returned refresh token differs from provided refresh token"
+                )
 
         logger.debug("OAuth manager was successfully prepared")
 
