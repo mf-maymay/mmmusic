@@ -4,7 +4,7 @@ from functools import cache
 from pydantic import BaseModel, validator
 
 from mmmusic.external import spotify
-from mmmusic.logging import get_logger
+from mmmusic.log_utils import get_logger
 from mmmusic.models.tracks import Track, get_track
 
 logger = get_logger()

@@ -1,4 +1,4 @@
-from mmmusic.logging import get_logger
+from mmmusic.log_utils import get_logger
 from mmmusic.models.playlist_configs import PlaylistConfig
 from mmmusic.playlists.management import (
     add_tracks_to_playlist,

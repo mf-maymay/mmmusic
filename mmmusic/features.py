@@ -4,7 +4,7 @@ import numpy as np
 from scipy.stats import percentileofscore
 
 from mmmusic.genres import get_genre_attributes_for_track
-from mmmusic.logging import get_logger
+from mmmusic.log_utils import get_logger
 from mmmusic.models.albums import get_album
 from mmmusic.models.tracks import Track
 from mmmusic.models.types import Item, Items, Metrics

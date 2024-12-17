@@ -5,7 +5,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyAuthBase, SpotifyPKCE
 
 from mmmusic.external.spotify import create_requests_session_for_spotify
-from mmmusic.logging import get_logger
+from mmmusic.log_utils import get_logger
 from mmmusic.models.albums import get_album, get_tracks_from_albums
 from mmmusic.models.artists import get_artist
 

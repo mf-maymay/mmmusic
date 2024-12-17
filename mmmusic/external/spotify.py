@@ -6,7 +6,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import urllib3
 
-from mmmusic.logging import get_logger
+from mmmusic.log_utils import get_logger
 
 logger = get_logger()
 

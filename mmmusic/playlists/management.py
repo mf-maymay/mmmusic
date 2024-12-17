@@ -1,4 +1,4 @@
-from mmmusic.logging import get_logger
+from mmmusic.log_utils import get_logger
 from mmmusic.models.tracks import get_track
 from mmmusic.shuffling import smart_shuffle
 from mmmusic.users import User
