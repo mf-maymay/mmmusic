@@ -10,14 +10,28 @@ if TYPE_CHECKING:
 TrackSource = Callable[[User], list[Track]]
 
 
-from_saved_albums: TrackSource = User.get_tracks_from_saved_albums
+def _exclude_featureless_tracks(track_source: TrackSource) -> TrackSource:
+    # Tracks without audio features cannot be used in most applications, so we will drop
+    # them (for now).
+
+    def track_source_without_featureless_tracks(user: User) -> list[Track]:
+        return [
+            track for track in track_source(user) if track.audio_features is not None
+        ]
+
+    return track_source_without_featureless_tracks
+
+
+from_saved_albums: TrackSource = _exclude_featureless_tracks(
+    User.get_tracks_from_saved_albums
+)
 
 
 def from_playlist(playlist_id: str) -> TrackSource:
     def track_source(user: User) -> list[Track]:
         return get_tracks_from_playlist(playlist_id, user=user)
 
-    return track_source
+    return _exclude_featureless_tracks(track_source)
 
 
 def from_playlist_config(playlist_config: "PlaylistConfig") -> TrackSource:
@@ -29,11 +43,11 @@ def from_playlist_config(playlist_config: "PlaylistConfig") -> TrackSource:
 
         return tracks
 
-    return track_source
+    return _exclude_featureless_tracks(track_source)
 
 
 def from_tracks(tracks: list[Track]) -> TrackSource:
     def track_source(user: User) -> list[Track]:
         return tracks
 
-    return track_source
+    return _exclude_featureless_tracks(track_source)

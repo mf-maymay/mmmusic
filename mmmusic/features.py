@@ -30,15 +30,14 @@ def similarity(u: Metrics, v: Metrics) -> float:
 
 
 def get_metrics_for_track(track: Track) -> Metrics:
-    try:
-        return [
-            *(track[feature] for feature in TRACK_FEATURES),
-            int(get_album(track.album_id).release_date.year),
-            *get_genre_attributes_for_track(track),
-        ]
-    except Exception:
-        logger.exception(f"Failed to get metrics for track {track!r}")
-        raise
+    if track.audio_features is None:
+        raise ValueError(f"Track {track!r} is missing audio features")
+
+    return [
+        *(track[feature] for feature in TRACK_FEATURES),
+        int(get_album(track.album_id).release_date.year),
+        *get_genre_attributes_for_track(track),
+    ]
 
 
 def get_percentile_scores_for_attributes_of_items(
