@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import spotipy
+from spotipy.cache_handler import CacheFileHandler
 from spotipy.oauth2 import SpotifyAuthBase, SpotifyPKCE
 
 from mmmusic.external.spotify import create_requests_session_for_spotify
@@ -42,8 +43,8 @@ class User:
         refresh_token = os.getenv("SPOTIFY_REFRESH_TOKEN")
 
         auth_manager = SpotifyPKCE(
-            username=self.username,
             scope=DEFAULT_SCOPE,
+            cache_handler=CacheFileHandler(cache_path=f".cache-pkce-{self.username}"),
         )
 
         if refresh_token is None:

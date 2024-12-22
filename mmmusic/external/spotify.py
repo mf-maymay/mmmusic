@@ -3,6 +3,7 @@ from functools import cache
 import requests
 import requests.adapters
 import spotipy
+from spotipy.cache_handler import CacheFileHandler
 from spotipy.oauth2 import SpotifyClientCredentials
 import urllib3
 
@@ -36,7 +37,11 @@ def create_requests_session_for_spotify() -> requests.Session:
 def get_client_credentials_managed_client() -> spotipy.Spotify:
     # NOTE: This is not thread safe.
     return spotipy.Spotify(
-        auth_manager=SpotifyClientCredentials(),
+        auth_manager=SpotifyClientCredentials(
+            cache_handler=CacheFileHandler(
+                cache_path=".cache-client-credentials-token-info"
+            )
+        ),
         requests_session=create_requests_session_for_spotify(),
     )
 
