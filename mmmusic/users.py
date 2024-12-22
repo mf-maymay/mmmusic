@@ -47,7 +47,7 @@ class User:
             cache_handler=CacheFileHandler(cache_path=f".cache-pkce-{self.username}"),
         )
 
-        if refresh_token is None:
+        if not refresh_token:
             logger.debug("Refresh token not provided")
         elif (cache_path := Path(auth_manager.cache_handler.cache_path)).exists():
             logger.debug("Using cached token info at %s", cache_path)
